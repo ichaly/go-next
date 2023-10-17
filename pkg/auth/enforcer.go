@@ -19,7 +19,7 @@ func NewEnforcer(d *gorm.DB) (*casbin.Enforcer, error) {
 	if err != nil {
 		return nil, err
 	}
-	registerFunction(e, d)
+	registerFunction(e)
 	return e, nil
 }
 
