@@ -102,7 +102,7 @@ func (my *TokenStore) getData(ctx context.Context, key string) (oauth2.TokenInfo
 	if err != nil {
 		return nil, err
 	}
-	var t *models.Token
+	t := &models.Token{}
 	err = util.UnmarshalJson(val, t)
 	if err != nil {
 		return nil, err

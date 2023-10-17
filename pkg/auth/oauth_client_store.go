@@ -67,7 +67,7 @@ func (my *Client) GetDomain() string {
 }
 
 func (my *Client) IsPublic() bool {
-	return false
+	return my.Public
 }
 
 func (my *Client) GetUserID() string {
@@ -79,7 +79,6 @@ func (my *Client) VerifyPassword(secret string) bool {
 	return err == nil
 }
 
-// GetByID http://127.0.0.1:8080/oauth/token?grant_type=client_credentials&client_id=0&client_secret=eV4YeKI484E1nVoioE91Os6eOQip0TFs&scope=read
 func (my *ClientStore) GetByID(ctx context.Context, id string) (oauth2.ClientInfo, error) {
 	var c Client
 	e := my.db.WithContext(ctx).Model(c).Where("id = ?", id).Take(&c).Error
