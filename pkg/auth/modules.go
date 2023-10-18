@@ -8,6 +8,7 @@ var Modules = fx.Options(
 	fx.Provide(
 		//Casbin鉴权
 		NewEnforcer,
+		NewSession,
 		//Oauth2认证
 		NewOauthServer,
 		NewOauthTokenStore,

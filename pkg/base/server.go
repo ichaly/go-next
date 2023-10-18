@@ -28,6 +28,8 @@ func NewServer(c *Config) *gin.Engine {
 		_ = chTranslations.RegisterDefaultTranslations(v, trans)
 	}
 	e := gin.Default()
+	e.LoadHTMLGlob("web/*.html")
+
 	e.Use(cors.Default())
 	e.Use(gzip.Gzip(gzip.DefaultCompression))
 	return e

@@ -20,7 +20,7 @@ const (
 	KEY = "oauth2_secret"
 )
 
-func NewOauthServer(db *gorm.DB, ts oauth2.TokenStore, cs oauth2.ClientStore) *server.Server {
+func NewOauthServer(db *gorm.DB, se *Session, ts oauth2.TokenStore, cs oauth2.ClientStore) *server.Server {
 	manager := manage.NewDefaultManager()
 	manager.MapTokenStorage(ts)
 	manager.MapClientStorage(cs)
@@ -29,7 +29,7 @@ func NewOauthServer(db *gorm.DB, ts oauth2.TokenStore, cs oauth2.ClientStore) *s
 	s := server.NewDefaultServer(manager)
 	s.SetAllowGetAccessRequest(true)
 	s.SetClientInfoHandler(clientInfoHandler())
-	s.SetUserAuthorizationHandler(userAuthorizationHandler(db))
+	s.SetUserAuthorizationHandler(userAuthorizationHandler(se))
 	s.SetPasswordAuthorizationHandler(passwordAuthorizationHandler(db))
 
 	s.SetInternalErrorHandler(func(err error) (re *errors.Response) {
@@ -39,13 +39,13 @@ func NewOauthServer(db *gorm.DB, ts oauth2.TokenStore, cs oauth2.ClientStore) *s
 	return s
 }
 
-func userAuthorizationHandler(db *gorm.DB) func(http.ResponseWriter, *http.Request) (userID string, err error) {
-	return func(w http.ResponseWriter, r *http.Request) (userID string, err error) {
-		//if userID = utils.GetUserSession(r); userID == "" {
-		//	w.Header().Set("Location", "/login?"+r.URL.RawQuery)
-		//	w.WriteHeader(302)
-		//}
-		return userID, nil
+func userAuthorizationHandler(se *Session) func(http.ResponseWriter, *http.Request) (userID string, err error) {
+	return func(w http.ResponseWriter, r *http.Request) (uid string, err error) {
+		if uid = se.GetUserSession(r); uid == "" {
+			w.Header().Set("Location", "/oauth/login?"+r.URL.RawQuery)
+			w.WriteHeader(http.StatusFound)
+		}
+		return uid, nil
 	}
 }
 
