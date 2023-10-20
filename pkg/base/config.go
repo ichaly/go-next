@@ -10,6 +10,7 @@ import (
 
 type Config struct {
 	App      *App        `mapstructure:"app" jsonschema:"title=App"`
+	Oauth    *Oauth      `mapstructure:"oauth" jsonschema:"title=oauth"`
 	Cache    *DataSource `mapstructure:"cache" jsonschema:"title=Cache"`
 	Database *DataSource `mapstructure:"database" jsonschema:"title=DataSource"`
 }
@@ -20,6 +21,15 @@ type App struct {
 	Host      string `mapstructure:"host" jsonschema:"title=Application Host"`
 	Debug     bool   `mapstructure:"debug" jsonschema:"title=Debug"`
 	Workspace string `mapstructure:"workspace" jsonschema:"title=root"`
+}
+
+type Jwt struct {
+	Key string `mapstructure:"key"`
+}
+
+type Oauth struct {
+	Jwt      Jwt    `mapstructure:"url"`
+	LoginUri string `mapstructure:"login_uri"`
 }
 
 type DataSource struct {
@@ -100,6 +110,9 @@ func newViperWithDefaults() *viper.Viper {
 	vi.SetDefault("debug", true)
 
 	vi.SetDefault("app.port", "3000")
+
+	vi.SetDefault("oauth.login_uri", "")
+	vi.SetDefault("oauth.jwt.key", "12345")
 
 	vi.SetDefault("cache.dialect", "memory")
 

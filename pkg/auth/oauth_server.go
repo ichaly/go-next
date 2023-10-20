@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"fmt"
 	"github.com/go-oauth2/oauth2/v4"
 	"github.com/go-oauth2/oauth2/v4/errors"
 	"github.com/go-oauth2/oauth2/v4/generates"
@@ -9,27 +10,23 @@ import (
 	"github.com/go-oauth2/oauth2/v4/server"
 	"github.com/golang-jwt/jwt"
 	"github.com/ichaly/go-next/app/sys"
+	"github.com/ichaly/go-next/pkg/base"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 	"net/http"
 	"strconv"
 )
 
-const (
-	KID = "go.next"
-	KEY = "oauth2_secret"
-)
-
-func NewOauthServer(db *gorm.DB, se *Session, ts oauth2.TokenStore, cs oauth2.ClientStore) *server.Server {
+func NewOauthServer(c *base.Config, db *gorm.DB, se *Session, ts oauth2.TokenStore, cs oauth2.ClientStore) *server.Server {
 	manager := manage.NewDefaultManager()
 	manager.MapTokenStorage(ts)
 	manager.MapClientStorage(cs)
-	manager.MapAccessGenerate(generates.NewJWTAccessGenerate(KID, []byte(KEY), jwt.SigningMethodHS512))
+	manager.MapAccessGenerate(generates.NewJWTAccessGenerate("", []byte(c.Oauth.Jwt.Key), jwt.SigningMethodHS512))
 
 	s := server.NewDefaultServer(manager)
 	s.SetAllowGetAccessRequest(true)
 	s.SetClientInfoHandler(clientInfoHandler())
-	s.SetUserAuthorizationHandler(userAuthorizationHandler(se))
+	s.SetUserAuthorizationHandler(userAuthorizationHandler(c, se))
 	s.SetPasswordAuthorizationHandler(passwordAuthorizationHandler(db))
 
 	s.SetInternalErrorHandler(func(err error) (re *errors.Response) {
@@ -39,13 +36,17 @@ func NewOauthServer(db *gorm.DB, se *Session, ts oauth2.TokenStore, cs oauth2.Cl
 	return s
 }
 
-func userAuthorizationHandler(se *Session) func(http.ResponseWriter, *http.Request) (userID string, err error) {
+func userAuthorizationHandler(c *base.Config, s *Session) func(http.ResponseWriter, *http.Request) (userID string, err error) {
 	return func(w http.ResponseWriter, r *http.Request) (uid string, err error) {
-		if uid = se.GetUserSession(r); uid == "" {
-			w.Header().Set("Location", "/oauth/login?"+r.URL.RawQuery)
+		if uid = s.GetUserSession(r); uid == "" {
+			uri := "/oauth/login"
+			if len(c.Oauth.LoginUri) > 0 {
+				uri = c.Oauth.LoginUri
+			}
+			w.Header().Set("Location", fmt.Sprintf("%s?%s", uri, r.URL.RawQuery))
 			w.WriteHeader(http.StatusFound)
 		}
-		return uid, nil
+		return
 	}
 }
 
