@@ -27,7 +27,7 @@ func NewOauthServer(c *base.Config, db *gorm.DB, se *Session, ts oauth2.TokenSto
 	s.SetAllowGetAccessRequest(true)
 	s.SetClientInfoHandler(clientInfoHandler())
 	s.SetUserAuthorizationHandler(userAuthorizationHandler(c, se))
-	s.SetPasswordAuthorizationHandler(passwordAuthorizationHandler(db))
+	s.SetPasswordAuthorizationHandler(passwordAuthorizationHandler(c, db))
 
 	s.SetInternalErrorHandler(func(err error) (re *errors.Response) {
 		return errors.NewResponse(err, http.StatusInternalServerError)
