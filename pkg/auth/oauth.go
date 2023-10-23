@@ -30,6 +30,9 @@ func (my *Oauth) Init(r gin.IRouter) {
 	//授权路由
 	r.Match([]string{http.MethodGet, http.MethodPost}, "/token", my.tokenHandler)
 	r.Match([]string{http.MethodGet, http.MethodPost}, "/authorize", my.authorizeHandler)
+
+	//登录回调
+	r.Any("/callback/:name", my.callbackHandler)
 }
 
 func (my *Oauth) tokenHandler(c *gin.Context) {
@@ -72,4 +75,8 @@ func (my *Oauth) logoutHandler(c *gin.Context) {
 	my.session.DeleteUserSession(c)
 	uri := c.DefaultQuery("redirect_uri", c.PostForm("redirect_uri"))
 	c.JSON(http.StatusOK, gin.H{"redirect": uri})
+}
+
+func (my *Oauth) callbackHandler(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{"code": c.Query("code"), "name": c.Param("name")})
 }

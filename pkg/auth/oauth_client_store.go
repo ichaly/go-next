@@ -23,6 +23,12 @@ func NewOauthClientStore(d *gorm.DB) oauth2.ClientStore {
 	return &ClientStore{db: d}
 }
 
+func (my *ClientStore) GetByID(ctx context.Context, id string) (oauth2.ClientInfo, error) {
+	var c Client
+	e := my.db.WithContext(ctx).Model(c).Where("id = ?", id).Take(&c).Error
+	return &c, e
+}
+
 type Client struct {
 	Domain string `gorm:"type:varchar(512)"`
 	Secret string `gorm:"type:varchar(512)"`
@@ -77,10 +83,4 @@ func (my *Client) GetUserID() string {
 func (my *Client) VerifyPassword(secret string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(my.Secret), []byte(secret))
 	return err == nil
-}
-
-func (my *ClientStore) GetByID(ctx context.Context, id string) (oauth2.ClientInfo, error) {
-	var c Client
-	e := my.db.WithContext(ctx).Model(c).Where("id = ?", id).Take(&c).Error
-	return &c, e
 }
