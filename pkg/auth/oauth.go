@@ -32,7 +32,7 @@ func (my *Oauth) Init(r gin.IRouter) {
 	r.Match([]string{http.MethodGet, http.MethodPost}, "/authorize", my.authorizeHandler)
 
 	//登录回调
-	r.Any("/callback/:name", my.callbackHandler)
+	r.GET("/callback/:name", my.callbackHandler)
 }
 
 func (my *Oauth) tokenHandler(c *gin.Context) {
