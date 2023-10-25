@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 )
 
 type Config struct {
@@ -13,6 +14,7 @@ type Config struct {
 	Oauth    *Oauth      `mapstructure:"oauth" jsonschema:"title=oauth"`
 	Cache    *DataSource `mapstructure:"cache" jsonschema:"title=Cache"`
 	Database *DataSource `mapstructure:"database" jsonschema:"title=DataSource"`
+	Captcha  *Captcha    `mapstructure:"captcha" jsonschema:"title=captcha"`
 }
 
 type App struct {
@@ -31,6 +33,10 @@ type Oauth struct {
 	Jwt      Jwt    `mapstructure:"url"`
 	Passkey  string `mapstructure:"passkey"`
 	LoginUri string `mapstructure:"login_uri"`
+}
+type Captcha struct {
+	Length  int           `mapstructure:"length" jsonschema:"title=Captcha length"`
+	Expired time.Duration `mapstructure:"expired" jsonschema:"title=Captcha expired in minute"`
 }
 
 type DataSource struct {
@@ -115,6 +121,9 @@ func newViperWithDefaults() *viper.Viper {
 	vi.SetDefault("oauth.Passkey", "go.next")
 	vi.SetDefault("oauth.login_uri", "")
 	vi.SetDefault("oauth.jwt.key", "12345")
+
+	vi.SetDefault("captcha.length", 6)
+	vi.SetDefault("captcha.expired", "10m")
 
 	vi.SetDefault("cache.dialect", "memory")
 

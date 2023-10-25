@@ -12,16 +12,16 @@ import (
 	"time"
 )
 
-const CachePrefix = "token"
+const TokenPrefix = "token"
 
 type TokenStore struct {
-	Cache       *cache.Cache[string]
+	cache       *cache.Cache[string]
 	keyGenerate func(key string) string
 }
 
 func NewOauthTokenStore(c *cache.Cache[string]) oauth2.TokenStore {
-	return &TokenStore{Cache: c, keyGenerate: func(key string) string {
-		return fmt.Sprintf("%s:%s", CachePrefix, key)
+	return &TokenStore{cache: c, keyGenerate: func(key string) string {
+		return fmt.Sprintf("%s:%s", TokenPrefix, key)
 	}}
 }
 
@@ -32,7 +32,7 @@ func (my *TokenStore) Create(ctx context.Context, info oauth2.TokenInfo) error {
 	}
 
 	if code := info.GetCode(); code != "" {
-		return my.Cache.Set(ctx, my.keyGenerate(code), jv, store.WithExpiration(info.GetCodeExpiresIn()))
+		return my.cache.Set(ctx, my.keyGenerate(code), jv, store.WithExpiration(info.GetCodeExpiresIn()))
 	}
 
 	basicID := uuid.Must(uuid.NewRandom()).String()
@@ -46,32 +46,32 @@ func (my *TokenStore) Create(ctx context.Context, info oauth2.TokenInfo) error {
 			aexp = rexp
 		}
 		if info.GetRefreshExpiresIn() != 0 {
-			if err := my.Cache.Set(ctx, my.keyGenerate(refresh), basicID, store.WithExpiration(rexp)); err != nil {
+			if err := my.cache.Set(ctx, my.keyGenerate(refresh), basicID, store.WithExpiration(rexp)); err != nil {
 				return err
 			}
 		}
 	}
 
-	if err = my.Cache.Set(ctx, my.keyGenerate(basicID), jv, store.WithExpiration(rexp)); err != nil {
+	if err = my.cache.Set(ctx, my.keyGenerate(basicID), jv, store.WithExpiration(rexp)); err != nil {
 		return err
 	}
 
-	return my.Cache.Set(ctx, my.keyGenerate(info.GetAccess()), basicID, store.WithExpiration(aexp))
+	return my.cache.Set(ctx, my.keyGenerate(info.GetAccess()), basicID, store.WithExpiration(aexp))
 }
 
 // RemoveByCode delete the authorization code
 func (my *TokenStore) RemoveByCode(ctx context.Context, code string) error {
-	return my.Cache.Delete(ctx, my.keyGenerate(code))
+	return my.cache.Delete(ctx, my.keyGenerate(code))
 }
 
 // RemoveByAccess use the access token to delete the token information
 func (my *TokenStore) RemoveByAccess(ctx context.Context, access string) error {
-	return my.Cache.Delete(ctx, my.keyGenerate(access))
+	return my.cache.Delete(ctx, my.keyGenerate(access))
 }
 
 // RemoveByRefresh use the refresh token to delete the token information
 func (my *TokenStore) RemoveByRefresh(ctx context.Context, refresh string) error {
-	return my.Cache.Delete(ctx, my.keyGenerate(refresh))
+	return my.cache.Delete(ctx, my.keyGenerate(refresh))
 }
 
 // GetByCode use the authorization code for token information data
@@ -98,7 +98,7 @@ func (my *TokenStore) GetByRefresh(ctx context.Context, refresh string) (oauth2.
 }
 
 func (my *TokenStore) getData(ctx context.Context, key string) (oauth2.TokenInfo, error) {
-	val, err := my.Cache.Get(ctx, my.keyGenerate(key))
+	val, err := my.cache.Get(ctx, my.keyGenerate(key))
 	if err != nil {
 		return nil, err
 	}
@@ -111,5 +111,5 @@ func (my *TokenStore) getData(ctx context.Context, key string) (oauth2.TokenInfo
 }
 
 func (my *TokenStore) getBasicID(ctx context.Context, key string) (string, error) {
-	return my.Cache.Get(ctx, my.keyGenerate(key))
+	return my.cache.Get(ctx, my.keyGenerate(key))
 }

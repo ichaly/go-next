@@ -1,10 +1,14 @@
 package auth
 
 import (
+	"errors"
+	"github.com/eko/gocache/lib/v4/cache"
+	"github.com/eko/gocache/lib/v4/store"
 	"github.com/gin-gonic/gin"
 	"github.com/go-oauth2/oauth2/v4/server"
 	"github.com/graphql-go/graphql/gqlerrors"
 	"github.com/ichaly/go-next/pkg/base"
+	"github.com/ichaly/go-next/pkg/util"
 	"net/http"
 )
 
@@ -12,10 +16,11 @@ type Oauth struct {
 	session *Session
 	config  *base.Config
 	oauth   *server.Server
+	cache   *cache.Cache[string]
 }
 
-func NewOauth(c *base.Config, o *server.Server, s *Session) base.Plugin {
-	return &Oauth{config: c, oauth: o, session: s}
+func NewOauth(c *base.Config, o *server.Server, s *Session, cache *cache.Cache[string]) base.Plugin {
+	return &Oauth{config: c, oauth: o, session: s, cache: cache}
 }
 
 func (my *Oauth) Base() string {
@@ -33,6 +38,9 @@ func (my *Oauth) Init(r gin.IRouter) {
 
 	//登录回调
 	r.GET("/callback/:name", my.callbackHandler)
+
+	//快捷登录验证码
+	r.Match([]string{http.MethodGet, http.MethodPost}, "/captcha", my.captchaHandler)
 }
 
 func (my *Oauth) tokenHandler(c *gin.Context) {
@@ -79,4 +87,33 @@ func (my *Oauth) logoutHandler(c *gin.Context) {
 
 func (my *Oauth) callbackHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"code": c.Query("code"), "name": c.Param("name")})
+}
+
+func (my *Oauth) captchaHandler(c *gin.Context) {
+	defer func() {
+		if err := recover(); err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"errors": gqlerrors.FormatErrors(err.(error))})
+		}
+	}()
+	req := struct {
+		Username    string `form:"username" json:"username,omitempty"`
+		CaptchaType string `form:"captcha_type" json:"captcha_type,omitempty"`
+	}{}
+	err := c.ShouldBind(&req)
+	if req.Username == "" {
+		panic(errors.New("手机号/邮箱不能为空"))
+	}
+	if err != nil {
+		panic(err)
+	}
+	key := keyGenerate(req.CaptchaType)
+	val, err := my.cache.Get(c.Request.Context(), key)
+	if err != nil || val == "" {
+		val = util.RandomCode(my.config.Captcha.Length)
+	}
+	err = my.cache.Set(c.Request.Context(), key, val, store.WithExpiration(my.config.Captcha.Expired))
+	if err != nil {
+		panic(err)
+	}
+	c.JSON(http.StatusOK, gin.H{"msg": "操作成功"})
 }

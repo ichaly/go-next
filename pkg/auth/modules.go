@@ -22,6 +22,11 @@ var Modules = fx.Options(
 			NewGraphql,
 			fx.ResultTags(`group:"middleware"`),
 		),
+		//手机邮件验证码登录验证
+		fx.Annotate(
+			NewCaptcha,
+			fx.ResultTags(`group:"middleware"`),
+		),
 		//登录验证中间件
 		fx.Annotate(
 			NewOauthVerify,

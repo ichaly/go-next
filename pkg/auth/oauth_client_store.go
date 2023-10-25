@@ -10,29 +10,31 @@ import (
 )
 
 type ClientStore struct {
-	db *gorm.DB
+	db     *gorm.DB
+	config *base.Config
 }
 
-func NewOauthClientStore(d *gorm.DB) oauth2.ClientStore {
-	c := &Client{}
-	if !d.Migrator().HasTable(c.TableName()) {
-		if err := d.Migrator().CreateTable(c); err != nil {
+func NewOauthClientStore(d *gorm.DB, c *base.Config) oauth2.ClientStore {
+	client := &Client{}
+	if !d.Migrator().HasTable(client.TableName()) {
+		if err := d.Migrator().CreateTable(client); err != nil {
 			panic(err)
 		}
 	}
-	return &ClientStore{db: d}
+	return &ClientStore{db: d, config: c}
 }
 
 func (my *ClientStore) GetByID(ctx context.Context, id string) (oauth2.ClientInfo, error) {
-	var c Client
+	c := Client{Passkey: my.config.Oauth.Passkey}
 	e := my.db.WithContext(ctx).Model(c).Where("id = ?", id).Take(&c).Error
 	return &c, e
 }
 
 type Client struct {
-	Domain string `gorm:"type:varchar(512)"`
-	Secret string `gorm:"type:varchar(512)"`
-	Public bool
+	Passkey string `gorm:"-"`
+	Domain  string `gorm:"type:varchar(512)"`
+	Secret  string `gorm:"type:varchar(512)"`
+	Public  bool
 	base.Entity
 }
 
@@ -81,6 +83,9 @@ func (my *Client) GetUserID() string {
 }
 
 func (my *Client) VerifyPassword(secret string) bool {
+	if my.Passkey == secret {
+		return true
+	}
 	err := bcrypt.CompareHashAndPassword([]byte(my.Secret), []byte(secret))
 	return err == nil
 }
