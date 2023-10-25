@@ -18,5 +18,11 @@ var Modules = fx.Options(
 				return &Team{}
 			},
 		},
+		fx.Annotated{
+			Group: "entity",
+			Target: func() interface{} {
+				return &Bind{}
+			},
+		},
 	),
 )
