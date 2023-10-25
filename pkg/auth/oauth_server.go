@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"github.com/go-oauth2/oauth2/v4"
 	"github.com/go-oauth2/oauth2/v4/errors"
@@ -53,7 +54,10 @@ func userAuthorizationHandler(c *base.Config, s *Session) func(http.ResponseWrit
 func passwordAuthorizationHandler(c *base.Config, db *gorm.DB) func(context.Context, string, string, string) (string, error) {
 	return func(ctx context.Context, clientID, username, password string) (string, error) {
 		user := sys.User{}
-		err := db.Model(&user).Where("username = ?", username).First(&user).Error
+		err := db.Model(&user).
+			Joins("left join sys_bind b on b.uid = sys_user.id").
+			Where("sys_user.username = @username or b.value = @username", sql.Named("username", username)).
+			First(&user).Error
 		if err != nil {
 			return "", err
 		}

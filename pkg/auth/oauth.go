@@ -106,7 +106,7 @@ func (my *Oauth) captchaHandler(c *gin.Context) {
 	if err != nil {
 		panic(err)
 	}
-	key := keyGenerate(req.CaptchaType)
+	key := keyGenerate(req.Username)
 	val, err := my.cache.Get(c.Request.Context(), key)
 	if err != nil || val == "" {
 		val = util.RandomCode(my.config.Captcha.Length)

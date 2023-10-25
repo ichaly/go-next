@@ -1,18 +1,17 @@
 package auth
 
 import (
-	"bytes"
-	"encoding/json"
+	"database/sql"
 	"errors"
 	"fmt"
 	"github.com/eko/gocache/lib/v4/cache"
 	"github.com/gin-gonic/gin"
+	"github.com/go-oauth2/oauth2/v4"
 	"github.com/graphql-go/graphql/gqlerrors"
 	"github.com/ichaly/go-next/app/sys"
 	"github.com/ichaly/go-next/pkg/base"
 	"github.com/ichaly/go-next/pkg/util"
 	"gorm.io/gorm"
-	"io"
 	"net/http"
 )
 
@@ -41,63 +40,42 @@ func (my *captcha) verifyHandler(c *gin.Context) {
 		c.Next()
 		return
 	}
+	gt := sys.BindType(c.Request.FormValue("grant_type"))
+	if gt != sys.Email && gt != sys.Mobile {
+		c.Next()
+		return
+	}
 	defer func() {
 		if err := recover(); err != nil {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"errors": gqlerrors.FormatErrors(err.(error))})
 		}
 	}()
-	req := struct {
-		Code         string `json:"code,omitempty"`
-		Password     string `json:"password,omitempty"`
-		Username     string `json:"username,omitempty"`
-		ClientId     string `json:"client_id,omitempty"`
-		ClientSecret string `json:"client_secret,omitempty"`
-		RedirectUri  string `json:"redirect_uri,omitempty"`
-		GrantType    string `json:"grant_type,omitempty"`
-		CaptchaType  string `json:"captcha_type,omitempty"`
-	}{}
-	body, _ := c.GetRawData()
-	err := json.Unmarshal(body, &req)
-	if err != nil {
-		panic(err)
-	}
-	ct := sys.BindType(req.CaptchaType)
-	if ct != sys.Email && ct != sys.Mobile {
-		c.Next()
-		return
-	}
-	key := keyGenerate(req.Password)
-	val, err := my.cache.Get(c.Request.Context(), key)
-	if err != nil {
-		panic(err)
-	}
-	if val != req.Password {
+	username, password := c.Request.FormValue("username"), c.Request.FormValue("password")
+	key := keyGenerate(username)
+	val, _ := my.cache.Get(c.Request.Context(), key)
+	if val != password {
 		panic(errors.New("验证码错误"))
 	}
 	_ = my.cache.Delete(c.Request.Context(), key)
-	req.Password = my.config.Oauth.Passkey
-	req.ClientSecret = my.config.Oauth.Passkey
-	req.CaptchaType = ""
-	//自动注册
-	user := sys.User{}
-	my.db.Table("sys_user").
-		Select("sys_user.id as id,sys_user.username as username").
-		Joins("left join sys_bind on sys_bind.uid = sys_user.id and sys_user.username = ? or sys_bind.value = ?", req.Username, req.Username).
-		First(&user)
-	if user.ID == 0 {
-		user.Username = req.Username
-		user.Password = req.Password
-		my.db.Save(user)
+	//验证码通过则使用万能密码替换参数
+	c.Request.Form.Set("password", my.config.Oauth.Passkey)
+	c.Request.Form.Set("grant_type", oauth2.PasswordCredentials.String())
+	//查询一下数据是否存在
+	user := sys.User{Username: username, Password: my.config.Oauth.Passkey}
+	err := my.db.Table("sys_user").Select("sys_user.id,sys_user.username").
+		Joins("left join sys_bind b on b.uid = sys_user.id").
+		Where("sys_user.username = @username or b.value = @username", sql.Named("username", username)).
+		First(&user).Error
+	//如果不存在则自动注册
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		my.db.Save(&user)
 		bind := sys.Bind{
+			Type:  gt,
 			Uid:   user.ID,
-			Value: user.Username,
-			Type:  sys.BindType(req.GrantType),
+			Value: username,
 		}
-		my.db.Save(bind)
+		my.db.Save(&bind)
 	}
-	//替换参数重写请求体
-	res, _ := json.Marshal(req)
-	c.Request.Body = io.NopCloser(bytes.NewBuffer(res))
 	c.Next()
 }
 

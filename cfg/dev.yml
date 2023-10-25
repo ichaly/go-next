@@ -4,6 +4,10 @@ app:
   debug: true
   workspace: /Users/Chaly/Downloads/YuGone/
 
+oauth:
+  captcha:
+    expired: 1h
+
 cache:
   dialect: redis
   host: 127.0.0.1
