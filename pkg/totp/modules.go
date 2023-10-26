@@ -16,5 +16,9 @@ var Modules = fx.Options(
 			NewCaptchaVerify,
 			fx.ResultTags(`group:"middleware"`),
 		),
+		fx.Annotate(
+			NewEmail,
+			fx.ResultTags(`group:"distributor"`),
+		),
 	),
 )

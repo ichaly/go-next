@@ -5,26 +5,26 @@ import (
 	"github.com/ichaly/go-next/pkg/base"
 )
 
-type OauthType string
+type OauthKind string
 
 const (
-	Email  OauthType = "email"
-	Mobile OauthType = "mobile"
-	WeiXin OauthType = "weixin"
+	Email  OauthKind = "email"
+	Mobile OauthKind = "mobile"
+	WeiXin OauthKind = "weixin"
 )
 
-func (my *OauthType) Scan(value interface{}) error {
-	*my = OauthType(value.(string))
+func (my *OauthKind) Scan(value interface{}) error {
+	*my = OauthKind(value.(string))
 	return nil
 }
 
-func (my OauthType) Value() (driver.Value, error) {
+func (my OauthKind) Value() (driver.Value, error) {
 	return string(my), nil
 }
 
 type Oauth struct {
 	Uid   base.ID   `gorm:"primaryKey;autoIncrement:false;comment:用户ID" json:",omitempty"`
-	Type  OauthType `gorm:"primaryKey;size:50;comment:类型"`
+	Kind  OauthKind `gorm:"primaryKey;size:50;comment:类型"`
 	Value string    `gorm:"primaryKey;size:100;comment:值"`
 	base.Entity
 }

@@ -39,7 +39,7 @@ func (my *verify) verifyHandler(c *gin.Context) {
 		c.Next()
 		return
 	}
-	ot := sys.OauthType(c.Request.FormValue("grant_type"))
+	ot := sys.OauthKind(c.Request.FormValue("grant_type"))
 	if ot != sys.Email && ot != sys.Mobile {
 		c.Next()
 		return

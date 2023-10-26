@@ -21,7 +21,7 @@ func (my *UserService) FindByUsername(username string) (User, error) {
 	return usr, err
 }
 
-func (my *UserService) Bind(u *User, t OauthType) {
+func (my *UserService) Bind(u *User, k OauthKind) {
 	my.db.Save(u)
-	my.db.Save(&Oauth{Type: t, Uid: u.ID, Value: u.Username})
+	my.db.Save(&Oauth{Kind: k, Uid: u.ID, Value: u.Username})
 }

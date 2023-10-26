@@ -15,6 +15,7 @@ type Config struct {
 	Cache    *DataSource `mapstructure:"cache" jsonschema:"title=Cache"`
 	Database *DataSource `mapstructure:"database" jsonschema:"title=DataSource"`
 	Captcha  *Captcha    `mapstructure:"captcha" jsonschema:"title=captcha"`
+	Email    *Email      `mapstructure:"email" jsonschema:"title=email"`
 }
 
 type App struct {
@@ -34,9 +35,18 @@ type Oauth struct {
 	Passkey  string `mapstructure:"passkey"`
 	LoginUri string `mapstructure:"login_uri"`
 }
+
 type Captcha struct {
 	Length  int           `mapstructure:"length" jsonschema:"title=Captcha length"`
 	Expired time.Duration `mapstructure:"expired" jsonschema:"title=Captcha expired in minute"`
+}
+
+type Email struct {
+	Port     int    `mapstructure:"port"`
+	Host     string `mapstructure:"host"`
+	From     string `mapstructure:"from"`
+	Username string `mapstructure:"username"`
+	Password string `mapstructure:"password"`
 }
 
 type DataSource struct {
