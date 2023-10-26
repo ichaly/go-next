@@ -24,5 +24,6 @@ var Modules = fx.Options(
 				return &Oauth{}
 			},
 		},
+		NewUserService,
 	),
 )

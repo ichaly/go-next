@@ -84,7 +84,9 @@ func TestClient(t *testing.T) {
 	}
 	//secret := strings.ReplaceAll(uuid.Must(uuid.NewRandom()).String(), "-", "")
 	//t.Log(secret)
-	err = db.Model(&auth.Client{}).Save(&auth.Client{Secret: "90c5f47a4b1e42f48efb20e0ed30cae7", Domain: "te0.cn"}).Error
+	client := auth.Client{Secret: "90c5f47a4b1e42f48efb20e0ed30cae7", Domain: "http://127.0.0.1:8080/oauth/callback/go-next"}
+	client.ID = 12708495015018519
+	err = db.Save(&client).Error
 	if err != nil {
 		t.Error(err)
 	}

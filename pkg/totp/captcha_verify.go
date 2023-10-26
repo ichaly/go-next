@@ -1,7 +1,6 @@
 package totp
 
 import (
-	"database/sql"
 	"errors"
 	"fmt"
 	"github.com/eko/gocache/lib/v4/cache"
@@ -18,13 +17,13 @@ import (
 const CaptchaPrefix = "captcha"
 
 type verify struct {
-	db     *gorm.DB
-	config *base.Config
-	cache  *cache.Cache[string]
+	config      *base.Config
+	cache       *cache.Cache[string]
+	userService *sys.UserService
 }
 
-func NewCaptchaVerify(db *gorm.DB, config *base.Config, cache *cache.Cache[string]) base.Plugin {
-	return &verify{db: db, config: config, cache: cache}
+func NewCaptchaVerify(config *base.Config, cache *cache.Cache[string], us *sys.UserService) base.Plugin {
+	return &verify{config: config, cache: cache, userService: us}
 }
 
 func (my *verify) Base() string {
@@ -40,8 +39,8 @@ func (my *verify) verifyHandler(c *gin.Context) {
 		c.Next()
 		return
 	}
-	gt := sys.OauthType(c.Request.FormValue("grant_type"))
-	if gt != sys.Email && gt != sys.Mobile {
+	ot := sys.OauthType(c.Request.FormValue("grant_type"))
+	if ot != sys.Email && ot != sys.Mobile {
 		c.Next()
 		return
 	}
@@ -61,20 +60,12 @@ func (my *verify) verifyHandler(c *gin.Context) {
 	c.Request.Form.Set("password", my.config.Oauth.Passkey)
 	c.Request.Form.Set("grant_type", oauth2.PasswordCredentials.String())
 	//查询一下数据是否存在
-	user := sys.User{Username: username, Password: my.config.Oauth.Passkey}
-	err := my.db.Table("sys_user").Select("sys_user.id,sys_user.username").
-		Joins("left join sys_oauth b on b.uid = sys_user.id").
-		Where("sys_user.username = @username or b.value = @username", sql.Named("username", username)).
-		First(&user).Error
+	usr, err := my.userService.FindByUsername(username)
 	//如果不存在则自动注册
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		my.db.Save(&user)
-		bind := sys.Oauth{
-			Type:  gt,
-			Uid:   user.ID,
-			Value: username,
-		}
-		my.db.Save(&bind)
+		usr.Username = username
+		usr.Password = my.config.Oauth.Passkey
+		my.userService.Bind(&usr, ot)
 	}
 	c.Next()
 }

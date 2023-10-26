@@ -2,7 +2,6 @@ package auth
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"github.com/go-oauth2/oauth2/v4"
 	"github.com/go-oauth2/oauth2/v4/errors"
@@ -13,12 +12,11 @@ import (
 	"github.com/ichaly/go-next/app/sys"
 	"github.com/ichaly/go-next/pkg/base"
 	"golang.org/x/crypto/bcrypt"
-	"gorm.io/gorm"
 	"net/http"
 	"strconv"
 )
 
-func NewOauthServer(c *base.Config, db *gorm.DB, se *Session, ts oauth2.TokenStore, cs oauth2.ClientStore) *server.Server {
+func NewOauthServer(c *base.Config, se *Session, ts oauth2.TokenStore, cs oauth2.ClientStore, us *sys.UserService) *server.Server {
 	manager := manage.NewDefaultManager()
 	manager.MapTokenStorage(ts)
 	manager.MapClientStorage(cs)
@@ -28,7 +26,7 @@ func NewOauthServer(c *base.Config, db *gorm.DB, se *Session, ts oauth2.TokenSto
 	s.SetAllowGetAccessRequest(true)
 	s.SetClientInfoHandler(clientInfoHandler())
 	s.SetUserAuthorizationHandler(userAuthorizationHandler(c, se))
-	s.SetPasswordAuthorizationHandler(passwordAuthorizationHandler(c, db))
+	s.SetPasswordAuthorizationHandler(passwordAuthorizationHandler(c, us))
 
 	s.SetInternalErrorHandler(func(err error) (re *errors.Response) {
 		return errors.NewResponse(err, http.StatusInternalServerError)
@@ -51,24 +49,20 @@ func userAuthorizationHandler(c *base.Config, s *Session) func(http.ResponseWrit
 	}
 }
 
-func passwordAuthorizationHandler(c *base.Config, db *gorm.DB) func(context.Context, string, string, string) (string, error) {
+func passwordAuthorizationHandler(c *base.Config, us *sys.UserService) func(context.Context, string, string, string) (string, error) {
 	return func(ctx context.Context, clientID, username, password string) (string, error) {
-		user := sys.User{}
-		err := db.Model(&user).
-			Joins("left join sys_oauth b on b.uid = sys_user.id").
-			Where("sys_user.username = @username or b.value = @username", sql.Named("username", username)).
-			First(&user).Error
+		usr, err := us.FindByUsername(username)
 		if err != nil {
 			return "", err
 		}
 		// 添加万能密码支持
 		if password != c.Oauth.Passkey {
-			err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+			err = bcrypt.CompareHashAndPassword([]byte(usr.Password), []byte(password))
 			if err != nil {
 				return "", err
 			}
 		}
-		return strconv.FormatUint(uint64(user.ID), 10), nil
+		return strconv.FormatUint(uint64(usr.ID), 10), nil
 	}
 }
 
