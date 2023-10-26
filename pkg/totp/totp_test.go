@@ -1,22 +1,12 @@
 package totp
 
 import (
-	"bufio"
 	"encoding/base32"
-	"fmt"
 	"github.com/pquerna/otp"
 	"github.com/pquerna/otp/totp"
-	"os"
 	"testing"
 	"time"
 )
-
-func promptForPasscode() string {
-	reader := bufio.NewReader(os.Stdin)
-	fmt.Print("Enter Passcode: ")
-	text, _ := reader.ReadString('\n')
-	return text
-}
 
 func TestTotp(t *testing.T) {
 	secret := base32.StdEncoding.EncodeToString([]byte("15210203617"))

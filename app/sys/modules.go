@@ -21,7 +21,7 @@ var Modules = fx.Options(
 		fx.Annotated{
 			Group: "entity",
 			Target: func() interface{} {
-				return &Bind{}
+				return &Oauth{}
 			},
 		},
 	),

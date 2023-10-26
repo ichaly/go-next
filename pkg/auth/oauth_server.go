@@ -55,7 +55,7 @@ func passwordAuthorizationHandler(c *base.Config, db *gorm.DB) func(context.Cont
 	return func(ctx context.Context, clientID, username, password string) (string, error) {
 		user := sys.User{}
 		err := db.Model(&user).
-			Joins("left join sys_bind b on b.uid = sys_user.id").
+			Joins("left join sys_oauth b on b.uid = sys_user.id").
 			Where("sys_user.username = @username or b.value = @username", sql.Named("username", username)).
 			First(&user).Error
 		if err != nil {

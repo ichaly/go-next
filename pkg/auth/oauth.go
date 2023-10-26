@@ -8,20 +8,20 @@ import (
 	"net/http"
 )
 
-type Oauth struct {
+type oauth struct {
 	session *Session
 	oauth   *server.Server
 }
 
 func NewOauth(o *server.Server, s *Session) base.Plugin {
-	return &Oauth{oauth: o, session: s}
+	return &oauth{oauth: o, session: s}
 }
 
-func (my *Oauth) Base() string {
+func (my *oauth) Base() string {
 	return "/oauth"
 }
 
-func (my *Oauth) Init(r gin.IRouter) {
+func (my *oauth) Init(r gin.IRouter) {
 	//登录退出
 	r.POST("/login", my.loginHandler)
 	r.Match([]string{http.MethodGet, http.MethodPost}, "/logout", my.logoutHandler)
@@ -34,19 +34,19 @@ func (my *Oauth) Init(r gin.IRouter) {
 	r.GET("/callback/:name", my.callbackHandler)
 }
 
-func (my *Oauth) tokenHandler(c *gin.Context) {
+func (my *oauth) tokenHandler(c *gin.Context) {
 	if err := my.oauth.HandleTokenRequest(c.Writer, c.Request); err != nil {
 		c.JSON(http.StatusInternalServerError, gqlerrors.FormatErrors(err))
 	}
 }
 
-func (my *Oauth) authorizeHandler(c *gin.Context) {
+func (my *oauth) authorizeHandler(c *gin.Context) {
 	if err := my.oauth.HandleAuthorizeRequest(c.Writer, c.Request); err != nil {
 		c.JSON(http.StatusInternalServerError, gqlerrors.FormatErrors(err))
 	}
 }
 
-func (my *Oauth) loginHandler(ctx *gin.Context) {
+func (my *oauth) loginHandler(ctx *gin.Context) {
 	c, u, p := ctx.Query("client_id"), ctx.PostForm("username"), ctx.PostForm("password")
 	if uid, err := my.oauth.PasswordAuthorizationHandler(ctx, c, u, p); err == nil {
 		my.session.SaveUserSession(ctx, uid)
@@ -56,7 +56,7 @@ func (my *Oauth) loginHandler(ctx *gin.Context) {
 	}
 }
 
-func (my *Oauth) logoutHandler(c *gin.Context) {
+func (my *oauth) logoutHandler(c *gin.Context) {
 	defer func() {
 		if err := recover(); err != nil {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"errors": gqlerrors.FormatErrors(err.(error))})
@@ -76,6 +76,6 @@ func (my *Oauth) logoutHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"redirect": uri})
 }
 
-func (my *Oauth) callbackHandler(c *gin.Context) {
+func (my *oauth) callbackHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"code": c.Query("code"), "name": c.Param("name")})
 }

@@ -40,7 +40,7 @@ func (my *verify) verifyHandler(c *gin.Context) {
 		c.Next()
 		return
 	}
-	gt := sys.BindType(c.Request.FormValue("grant_type"))
+	gt := sys.OauthType(c.Request.FormValue("grant_type"))
 	if gt != sys.Email && gt != sys.Mobile {
 		c.Next()
 		return
@@ -63,13 +63,13 @@ func (my *verify) verifyHandler(c *gin.Context) {
 	//查询一下数据是否存在
 	user := sys.User{Username: username, Password: my.config.Oauth.Passkey}
 	err := my.db.Table("sys_user").Select("sys_user.id,sys_user.username").
-		Joins("left join sys_bind b on b.uid = sys_user.id").
+		Joins("left join sys_oauth b on b.uid = sys_user.id").
 		Where("sys_user.username = @username or b.value = @username", sql.Named("username", username)).
 		First(&user).Error
 	//如果不存在则自动注册
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		my.db.Save(&user)
-		bind := sys.Bind{
+		bind := sys.Oauth{
 			Type:  gt,
 			Uid:   user.ID,
 			Value: username,
