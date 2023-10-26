@@ -1,4 +1,4 @@
-package auth
+package totp
 
 import (
 	"database/sql"
@@ -17,25 +17,25 @@ import (
 
 const CaptchaPrefix = "captcha"
 
-type captcha struct {
+type verify struct {
 	db     *gorm.DB
 	config *base.Config
 	cache  *cache.Cache[string]
 }
 
-func NewCaptcha(db *gorm.DB, config *base.Config, cache *cache.Cache[string]) base.Plugin {
-	return &captcha{db: db, config: config, cache: cache}
+func NewCaptchaVerify(db *gorm.DB, config *base.Config, cache *cache.Cache[string]) base.Plugin {
+	return &verify{db: db, config: config, cache: cache}
 }
 
-func (my *captcha) Base() string {
+func (my *verify) Base() string {
 	return "/oauth"
 }
 
-func (my *captcha) Init(r gin.IRouter) {
+func (my *verify) Init(r gin.IRouter) {
 	r.Use(my.verifyHandler)
 }
 
-func (my *captcha) verifyHandler(c *gin.Context) {
+func (my *verify) verifyHandler(c *gin.Context) {
 	if c.Request.RequestURI != "/oauth/token" {
 		c.Next()
 		return
