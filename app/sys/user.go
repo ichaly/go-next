@@ -10,8 +10,8 @@ import (
 type User struct {
 	Username    string     `gorm:"size:200;comment:名称;index:,unique" validate:"required"`
 	Password    string     `gorm:"size:200;comment:密码;" gql:"-"`
-	Nickname    string     `gorm:"size:50;comment:昵称"`
-	Avatar      string     `gorm:"size:200;comment:头像"`
+	Nickname    string     `gorm:"size:50;comment:昵称"`  //https://github.com/DanPlayer/randomname/tree/main
+	Avatar      string     `gorm:"size:200;comment:头像"` //https://golangnote.com/topic/274.html
 	Source      string     `gorm:"comment:来源"`
 	Birthday    *time.Time `gorm:"comment:生日"`
 	base.Entity `mapstructure:",squash"`
