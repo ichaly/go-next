@@ -13,15 +13,18 @@ import (
 )
 
 var (
-	Version   = "v0.0.0"
-	GitHash   = "Unknown"
-	BuildTime = time.Now().Format("2006-01-02 15:04:05")
+	Version   = "V0.0.0"
+	GitCommit = "Unknown"
+	BuildTime = ""
 
 	routers = make(map[string]gin.IRouter)
 	reg     = regexp.MustCompile(`/+`)
 )
 
 func Bootstrap(l fx.Lifecycle, c *Config, e *gin.Engine, g PluginGroup) {
+	if BuildTime == "" {
+		BuildTime = time.Now().Format("2006-01-02 15:04:05")
+	}
 	routers["/"] = e
 	all := append(g.Middlewares, g.Plugins...)
 	for _, p := range all {
@@ -39,7 +42,7 @@ func Bootstrap(l fx.Lifecycle, c *Config, e *gin.Engine, g PluginGroup) {
 	}, func(ctx context.Context) error {
 		return stopServer(srv, c)
 	}))
-	fmt.Printf("当前版本:%s-%s 发布日期:%s\n", Version, GitHash, BuildTime)
+	fmt.Printf("当前版本:%s-%s 发布日期:%s\n", Version, GitCommit, BuildTime)
 }
 
 func startServer(srv *http.Server, c *Config) {

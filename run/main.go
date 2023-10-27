@@ -11,23 +11,23 @@ import (
 )
 
 func main() {
-	output := zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.DateTime}
-	output.FormatLevel = func(i interface{}) string {
+	c := zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.DateTime}
+	c.FormatLevel = func(i interface{}) string {
 		return strings.ToUpper(fmt.Sprintf("| %-6s|", i))
 	}
-	output.FormatFieldName = func(i interface{}) string {
+	c.FormatFieldName = func(i interface{}) string {
 		return fmt.Sprintf("%s=", i)
 	}
-	errors := zlog.NewRotate(
+	e := zlog.NewRotate(
 		zlog.WithFilename("logs/error.log"),
 		zlog.WithLevelFunc(func(l zlog.Level) bool { return l > zlog.WarnLevel }),
 	)
-	traces := zlog.NewRotate(
+	t := zlog.NewRotate(
 		zlog.WithFilename("logs/trace.log"),
 		zlog.WithLevelFunc(func(l zlog.Level) bool { return l <= zlog.WarnLevel }),
 	)
-	out := zerolog.MultiLevelWriter(output, errors, traces)
-	l := zlog.New(zlog.WithOut(out), zlog.WithLevel(zlog.DebugLevel))
+	o := zerolog.MultiLevelWriter(c, e, t)
+	l := zlog.New(zlog.WithOut(o), zlog.WithLevel(zlog.DebugLevel))
 	zlog.SetDefault(l)
 
 	cmd.Execute()
