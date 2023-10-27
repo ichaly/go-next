@@ -18,7 +18,7 @@ var Modules = fx.Options(
 		),
 		fx.Annotate(
 			NewEmail,
-			fx.ResultTags(`group:"distributor"`),
+			fx.ResultTags(`group:"deliver"`),
 		),
 	),
 )

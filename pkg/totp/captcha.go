@@ -12,13 +12,13 @@ import (
 )
 
 type captcha struct {
-	config       *base.Config
-	cache        *cache.Cache[string]
-	distributors []Distributor
+	config   *base.Config
+	cache    *cache.Cache[string]
+	delivers []Deliver
 }
 
-func NewCaptcha(config *base.Config, cache *cache.Cache[string], g DistributorGroup) base.Plugin {
-	return &captcha{config: config, cache: cache, distributors: g.All}
+func NewCaptcha(config *base.Config, cache *cache.Cache[string], g DeliverGroup) base.Plugin {
+	return &captcha{config: config, cache: cache, delivers: g.All}
 }
 
 func (my *captcha) Base() string {
@@ -37,8 +37,8 @@ func (my *captcha) captchaHandler(c *gin.Context) {
 		}
 	}()
 	req := struct {
-		Username    string `form:"username" json:"username,omitempty"`
-		CaptchaType string `form:"captcha_type" json:"captcha_type,omitempty"`
+		Username  string `form:"username" json:"username,omitempty"`
+		OauthKind string `form:"oauth_kind" json:"oauth_kind,omitempty"`
 	}{}
 	err := c.ShouldBind(&req)
 	if req.Username == "" {
@@ -57,8 +57,8 @@ func (my *captcha) captchaHandler(c *gin.Context) {
 		panic(err)
 	}
 	//发送验证码
-	for _, d := range my.distributors {
-		if d.Support(req.CaptchaType) {
+	for _, d := range my.delivers {
+		if d.Support(req.OauthKind) {
 			if err := d.Send(val, req.Username); err != nil {
 				panic(err)
 			}

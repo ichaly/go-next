@@ -4,12 +4,12 @@ import (
 	"go.uber.org/fx"
 )
 
-type DistributorGroup struct {
+type DeliverGroup struct {
 	fx.In
-	All []Distributor `group:"distributor"`
+	All []Deliver `group:"deliver"`
 }
 
-type Distributor interface {
+type Deliver interface {
 	Support(kind string) bool
 	Send(code string, to ...string) error
 }
