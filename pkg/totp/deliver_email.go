@@ -1,10 +1,12 @@
 package totp
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/ichaly/go-next/app/sys"
 	"github.com/ichaly/go-next/pkg/base"
 	"github.com/jordan-wright/email"
+	"html/template"
 	"net/smtp"
 	"net/textproto"
 	"time"
@@ -19,19 +21,38 @@ func (my *Email) Support(kind string) bool {
 	return string(sys.Email) == kind
 }
 
-func (my *Email) Send(code string, to ...string) error {
+func (my *Email) Send(code string, to string) error {
 	if len(to) <= 0 {
 		return nil
 	}
-	e := &email.Email{
+	//解析模版
+	body, err := template.ParseFiles("cfg/email.html")
+	if err != nil {
+		return err
+	}
+	buf := new(bytes.Buffer)
+	err = body.Execute(buf, struct {
+		To      string
+		Code    string
+		Time    string
+		Timeout int
+	}{
 		To:      to,
+		Code:    code,
+		Time:    time.Now().Format("2006-01-02 15:04:05"),
+		Timeout: 5,
+	})
+	if err != nil {
+		return err
+	}
+	e := &email.Email{
+		To:      []string{to},
 		Subject: "登录验证码",
 		From:    my.config.Email.From,
-		Text:    []byte("Text Body is, of course, supported!" + code),
-		HTML:    []byte("<h1>Fancy HTML is supported, too!</h1>"),
+		HTML:    buf.Bytes(),
 		Headers: textproto.MIMEHeader{},
 	}
-	return my.pool.Send(e, 1*time.Minute)
+	return my.pool.Send(e, 10*time.Second)
 }
 
 func NewEmail(c *base.Config) Deliver {

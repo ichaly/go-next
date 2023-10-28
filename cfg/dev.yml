@@ -11,7 +11,7 @@ oauth:
 email:
   host: smtp.qq.com
   port: 587
-  from: Go Next Support <admin@te0.cn>
+  from: Any Support <admin@te0.cn>
   username: admin@te0.cn
   password: opzasepuoqzebhdf
 

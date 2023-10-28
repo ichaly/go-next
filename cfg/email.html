@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+<div style="padding: 35px;">
+    <table cellpadding="0" align="center"
+           style="width: 600px; margin: 0 auto; text-align: left; position: relative; border-radius: 5px;font-size: 18px; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; line-height: 1.5; box-shadow: rgb(153, 153, 153) 0 0 5px; border-collapse: collapse; background: #fff initial initial initial initial;">
+        <tbody>
+        <tr>
+            <th valign="middle"
+                style="height: 25px; line-height: 25px; padding: 15px 35px; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: rgba(18, 24, 37, 0.87); background-color: #484f60; border-radius: 5px 5px 0 0;">
+                <font size="5" style="color: rgb(255, 255, 255); ">随心团队 </font>
+            </th>
+        </tr>
+        <tr>
+            <td>
+                <div style="padding:25px 35px 40px; background-color:#fff;">
+                    <h2 style="margin: 5px 0; ">
+                        <span style="line-height: 20px;  color: #333333; ">
+                            <span style="line-height: 22px;  font-size: medium; ">亲爱的用户：{{.To}}</span>
+                        </span>
+                    </h2>
+                    <p>您正在<span style="color: dodgerblue;">登录随心</span>, 验证码为：
+                        <span style="color: #fd9827; font-size: xx-large; ">{{.Code}}</span>，有效期
+                        <span style="color: red">{{.Timeout}}</span>分钟,请尽快验证并保持其私密性，以保障您的账号安全。祝您使用愉快！
+                    </p>
+                    <p align="right">随心官方团队</p>
+                    <p align="right">{{.Time}}</p>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
