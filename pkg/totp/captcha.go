@@ -14,7 +14,7 @@ import (
 type captcha struct {
 	config   *base.Config
 	cache    *cache.Cache[string]
-	delivers []Deliver
+	delivers []Sender
 }
 
 func NewCaptcha(config *base.Config, cache *cache.Cache[string], g DeliverGroup) base.Plugin {

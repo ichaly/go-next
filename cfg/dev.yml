@@ -4,9 +4,8 @@ app:
   debug: true
   workspace: /Users/Chaly/Downloads/YuGone/
 
-oauth:
-  captcha:
-    expired: 1h
+captcha:
+  expired: 10m
 
 email:
   host: smtp.qq.com

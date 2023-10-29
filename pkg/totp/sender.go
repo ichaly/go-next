@@ -6,10 +6,10 @@ import (
 
 type DeliverGroup struct {
 	fx.In
-	All []Deliver `group:"deliver"`
+	All []Sender `group:"sender"`
 }
 
-type Deliver interface {
+type Sender interface {
 	Support(kind string) bool
 	Send(code string, to string) error
 }
