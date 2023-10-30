@@ -12,13 +12,13 @@ import (
 )
 
 type captcha struct {
-	config   *base.Config
-	cache    *cache.Cache[string]
-	delivers []Sender
+	senders []Sender
+	config  *base.Config
+	cache   *cache.Cache[string]
 }
 
 func NewCaptcha(config *base.Config, cache *cache.Cache[string], g DeliverGroup) base.Plugin {
-	return &captcha{config: config, cache: cache, delivers: g.All}
+	return &captcha{config: config, cache: cache, senders: g.All}
 }
 
 func (my *captcha) Base() string {
@@ -57,7 +57,7 @@ func (my *captcha) captchaHandler(c *gin.Context) {
 		panic(err)
 	}
 	//发送验证码
-	for _, d := range my.delivers {
+	for _, d := range my.senders {
 		if d.Support(req.OauthKind) {
 			if err := d.Execute(req.Username, val); err != nil {
 				panic(err)
@@ -66,5 +66,5 @@ func (my *captcha) captchaHandler(c *gin.Context) {
 			return
 		}
 	}
-	c.JSON(http.StatusInternalServerError, gin.H{"msg": "操作失败"})
+	panic(errors.New("操作失败"))
 }

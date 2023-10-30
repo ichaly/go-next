@@ -16,6 +16,7 @@ type Config struct {
 	Database *DataSource `mapstructure:"database" jsonschema:"title=DataSource"`
 	Captcha  *Captcha    `mapstructure:"captcha" jsonschema:"title=captcha"`
 	Email    *Email      `mapstructure:"email" jsonschema:"title=email"`
+	Mobile   *Mobile     `mapstructure:"mobile" jsonschema:"title=mobile"`
 }
 
 type App struct {
@@ -47,6 +48,13 @@ type Email struct {
 	From     string `mapstructure:"from"`
 	Username string `mapstructure:"username"`
 	Password string `mapstructure:"password"`
+}
+
+type Mobile struct {
+	SignName        string `mapstructure:"sign_name"`
+	TemplateCode    string `mapstructure:"template_code"`
+	AccessKeyId     string `mapstructure:"access_key_id"`
+	AccessKeySecret string `mapstructure:"access_key_secret"`
 }
 
 type DataSource struct {

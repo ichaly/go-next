@@ -12,7 +12,6 @@ import (
 )
 
 const EMAIL sys.OauthKind = "email"
-const MOBILE sys.OauthKind = "mobile"
 
 type Email struct {
 	pool   *email.Pool

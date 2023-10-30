@@ -20,5 +20,9 @@ var Modules = fx.Options(
 			NewEmail,
 			fx.ResultTags(`group:"sender"`),
 		),
+		fx.Annotate(
+			NewMobile,
+			fx.ResultTags(`group:"sender"`),
+		),
 	),
 )
