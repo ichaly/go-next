@@ -136,7 +136,7 @@ func newViperWithDefaults() *viper.Viper {
 
 	vi.SetDefault("app.port", "3000")
 
-	vi.SetDefault("oauth.Passkey", "go.next")
+	vi.SetDefault("oauth.passkey", "go.next")
 	vi.SetDefault("oauth.login_uri", "")
 	vi.SetDefault("oauth.jwt.key", "12345")
 
