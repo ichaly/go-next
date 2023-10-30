@@ -11,5 +11,5 @@ type DeliverGroup struct {
 
 type Sender interface {
 	Support(kind string) bool
-	Send(code string, to string) error
+	Execute(to, code string) error
 }

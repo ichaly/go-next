@@ -39,8 +39,8 @@ func (my *verify) verifyHandler(c *gin.Context) {
 		c.Next()
 		return
 	}
-	ot := sys.OauthKind(c.Request.FormValue("grant_type"))
-	if ot != sys.Email && ot != sys.Mobile {
+	kind := sys.OauthKind(c.Request.FormValue("grant_type"))
+	if kind != EMAIL && kind != MOBILE {
 		c.Next()
 		return
 	}
@@ -60,12 +60,12 @@ func (my *verify) verifyHandler(c *gin.Context) {
 	c.Request.Form.Set("password", my.config.Oauth.Passkey)
 	c.Request.Form.Set("grant_type", oauth2.PasswordCredentials.String())
 	//查询一下数据是否存在
-	usr, err := my.userService.FindByUsername(username)
+	user, err := my.userService.FindByUsername(username)
 	//如果不存在则自动注册
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		usr.Username = username
-		usr.Password = my.config.Oauth.Passkey
-		my.userService.Bind(&usr, ot)
+		user.Username = username
+		user.Password = my.config.Oauth.Passkey
+		my.userService.Bind(&user, kind)
 	}
 	c.Next()
 }

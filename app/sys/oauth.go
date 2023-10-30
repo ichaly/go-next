@@ -7,12 +7,6 @@ import (
 
 type OauthKind string
 
-const (
-	Email  OauthKind = "email"
-	Mobile OauthKind = "mobile"
-	WeiXin OauthKind = "weixin"
-)
-
 func (my *OauthKind) Scan(value interface{}) error {
 	*my = OauthKind(value.(string))
 	return nil

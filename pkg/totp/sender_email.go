@@ -11,16 +11,19 @@ import (
 	"time"
 )
 
+const EMAIL sys.OauthKind = "email"
+const MOBILE sys.OauthKind = "mobile"
+
 type Email struct {
 	pool   *email.Pool
 	config *base.Config
 }
 
 func (my *Email) Support(kind string) bool {
-	return string(sys.Email) == kind
+	return string(EMAIL) == kind
 }
 
-func (my *Email) Send(code string, to string) error {
+func (my *Email) Execute(to, code string) error {
 	if len(to) <= 0 {
 		return nil
 	}

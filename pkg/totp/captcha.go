@@ -59,10 +59,12 @@ func (my *captcha) captchaHandler(c *gin.Context) {
 	//发送验证码
 	for _, d := range my.delivers {
 		if d.Support(req.OauthKind) {
-			if err := d.Send(val, req.Username); err != nil {
+			if err := d.Execute(req.Username, val); err != nil {
 				panic(err)
 			}
+			c.JSON(http.StatusOK, gin.H{"msg": "操作成功"})
+			return
 		}
 	}
-	c.JSON(http.StatusOK, gin.H{"msg": "操作成功"})
+	c.JSON(http.StatusInternalServerError, gin.H{"msg": "操作失败"})
 }
