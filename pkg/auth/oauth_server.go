@@ -20,7 +20,7 @@ func NewOauthServer(c *base.Config, se *Session, ts oauth2.TokenStore, cs oauth2
 	manager := manage.NewDefaultManager()
 	manager.MapTokenStorage(ts)
 	manager.MapClientStorage(cs)
-	manager.MapAccessGenerate(generates.NewJWTAccessGenerate("", []byte(c.Oauth.Jwt.Key), jwt.SigningMethodHS512))
+	manager.MapAccessGenerate(generates.NewJWTAccessGenerate("", []byte(c.Oauth.Jwt.Secret), jwt.SigningMethodHS512))
 
 	s := server.NewDefaultServer(manager)
 	s.SetAllowGetAccessRequest(true)

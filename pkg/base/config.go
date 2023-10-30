@@ -28,7 +28,7 @@ type App struct {
 }
 
 type Jwt struct {
-	Key string `mapstructure:"key"`
+	Secret string `mapstructure:"secret"`
 }
 
 type Oauth struct {
@@ -136,9 +136,9 @@ func newViperWithDefaults() *viper.Viper {
 
 	vi.SetDefault("app.port", "3000")
 
-	vi.SetDefault("oauth.passkey", "go.next")
 	vi.SetDefault("oauth.login_uri", "")
-	vi.SetDefault("oauth.jwt.key", "12345")
+	vi.SetDefault("oauth.passkey", "go.next")
+	vi.SetDefault("oauth.jwt.secret", "12345")
 
 	vi.SetDefault("captcha.length", 6)
 	vi.SetDefault("captcha.expired", "10m")
