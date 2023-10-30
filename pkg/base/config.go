@@ -153,13 +153,8 @@ func newViperWithDefaults() *viper.Viper {
 	vi.SetDefault("database.schema", "public")
 	vi.SetDefault("database.pool_size", 10)
 
-	vi.SetDefault("proxy.timeout", 1)
-
-	vi.SetDefault("env", "development")
-
-	_ = vi.BindEnv("env", "GO_ENV")
-	_ = vi.BindEnv("host", "HOST")
-	_ = vi.BindEnv("port", "PORT")
+	vi.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
+	vi.AutomaticEnv()
 
 	return vi
 }

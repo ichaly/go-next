@@ -8,11 +8,17 @@ captcha:
   expired: 10m
 
 email:
-  host: smtp.qq.com
   port: 587
+  host: smtp.qq.com
   from: Any Support <admin@te0.cn>
-  username: admin@te0.cn
-  password: opzasepuoqzebhdf
+  username:
+  password:
+
+mobile:
+  sign_name:
+  template_code:
+  access_key_id:
+  access_key_secret:
 
 cache:
   dialect: redis
