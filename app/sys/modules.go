@@ -21,6 +21,12 @@ var Modules = fx.Options(
 		fx.Annotated{
 			Group: "entity",
 			Target: func() interface{} {
+				return &Role{}
+			},
+		},
+		fx.Annotated{
+			Group: "entity",
+			Target: func() interface{} {
 				return &Oauth{}
 			},
 		},
