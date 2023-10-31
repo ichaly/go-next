@@ -3,14 +3,14 @@ package user
 import (
 	"github.com/graphql-go/graphql"
 	"github.com/ichaly/go-next/app/sys"
-	"github.com/ichaly/go-next/pkg/core"
+	"github.com/ichaly/go-next/pkg/gql"
 	"time"
 )
 
 type age struct {
 }
 
-func NewUserAge() core.Schema {
+func NewUserAge() gql.Schema {
 	return &age{}
 }
 

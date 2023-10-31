@@ -5,7 +5,7 @@ import (
 	"github.com/gin-gonic/gin/binding"
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/graphql/gqlerrors"
-	"github.com/ichaly/go-next/pkg/core"
+	"github.com/ichaly/go-next/pkg/gql"
 	"go.uber.org/fx"
 	"net/http"
 )
@@ -16,7 +16,7 @@ type Graphql struct {
 
 type SchemaGroup struct {
 	fx.In
-	All []core.Schema `group:"schema"`
+	All []gql.Schema `group:"schema"`
 }
 
 type gqlRequest struct {
@@ -25,7 +25,7 @@ type gqlRequest struct {
 	Variables map[string]interface{} `form:"variables"`
 }
 
-func NewGraphql(e *core.Engine, g SchemaGroup) (*Graphql, error) {
+func NewGraphql(e *gql.Engine, g SchemaGroup) (*Graphql, error) {
 	for _, v := range g.All {
 		err := e.Register(v)
 		if err != nil {

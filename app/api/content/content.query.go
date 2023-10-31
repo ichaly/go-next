@@ -4,7 +4,7 @@ import (
 	"github.com/graphql-go/graphql"
 	"github.com/ichaly/go-next/app/cms"
 	"github.com/ichaly/go-next/pkg/base"
-	"github.com/ichaly/go-next/pkg/core"
+	"github.com/ichaly/go-next/pkg/gql"
 	"gorm.io/gorm"
 )
 
@@ -14,7 +14,7 @@ type query struct {
 	db *gorm.DB
 }
 
-func NewContentQuery(db *gorm.DB) core.Schema {
+func NewContentQuery(db *gorm.DB) gql.Schema {
 	return &query{db: db}
 }
 
@@ -27,7 +27,7 @@ func (*query) Description() string {
 }
 
 func (*query) Host() interface{} {
-	return core.Query
+	return gql.Query
 }
 
 func (*query) Type() interface{} {

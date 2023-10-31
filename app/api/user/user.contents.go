@@ -5,18 +5,18 @@ import (
 	"github.com/graphql-go/graphql"
 	"github.com/ichaly/go-next/app/cms"
 	"github.com/ichaly/go-next/app/sys"
-	"github.com/ichaly/go-next/pkg/core"
+	"github.com/ichaly/go-next/pkg/gql"
 	"gorm.io/gorm"
 )
 
 type contents struct {
 	db     *gorm.DB
-	loader *core.Loader[uint64, []*cms.Content]
+	loader *gql.Loader[uint64, []*cms.Content]
 }
 
-func NewUserContents(db *gorm.DB) core.Schema {
+func NewUserContents(db *gorm.DB) gql.Schema {
 	my := &contents{db: db}
-	my.loader = core.NewBatchedLoader(my.batchContents)
+	my.loader = gql.NewBatchedLoader(my.batchContents)
 	return my
 }
 
@@ -44,16 +44,16 @@ func (my *contents) Resolve(p graphql.ResolveParams) (interface{}, error) {
 	}, nil
 }
 
-func (my *contents) batchContents(ctx context.Context, keys []uint64) []*core.Result[[]*cms.Content] {
+func (my *contents) batchContents(ctx context.Context, keys []uint64) []*gql.Result[[]*cms.Content] {
 	var res []*cms.Content
 	err := my.db.WithContext(ctx).Model(&cms.Content{}).Where("created_by in ?", keys).Find(&res).Error
 	values := make(map[uint64][]*cms.Content)
 	for _, c := range res {
 		values[*c.CreatedBy] = append(values[*c.CreatedBy], c)
 	}
-	results := make([]*core.Result[[]*cms.Content], len(keys))
+	results := make([]*gql.Result[[]*cms.Content], len(keys))
 	for i, k := range keys {
-		r := &core.Result[[]*cms.Content]{
+		r := &gql.Result[[]*cms.Content]{
 			Error: err,
 		}
 		if v, ok := values[k]; ok {

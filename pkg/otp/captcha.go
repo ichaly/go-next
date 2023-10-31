@@ -1,4 +1,4 @@
-package totp
+package otp
 
 import (
 	"errors"
@@ -59,7 +59,7 @@ func (my *captcha) captchaHandler(c *gin.Context) {
 	//发送验证码
 	for _, d := range my.senders {
 		if d.Support(req.OauthKind) {
-			if err := d.Execute(req.Username, val); err != nil {
+			if err = d.Execute(req.Username, val); err != nil {
 				panic(err)
 			}
 			c.JSON(http.StatusOK, gin.H{"msg": "操作成功"})

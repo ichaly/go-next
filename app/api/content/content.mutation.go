@@ -4,7 +4,7 @@ import (
 	"github.com/graphql-go/graphql"
 	"github.com/ichaly/go-next/app/cms"
 	"github.com/ichaly/go-next/pkg/base"
-	"github.com/ichaly/go-next/pkg/core"
+	"github.com/ichaly/go-next/pkg/gql"
 	"gorm.io/gorm"
 )
 
@@ -13,7 +13,7 @@ type mutation struct {
 	validate *base.Validate
 }
 
-func NewContentMutation(d *gorm.DB, v *base.Validate) core.Schema {
+func NewContentMutation(d *gorm.DB, v *base.Validate) gql.Schema {
 	return &mutation{db: d, validate: v}
 }
 
@@ -26,7 +26,7 @@ func (*mutation) Description() string {
 }
 
 func (*mutation) Host() interface{} {
-	return core.Mutation
+	return gql.Mutation
 }
 
 func (*mutation) Type() interface{} {

@@ -4,7 +4,7 @@ import (
 	"github.com/graphql-go/graphql"
 	"github.com/ichaly/go-next/app/sys"
 	"github.com/ichaly/go-next/pkg/base"
-	"github.com/ichaly/go-next/pkg/core"
+	"github.com/ichaly/go-next/pkg/gql"
 	"github.com/ichaly/go-next/pkg/util"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
@@ -16,7 +16,7 @@ type query struct {
 	db *gorm.DB
 }
 
-func NewUserQuery(db *gorm.DB) core.Schema {
+func NewUserQuery(db *gorm.DB) gql.Schema {
 	return &query{db: db}
 }
 
@@ -29,7 +29,7 @@ func (*query) Description() string {
 }
 
 func (*query) Host() interface{} {
-	return core.Query
+	return gql.Query
 }
 
 func (my *query) Type() interface{} {

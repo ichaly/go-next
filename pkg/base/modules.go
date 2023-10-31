@@ -1,13 +1,13 @@
 package base
 
 import (
-	"github.com/ichaly/go-next/pkg/core"
+	"github.com/ichaly/go-next/pkg/gql"
 	"go.uber.org/fx"
 )
 
 var Modules = fx.Options(
 	fx.Provide(
-		core.NewEngine,
+		gql.NewEngine,
 		NewConfig,
 		NewServer,
 		NewStorage,
