@@ -17,16 +17,13 @@ func MD5(s string) string {
 	return hex.EncodeToString(m.Sum(nil))
 }
 
-func Hash(s string) int {
-	v := int(crc32.ChecksumIEEE([]byte(s)))
-	if v >= 0 {
-		return v
+func Hash(key string) int {
+	if len(key) < 64 {
+		var scratch [64]byte
+		copy(scratch[:], key)
+		return int(crc32.ChecksumIEEE(scratch[:len(key)]))
 	}
-	if -v >= 0 {
-		return -v
-	}
-	// v == MinInt
-	return 0
+	return int(crc32.ChecksumIEEE([]byte(key)))
 }
 
 func RandomCode(width int) string {
