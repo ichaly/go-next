@@ -18,8 +18,13 @@ var (
 		"if you use other type, specify you own ShardingAlgorithm")
 )
 
-func Register(config Config, tables ...any) *Sharding {
-	return &Sharding{_config: config, _tables: tables}
+type Config struct {
+	DoubleWrite       bool
+	NumberOfShards    uint
+	ShardingKey       string
+	ShardingAlgorithm func(columnValue any) (suffix string, err error)
+
+	tableFormat string
 }
 
 type Sharding struct {
@@ -33,13 +38,12 @@ type Sharding struct {
 	_tables []any
 }
 
-type Config struct {
-	DoubleWrite       bool
-	NumberOfShards    uint
-	ShardingKey       string
-	ShardingAlgorithm func(columnValue any) (suffix string, err error)
+func Register(config Config, tables ...any) *Sharding {
+	return (&Sharding{}).Register(config, tables...)
+}
 
-	tableFormat string
+func (my *Sharding) Register(config Config, tables ...any) *Sharding {
+	return my
 }
 
 func (my *Sharding) Name() string {
@@ -50,12 +54,12 @@ func (my *Sharding) Initialize(db *gorm.DB) error {
 	db.Dialector = NewShardingDialector(db.Dialector, my)
 	my.DB = db
 
-	_ = my.Callback().Create().Before("*").Register("gorm:sharding", my.decoration)
-	_ = my.Callback().Query().Before("*").Register("gorm:sharding", my.decoration)
-	_ = my.Callback().Update().Before("*").Register("gorm:sharding", my.decoration)
-	_ = my.Callback().Delete().Before("*").Register("gorm:sharding", my.decoration)
-	_ = my.Callback().Row().Before("*").Register("gorm:sharding", my.decoration)
-	_ = my.Callback().Raw().Before("*").Register("gorm:sharding", my.decoration)
+	_ = my.Callback().Create().Before("*").Register("gorm:sharding", my.decorate)
+	_ = my.Callback().Query().Before("*").Register("gorm:sharding", my.decorate)
+	_ = my.Callback().Update().Before("*").Register("gorm:sharding", my.decorate)
+	_ = my.Callback().Delete().Before("*").Register("gorm:sharding", my.decorate)
+	_ = my.Callback().Row().Before("*").Register("gorm:sharding", my.decorate)
+	_ = my.Callback().Raw().Before("*").Register("gorm:sharding", my.decorate)
 
 	if my._config.ShardingAlgorithm == nil {
 		if my._config.NumberOfShards == 0 {
@@ -109,7 +113,7 @@ func (my *Sharding) Initialize(db *gorm.DB) error {
 	return nil
 }
 
-func (my *Sharding) decoration(db *gorm.DB) {
+func (my *Sharding) decorate(db *gorm.DB) {
 	my.mutex.Lock()
 	if db.Statement.ConnPool != nil {
 		my.ConnPool = &Connection{ConnPool: db.Statement.ConnPool, sharding: my}
