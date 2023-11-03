@@ -20,3 +20,6 @@ $--colors: (
 
 // You can comment it to hide debug info.
 // @debug $--colors;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
