@@ -2,6 +2,7 @@
 import {
     defineConfig,
     presetUno,
+    presetIcons,
     presetAttributify,
     transformerDirectives,
     transformerVariantGroup
@@ -10,6 +11,9 @@ import {
 export default defineConfig({
     presets: [
         presetUno(),
+        presetIcons({
+            cdn: 'https://esm.sh/'
+        }),
         presetAttributify(),
     ],
     transformers: [

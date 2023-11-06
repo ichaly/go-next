@@ -15,7 +15,7 @@ const changeLang = () => {
       <div class="flex-grow"/>
       <el-sub-menu index="1">
         <template #title>
-          <Icon name="ri:earth-line" size="24"/>
+          <i class="i-ri:earth-line text-2xl" />
         </template>
         <el-menu-item index="2-1">English</el-menu-item>
         <el-menu-item index="2-2">简体中文</el-menu-item>

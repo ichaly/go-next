@@ -3,7 +3,6 @@ export default defineNuxtConfig({
     srcDir: 'src/',
     devtools: {enabled: true},
     modules: [
-        'nuxt-icon',
         '@unocss/nuxt',
         '@element-plus/nuxt',
         '@nuxtjs/i18n',
