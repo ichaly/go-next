@@ -3,9 +3,10 @@ export default defineNuxtConfig({
     srcDir: 'src/',
     devtools: {enabled: true},
     modules: [
+        '@nuxtjs/i18n',
+        '@vueuse/nuxt',
         '@unocss/nuxt',
         '@element-plus/nuxt',
-        '@nuxtjs/i18n',
         '@pinia/nuxt',
         '@pinia-plugin-persistedstate/nuxt',
     ],

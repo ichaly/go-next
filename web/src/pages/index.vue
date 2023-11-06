@@ -1,9 +1,5 @@
 <template>
-  <div>
-    <AppHeader/>
-    <NuxtWelcome/>
-    <NuxtWelcome/>
-  </div>
+  <NuxtWelcome/>
 </template>
 <script setup>
 const store = useMainStore()

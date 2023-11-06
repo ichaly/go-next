@@ -6,28 +6,29 @@ const changeLang = () => {
 </script>
 
 <template>
-  <div class="bg-nav">
+  <header class="bg-nav">
+    <Container  />
     <el-menu mode="horizontal" :ellipsis="false" class="!bg-transparent">
-      <el-menu-item index="0">
+      <el-menu-item index="0" class="!inline-flex dark:!hidden">
         <img class="h-8" src="@/assets/images/go-next-logo.svg" alt="Go Next Logo"/>
         <span class="ml-1 text-2xl">GONEXT</span>
       </el-menu-item>
       <div class="flex-grow"/>
       <el-sub-menu index="1">
         <template #title>
-          <i class="i-ri:earth-line text-2xl" />
+          <i class="i-ri:earth-line text-2xl"/>
         </template>
         <el-menu-item index="2-1">English</el-menu-item>
         <el-menu-item index="2-2">简体中文</el-menu-item>
       </el-sub-menu>
       <el-menu-item index="2">
         <template #title>
-          <i class="i-ri:github-fill text-2xl" />
+          <i class="i-ri:github-fill text-2xl"/>
         </template>
       </el-menu-item>
       <el-menu-item index="3">登录/注册</el-menu-item>
     </el-menu>
-  </div>
+  </header>
 </template>
 
 <style scoped lang="scss">
