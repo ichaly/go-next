@@ -22,7 +22,7 @@ const changeLang = () => {
       </el-sub-menu>
       <el-menu-item index="2">
         <template #title>
-          <Icon name="ri:github-fill" size="24"/>
+          <i class="i-ri:github-fill text-2xl" />
         </template>
       </el-menu-item>
       <el-menu-item index="3">登录/注册</el-menu-item>
