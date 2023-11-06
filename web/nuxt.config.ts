@@ -4,8 +4,8 @@ export default defineNuxtConfig({
     devtools: {enabled: true},
     modules: [
         'nuxt-icon',
+        '@unocss/nuxt',
         '@element-plus/nuxt',
-        '@nuxtjs/tailwindcss',
         '@nuxtjs/i18n',
         '@pinia/nuxt',
         '@pinia-plugin-persistedstate/nuxt',

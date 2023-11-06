@@ -7,14 +7,16 @@ const changeLang = () => {
 
 <template>
   <div class="bg-nav">
-    <el-menu mode="horizontal" :ellipsis="false" class="bg-transparent">
+    <el-menu mode="horizontal" :ellipsis="false" class="!bg-transparent">
       <el-menu-item index="0">
         <img class="h-8" src="@/assets/images/go-next-logo.svg" alt="Go Next Logo"/>
         <span class="ml-1 text-2xl">GONEXT</span>
       </el-menu-item>
       <div class="flex-grow"/>
       <el-sub-menu index="1">
-        <template #title><Icon name="ri:earth-line" size="24"/></template>
+        <template #title>
+          <Icon name="ri:earth-line" size="24"/>
+        </template>
         <el-menu-item index="2-1">English</el-menu-item>
         <el-menu-item index="2-2">简体中文</el-menu-item>
       </el-sub-menu>
@@ -30,8 +32,7 @@ const changeLang = () => {
 
 <style scoped lang="scss">
 .bg-nav {
-  @apply fixed w-full z-50 bg-[size:4px_4px];
-  background-color: transparent;
+  @apply fixed w-full z-50 bg-[length:4px_4px] bg-transparent;
   backdrop-filter: saturate(50%) blur(4px);
   background-image: radial-gradient(transparent 1px, white 1px);
 }
