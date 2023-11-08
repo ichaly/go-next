@@ -6,9 +6,13 @@ export default defineNuxtConfig({
         '@nuxtjs/i18n',
         '@vueuse/nuxt',
         '@unocss/nuxt',
+        '@nuxt/content',
         '@element-plus/nuxt',
         '@pinia/nuxt',
         '@pinia-plugin-persistedstate/nuxt',
+    ],
+    css: [
+        '@unocss/reset/tailwind.css',
     ],
     elementPlus: {
         importStyle: 'scss',
