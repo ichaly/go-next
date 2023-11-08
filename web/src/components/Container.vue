@@ -1,25 +1,33 @@
 <template>
-  <component :is="as" :class="containerClass" v-bind="$attrs">
+  <component :is="as" :class="clazz" v-bind="$attrs">
     <slot/>
   </component>
 </template>
 
 <script lang="ts" setup>
-import type {ClassNameValue} from "tailwind-merge";
-import {twJoin, twMerge} from "tailwind-merge";
-
-const props = withDefaults(defineProps<{
+const {padded, fluid} = withDefaults(defineProps<{
   as?: string
-  class?: ClassNameValue
+  fluid?: boolean
+  padded?: boolean
 }>(), {
   as: 'div',
-  class: undefined,
+  fluid: true,
+  padded: false,
 })
-const appConfig = useAppConfig()
-// fluid?: boolean
-// padded?: boolean
-const containerClass = computed(() => {
-  return twMerge(twJoin(
-  ), props.class)
+const clazz = computed(() => {
+  return ['base', {padding: padded, constrained: fluid}]
 })
 </script>
+<style scoped lang="scss">
+.base {
+  @apply m-a w-full;
+}
+
+.padding {
+  @apply px-4 sm:px-6 lg:px-8;
+}
+
+.constrained {
+  @apply max-w-7xl;
+}
+</style>
