@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import Logo from "~/components/Logo.vue";
+
 const {locale, locales, setLocale} = useI18n()
 const changeLang = () => {
   setLocale('en')
@@ -7,11 +9,10 @@ const changeLang = () => {
 
 <template>
   <header class="bg-nav">
-    <Container :fluid="false">
+    <Container>
       <el-menu mode="horizontal" :ellipsis="false" class="!bg-transparent !border-b-0">
-        <el-menu-item index="0" class="!inline-flex dark:!hidden !text-red">
-          <i class="i-fa:dashcube text-4xl"/>
-<!--          <span class="ml-0.5 text-2xl"><span class="text-black dark:text-white">Go</span>Next</span>-->
+        <el-menu-item index="0" class="!inline-flex dark:!hidden">
+          <Logo class="w-auto h-12"/>
         </el-menu-item>
         <div class="flex-grow"/>
         <el-sub-menu index="1">
