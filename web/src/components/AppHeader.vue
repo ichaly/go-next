@@ -1,6 +1,18 @@
 <script setup lang="ts">
 import Logo from "~/components/Logo.vue";
 
+const color = ref('#0E9502')
+
+const colorMode = useColorMode()
+const isDark = computed({
+  get() {
+    return colorMode.value === 'dark'
+  },
+  set() {
+    colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'
+  }
+})
+
 const {locale, locales, setLocale} = useI18n()
 const changeLang = () => {
   setLocale('en')
@@ -9,27 +21,26 @@ const changeLang = () => {
 
 <template>
   <header class="bg-nav">
-    <Container>
-      <el-menu mode="horizontal" :ellipsis="false" class="!bg-transparent !border-b-0">
-        <el-menu-item index="0" class="!inline-flex dark:!hidden">
-          <Logo class="w-auto h-12"/>
-        </el-menu-item>
-        <div class="flex-grow"/>
-        <el-sub-menu index="1">
-          <template #title>
-            <i class="i-ri:earth-line text-2xl"/>
-          </template>
-          <el-menu-item index="2-1">English</el-menu-item>
-          <el-menu-item index="2-2">简体中文</el-menu-item>
-        </el-sub-menu>
-        <el-menu-item index="2">
-          <template #title>
-            <i class="i-ri:github-fill text-2xl"/>
-          </template>
-        </el-menu-item>
-        <el-menu-item index="3">登录/注册</el-menu-item>
-      </el-menu>
-    </Container>
+    <div class="container flex flex-row items-center m-a">
+      <logo class="w-auto h-12 m-1"/>
+      <div class="flex-grow justify-center items-center"/>
+      <el-button link>
+        <client-only>
+          <el-color-picker v-model="color"/>
+        </client-only>
+      </el-button>
+      <el-button link>
+        <i class="i-ri:search-line text-2xl"/>
+      </el-button>
+      <el-button @click="isDark = !isDark" link>
+        <i class="i-ri:moon-line text-2xl" v-if="isDark"/>
+        <i class="i-ri:sun-line text-2xl" v-else/>
+      </el-button>
+      <el-button link>
+        <i class="i-ri:github-line text-2xl"/>
+      </el-button>
+      <el-button type="primary" plain class="w-0">登录 / 注册</el-button>
+    </div>
   </header>
 </template>
 
