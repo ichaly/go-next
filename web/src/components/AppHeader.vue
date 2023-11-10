@@ -1,17 +1,8 @@
 <script setup lang="ts">
-import Logo from "~/components/Logo.vue";
-
 const color = ref('#0E9502')
 
-const colorMode = useColorMode()
-const isDark = computed({
-  get() {
-    return colorMode.value === 'dark'
-  },
-  set() {
-    colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'
-  }
-})
+const isDark = useDark()
+const toggleDark = useToggle(isDark)
 
 const {locale, locales, setLocale} = useI18n()
 const changeLang = () => {
@@ -32,14 +23,14 @@ const changeLang = () => {
       </div>
       <div class="flex-1 flex items-center justify-end">
         <el-button link>
-          <i class="i-ri:search-line text-2xl"/>
+          <i class="i-ri:search-line dark:text-white text-2xl"/>
         </el-button>
-        <el-button @click="isDark = !isDark" link>
-          <i class="i-ri:moon-line text-2xl" v-if="isDark"/>
-          <i class="i-ri:sun-line text-2xl" v-else/>
+        <el-button @click="toggleDark()" link>
+          <i class="i-ri:moon-line text-2xl dark:text-white" v-if="isDark"/>
+          <i class="i-ri:sun-line text-2xl dark:text-white" v-else/>
         </el-button>
         <el-button link>
-          <i class="i-ri:github-line text-2xl"/>
+          <i class="i-ri:github-line dark:text-white text-2xl"/>
         </el-button>
         <el-button link>
           <client-only>
@@ -58,7 +49,7 @@ const changeLang = () => {
 .bg-nav {
   @apply sticky w-full z-50 bg-[length:4px_4px] bg-transparent border-b-1 top-0;
   backdrop-filter: saturate(50%) blur(4px);
-  background-image: radial-gradient(transparent 1px, white 1px);
+  //background-image: radial-gradient(transparent 1px, white 1px);
 }
 
 .base {
