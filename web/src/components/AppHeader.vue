@@ -27,29 +27,10 @@ const changeLang = () => {
       </div>
       <div class="sm:block">
         <el-menu class="!border-b-0 !bg-transparent" mode="horizontal">
-          <el-menu-item index="1">Processing Center</el-menu-item>
-          <el-sub-menu index="2">
-            <template #title>Workspace</template>
-            <el-menu-item index="2-1">item one</el-menu-item>
-            <el-menu-item index="2-2">item two</el-menu-item>
-            <el-menu-item index="2-3">item three</el-menu-item>
-            <el-sub-menu index="2-4">
-              <template #title>item four</template>
-              <el-menu-item index="2-4-1">item one</el-menu-item>
-              <el-menu-item index="2-4-2">item two</el-menu-item>
-              <el-menu-item index="2-4-3">item three</el-menu-item>
-            </el-sub-menu>
-          </el-sub-menu>
-          <el-menu-item index="3" disabled>Info</el-menu-item>
-          <el-menu-item index="4">Orders</el-menu-item>
+          <Navigation/>
         </el-menu>
       </div>
       <div class="flex-1 flex items-center justify-end">
-        <el-button link>
-          <client-only>
-            <el-color-picker v-model="color"/>
-          </client-only>
-        </el-button>
         <el-button link>
           <i class="i-ri:search-line text-2xl"/>
         </el-button>
@@ -60,7 +41,14 @@ const changeLang = () => {
         <el-button link>
           <i class="i-ri:github-line text-2xl"/>
         </el-button>
-        <el-button type="primary" plain class="w-0">登录 / 注册</el-button>
+        <el-button link>
+          <client-only>
+            <el-color-picker v-model="color"/>
+            <template #fallback>
+              <p class="w-8"></p>
+            </template>
+          </client-only>
+        </el-button>
       </div>
     </div>
   </header>
