@@ -1,11 +1,11 @@
-import en_us from "assets/lang/en_us";
-import zh_cn from "assets/lang/zh_cn";
+import en from "assets/lang/en";
+import zh from "assets/lang/zh";
 
 export default defineI18nConfig(() => ({
     legacy: true,
     locale: 'zh',
     messages: {
-        en: en_us,
-        zh: zh_cn
+        en: en,
+        zh: zh
     },
 }))

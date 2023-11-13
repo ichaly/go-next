@@ -3,11 +3,10 @@ const color = ref('#0E9502')
 
 const isDark = useDark()
 const toggleDark = useToggle(isDark)
-
-const {locale, locales, setLocale} = useI18n()
-const changeLang = () => {
-  setLocale('en')
-};
+const {locale} = useI18n()
+const handleLanguageChange = (lang: string) => {
+  locale.value = lang
+}
 </script>
 
 <template>
@@ -22,9 +21,17 @@ const changeLang = () => {
         </el-menu>
       </div>
       <div class="flex-1 flex items-center justify-end">
-        <el-button link>
-          <i class="i-ri:search-line dark:text-white text-2xl"/>
-        </el-button>
+        <el-dropdown trigger="click" @command="handleLanguageChange">
+          <el-button link>
+            <i class="i-ri:translate dark:text-white text-2xl"/>
+          </el-button>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item :disabled="locale === 'zh'" command="zh">简体中文</el-dropdown-item>
+              <el-dropdown-item :disabled="locale === 'en'" command="en">English</el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
         <el-button @click="toggleDark()" link>
           <i class="i-ri:moon-line text-2xl dark:text-white" v-if="isDark"/>
           <i class="i-ri:sun-line text-2xl dark:text-white" v-else/>

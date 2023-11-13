@@ -1,5 +1,5 @@
 <template>
-  <el-config-provider :locale="zh">
+  <el-config-provider :locale="language">
     <NuxtLayout>
       <NuxtLoadingIndicator/>
       <NuxtPage/>
@@ -8,14 +8,11 @@
   </el-config-provider>
 </template>
 <script setup lang="ts">
-// import {useI18n} from 'vue-i18n'
 import zh from 'element-plus/es/locale/lang/zh-cn'
-// import en from 'element-plus/es/locale/lang/en'
+import en from 'element-plus/es/locale/lang/en'
 
-// let locale11 = ref(en)
-// const {t, locale} = useI18n({useScope: 'global'})
-// const switchLang = () => {
-//   locale11 = zh
-//   locale.value = 'zh'
-// }
+const {locale} = useI18n()
+const language = computed(() => {
+  return locale.value === 'zh' ? zh : en
+})
 </script>
