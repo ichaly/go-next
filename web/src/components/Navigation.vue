@@ -10,12 +10,10 @@ withDefaults(defineProps<{ list?: Node[] }>(), {
     {
       name: '首页',
       path: '/index',
-      icon: 'i-ri:home-2-line',
     },
     {
       name: '文档',
       path: '/docs',
-      icon: 'i-ri:book-2-line',
       children: [
         {
           name: '指南',
