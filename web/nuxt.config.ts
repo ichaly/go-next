@@ -12,7 +12,7 @@ export default defineNuxtConfig({
         '@pinia-plugin-persistedstate/nuxt',
     ],
     css: [
-        '@unocss/reset/tailwind.css',
+        '@unocss/reset/tailwind-compat.css',
     ],
     elementPlus: {
         importStyle: 'scss',
