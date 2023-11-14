@@ -21,15 +21,17 @@ const toggleDark = useToggle(isDark)
           <i class="i-ri:moon-line text-2xl block dark:hidden"/>
         </el-button>
         <el-button link>
-          <el-dropdown trigger="click" @command="(lang: string) =>locale = lang">
-            <i class="i-ri:translate text-2xl"/>
-            <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item :disabled="locale === 'zh'" command="zh">简体中文</el-dropdown-item>
-                <el-dropdown-item :disabled="locale === 'en'" command="en">English</el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
+          <client-only>
+            <el-dropdown trigger="click" @command="(lang: string) =>locale = lang">
+              <i class="i-ri:translate text-2xl"/>
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item :disabled="locale === 'zh'" command="zh">简体中文</el-dropdown-item>
+                  <el-dropdown-item :disabled="locale === 'en'" command="en">English</el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
+          </client-only>
         </el-button>
         <el-button link>
           <i class="i-ri:github-fill text-2xl"/>
