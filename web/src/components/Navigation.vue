@@ -7,26 +7,26 @@ type Node = {
 }
 withDefaults(defineProps<{ list?: Node[] }>(), {
   list: () => [
-    {
-      name: '首页',
-      path: '/index',
-    },
-    {
-      name: '文档',
-      path: '/docs',
-      children: [
-        {
-          name: '指南',
-          path: '/index/sub1',
-          icon: 'i-ri:compass-3-line',
-        },
-        {
-          name: 'API',
-          path: '/index/sub2',
-          icon: 'i-ant-design:api-outlined',
-        },
-      ],
-    },
+    // {
+    //   name: '首页',
+    //   path: '/index',
+    // },
+    // {
+    //   name: '文档',
+    //   path: '/docs',
+    //   children: [
+    //     {
+    //       name: '指南',
+    //       path: '/index/sub1',
+    //       icon: 'i-ri:compass-3-line',
+    //     },
+    //     {
+    //       name: 'API',
+    //       path: '/index/sub2',
+    //       icon: 'i-ant-design:api-outlined',
+    //     },
+    //   ],
+    // },
   ],
 })
 </script>

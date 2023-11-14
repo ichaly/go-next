@@ -1,5 +1,5 @@
 <template>
-  <NuxtWelcome/>
+  <Main/>
 </template>
 <script setup>
 const store = useMainStore()
