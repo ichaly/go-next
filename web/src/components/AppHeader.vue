@@ -12,8 +12,13 @@ const clazz = computed(() => {
   <header :class="clazz">
     <Container>
       <div class="flex flex-row items-center">
-        <div class="flex-1">
-          <logo class="w-auto h-12"/>
+        <div class="flex-1 text-black flex flex-row">
+          <i class="i-tabler:hexagon-letter-g text-4xl block text-red "/>
+          <i class="i-tabler:hexagon-letter-o text-4xl block text-green"/>
+          <i class="i-tabler:hexagon-letter-n text-4xl block text-blue"/>
+          <i class="i-tabler:hexagon-letter-e text-4xl block text-slate"/>
+          <i class="i-tabler:hexagon-letter-x text-4xl block text-purple"/>
+          <i class="i-tabler:hexagon-letter-t text-4xl block text-orange"/>
         </div>
         <div class="sm:block">
           <el-menu class="!border-b-0 !bg-transparent" mode="horizontal">
@@ -49,7 +54,7 @@ const clazz = computed(() => {
 
 <style scoped lang="scss">
 .bg-nav {
-  @apply fixed w-full z-50 bg-[length:4px_4px] top-0 backdrop-blur;
+  @apply sticky w-full z-50 bg-[length:4px_4px] top-0 backdrop-blur;
   //backdrop-filter: saturate(50%) blur(4px);
   //background-image: radial-gradient(transparent 1px, white 1px);
 }
