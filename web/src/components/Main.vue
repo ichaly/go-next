@@ -5,7 +5,7 @@
 <template>
   <Container>
     <main class="w-full min-h-screen">
-      <div class="flex flex-row p-16">
+      <div class="flex flex-row px-16 py-32">
         <div class="main text flex-1">
           <h1>
             <span class="clip bg-rainbow">GoNext</span>

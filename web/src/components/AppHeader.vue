@@ -2,10 +2,14 @@
 const isDark = useDark()
 const {locale} = useI18n()
 const toggleDark = useToggle(isDark)
+const {y} = useWindowScroll()
+const clazz = computed(() => {
+  return ['bg-nav', {'!border-b-1': y.value > 0}]
+})
 </script>
 
 <template>
-  <header class="bg-nav">
+  <header :class="clazz">
     <Container>
       <div class="flex flex-row items-center">
         <div class="flex-1">
@@ -45,20 +49,8 @@ const toggleDark = useToggle(isDark)
 
 <style scoped lang="scss">
 .bg-nav {
-  @apply sticky w-full z-50 bg-[length:4px_4px] border-b-1 top-0 backdrop-blur;
+  @apply fixed w-full z-50 bg-[length:4px_4px] top-0 backdrop-blur;
   //backdrop-filter: saturate(50%) blur(4px);
   //background-image: radial-gradient(transparent 1px, white 1px);
-}
-
-.base {
-  @apply m-a w-full;
-}
-
-.padding {
-  @apply px-4 sm:px-6 lg:px-8;
-}
-
-.constrained {
-  @apply max-w-7xl;
 }
 </style>
