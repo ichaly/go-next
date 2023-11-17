@@ -107,11 +107,11 @@ const features = ref<Feature[]>([
           </div>
         </div>
         <div class="image flex-1 flex justify-center items-center">
-          <div class="rainbow w-80 h-80 bg-red:10 absolute rounded-full z-1 blur-[240px]"></div>
+          <div class="rainbow w-80 h-80 bg-red:10 absolute rounded-full z-1 blur-[140px]"></div>
           <img src="~/assets/images/go-next-logo.svg" alt="GoNext" class="w-55 h-55 z-2 pointer-events-none">
         </div>
       </div>
-      <div class="w-full flex flex-row flex-wrap content-start gap-4 box-border">
+      <div class="w-full flex flex-row flex-wrap content-start gap-4 py-20">
         <div class="grow-1 shrink-0 basis-1/4" v-for='(f,i) in features' :key='i'>
           <div
               class="flex flex-col p-8 bg-slate-100 dark:bg-[#202127] dark:border-[#202127] rounded-xl h-full cursor-pointer border-1 hover:border-[--el-color-primary]">
