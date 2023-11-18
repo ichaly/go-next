@@ -26,8 +26,8 @@ const features = ref<Feature[]>([
     icon: "i-ri:earth-line"
   },
   {
-    title: "支持多个框架",
-    description: "支持包括像gin，echo，fasthttp，chi，beego等流行的web框架无缝接入，选用您擅长的框架。",
+    title: "原生支持多租户",
+    description: "多租户设计简化了应用的开发和维护，使开发者能更专注于核心业务功能的实现。",
     icon: "i-ri:checkbox-multiple-blank-line",
     link: {
       title: "快速开始",
@@ -35,13 +35,13 @@ const features = ref<Feature[]>([
     }
   },
   {
-    title: "pjax无刷新体验",
-    description: "系统内采用pjax技术，实现无刷新的良好用户体验，不用再为页面刷新卡住而烦恼。",
-    icon: "i-ri:refresh-line"
+    title: "前后分离",
+    description: "前后端分离的开发模式提高了代码的可维护性与扩展性，加速项目迭代与上线。",
+    icon: "i-ri:pin-distance-line"
   },
   {
-    title: "插件提升效率",
-    description: "不同的插件可以简化你的开发工作量，插件的接入十分简易。",
+    title: "插件化开发",
+    description: "插件化开发降低了耦合度，提高代码复用率，缩短开发周期，提升整体开发效率。",
     icon: "i-ri:plug-line",
     link: {
       title: "马上尝试",
@@ -64,7 +64,7 @@ const features = ref<Feature[]>([
   },
   {
     title: "性能更好",
-    description: "得益于golang的良好性能，GoAdmin也同步拥有优于其他语言同类框架的性能特性。",
+    description: "得益于golang的良好性能，GoNext也同步拥有优于其他语言同类框架的性能特性。",
     icon: "i-ri:dashboard-3-line"
   },
 ])
@@ -75,7 +75,7 @@ const features = ref<Feature[]>([
     <main class="w-full">
       <div class="py-20 flex flex-row w-full">
         <div class="flex flex-col justify-center items-start flex-1">
-          <h1 class="text-5xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-7xl mt-10">
+          <h1 class="text-5xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-7xl">
             <span>基于<span class="clip rainbow">GO</span>的现代化WEB开发库</span>
             <!--            A <span class="clip rainbow">Go Library</span> for Modern Web Apps-->
           </h1>
@@ -107,11 +107,11 @@ const features = ref<Feature[]>([
           </div>
         </div>
         <div class="image flex-1 flex justify-center items-center">
-          <div class="rainbow w-80 h-80 bg-red:10 absolute rounded-full z-1 blur-[140px]"></div>
+          <div class="rainbow w-80 h-80 absolute rounded-full z-1 blur-[140px]"></div>
           <img src="~/assets/images/go-next-logo.svg" alt="GoNext" class="w-55 h-55 z-2 pointer-events-none">
         </div>
       </div>
-      <div class="w-full flex flex-row flex-wrap content-start gap-4 py-20">
+      <div class="w-full flex flex-row flex-wrap content-start gap-4 pb-20">
         <div class="grow-1 shrink-0 basis-1/4" v-for='(f,i) in features' :key='i'>
           <div
               class="flex flex-col p-8 bg-slate-100 dark:bg-[#202127] dark:border-[#202127] rounded-xl h-full cursor-pointer border-1 hover:border-[--el-color-primary]">

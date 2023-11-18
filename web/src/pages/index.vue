@@ -1,5 +1,5 @@
 <template>
-  <Main/>
+  <Welcome/>
 </template>
 <script setup>
 const store = useMainStore()
