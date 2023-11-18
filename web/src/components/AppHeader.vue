@@ -11,8 +11,8 @@ const clazz = computed(() => {
 <template>
   <header :class="clazz">
     <Container>
-      <div class="flex flex-row items-center">
-        <div class="flex-1 text-black flex flex-row">
+      <div class="flex flex-row items-center h-15">
+        <div class="flex-1 text-black flex flex-row justify-center md:justify-start">
           <i class="i-tabler:hexagon-letter-g text-4xl block text-red "/>
           <i class="i-tabler:hexagon-letter-o text-4xl block text-green"/>
           <i class="i-tabler:hexagon-letter-n text-4xl block text-blue"/>
@@ -20,12 +20,12 @@ const clazz = computed(() => {
           <i class="i-tabler:hexagon-letter-x text-4xl block text-purple"/>
           <i class="i-tabler:hexagon-letter-t text-4xl block text-orange"/>
         </div>
-        <div class="sm:block">
+        <div class="hidden md:block">
           <el-menu class="!border-b-0 !bg-transparent" mode="horizontal">
             <Navigation/>
           </el-menu>
         </div>
-        <div class="flex-1 flex items-center justify-end">
+        <div class="flex-1 hidden md:flex items-center justify-end">
           <el-button @click="toggleDark()" link>
             <i class="i-ri:sun-line text-2xl hidden dark:block"/>
             <i class="i-ri:moon-line text-2xl block dark:hidden"/>
