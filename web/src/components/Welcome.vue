@@ -138,7 +138,9 @@ const { copy, copied } = useClipboard()
 }
 
 .rainbow {
-  @apply bg-gradient-to-br from-indigo-500 from-30% to-pink-500;
+  --vp-c-brand-1: #00a98e; --vp-c-brand-light: #4ad1b4; --vp-c-brand-lighter: #78fadc; --vp-c-brand-dark: #008269; --vp-c-brand-darker: #005d47; --vp-c-brand-next: #009ff7;
+  @apply bg-gradient-to-br from-30% from-[--vp-c-brand-1] to-[--vp-c-brand-next];
+  animation: rainbow 12s linear infinite;
 }
 
 .image {
