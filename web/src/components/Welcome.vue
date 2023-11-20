@@ -68,6 +68,9 @@ const features = ref<Feature[]>([
     icon: "i-ri:dashboard-3-line"
   },
 ])
+
+const content = ref<string>("go get github.com/ichaly/go-next@latest")
+const { copy, copied } = useClipboard()
 </script>
 
 <template>
@@ -88,14 +91,15 @@ const features = ref<Feature[]>([
               </template>
               立即体验
             </el-button>
-            <el-input size="large" value="go get github.com/ichaly/go-next@latest" readonly>
+            <el-input size="large" :value="content" readonly>
               <template #prefix>
                 <i class="i-heroicons-command-line h-5 w-5 flex-shrink-0"/>
               </template>
               <template #append>
-                <el-button class="!p-0">
+                <el-button class="!p-0" @click="copy(content)">
                   <template #icon>
-                    <i class="i-heroicons-clipboard-document h-5 w-5 flex-shrink-0"/>
+                    <i class="i-heroicons-clipboard-document-check h-5 w-5 flex-shrink-0 text-[--el-color-primary]" v-if="copied"/>
+                    <i class="i-heroicons-clipboard-document h-5 w-5 flex-shrink-0" v-else/>
                   </template>
                 </el-button>
               </template>
