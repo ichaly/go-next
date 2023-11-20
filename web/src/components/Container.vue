@@ -12,7 +12,7 @@ const {padded, fluid} = withDefaults(defineProps<{
 }>(), {
   as: 'div',
   fluid: true,
-  padded: false,
+  padded: true,
 })
 const clazz = computed(() => {
   return ['base', {padding: padded, constrained: fluid}]
