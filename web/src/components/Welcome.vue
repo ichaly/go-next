@@ -73,17 +73,13 @@ const features = ref<Feature[]>([
 <template>
   <Container>
     <main class="w-full">
-      <div class="py-20 flex flex-row w-full">
-        <div class="flex flex-col justify-center items-start flex-1">
-          <h1 class="text-5xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-7xl">
-            <span>基于<span class="clip rainbow">GO</span>的现代化WEB开发库</span>
-            <!--            A <span class="clip rainbow">Go Library</span> for Modern Web Apps-->
+      <div class="flex flex-row w-full pt-10">
+        <div class="flex flex-col justify-center items-center flex-1">
+          <h1 class="text-5xl font-bold tracking-tight text-gray-900 text-center dark:text-white md:text-7xl md:text-start">
+            <span>基于<span class="clip rainbow">GO</span>的<br class="md:hidden"/>现代化WEB开发库</span>
           </h1>
-          <p class="mt-6 text-lg tracking-tight text-gray-600 dark:text-gray-300">
-          <span class="mt-6 text-lg tracking-tight text-gray-600 dark:text-gray-300">
-            融合了 Golang、Nuxt 和 GraphQL 的强大中后台框架，拥有灵活的架构，<br class="hidden lg:block"/>能够轻松解决各种复杂任务，让你快速开发Web App的梦想变成现实。
-            <br/><br/>快来体验一下吧！
-          </span>
+          <p class="mt-6 text-lg tracking-tight text-gray-600 text-center dark:text-gray-300 md:text-start">
+            <span>融合 Golang、Nuxt 和 GraphQL 的强大中后台框架，拥有灵活的架构，能够轻松解决各种复杂任务，让你快速开发Web App的梦想变成现实。<br/><br/>快来体验一下吧！</span>
           </p>
           <div class="mt-10 flex gap-x-6 w-140">
             <el-button type="primary" size="large">
@@ -106,12 +102,12 @@ const features = ref<Feature[]>([
             </el-input>
           </div>
         </div>
-        <div class="image flex-1 flex justify-center items-center">
+        <div class="image flex-1 justify-center items-center hidden md:flex">
           <div class="rainbow w-80 h-80 absolute rounded-full z-1 blur-[140px]"></div>
           <img src="~/assets/images/go-next-logo.svg" alt="GoNext" class="w-55 h-55 z-2 pointer-events-none">
         </div>
       </div>
-      <div class="w-full flex flex-row flex-wrap content-start gap-4 pb-20">
+      <div class="w-full flex flex-row flex-wrap content-start gap-4 py-20">
         <div class="grow-1 shrink-0 basis-1/4" v-for='(f,i) in features' :key='i'>
           <div
               class="flex flex-col p-8 bg-slate-100 dark:bg-[#202127] dark:border-[#202127] rounded-xl h-full cursor-pointer border-1 hover:border-[--el-color-primary]">
@@ -121,7 +117,7 @@ const features = ref<Feature[]>([
             <h2 class="leading-6 text-base font-semibold text-base">{{ f.title }}</h2>
             <p class="grow pt-2 text-sm text-slate-500 pt-2 flex-1">{{ f.description }}</p>
             <p class="flex items-center text-sm font-medium mt-2 text-[--el-color-primary]" v-if="f.link">
-              {{f.link?.title}}
+              {{ f.link?.title }}
               <i class="i-ep:right ml-1.5"/>
             </p>
           </div>
