@@ -1,47 +1,20 @@
 <template>
   <el-container class="w-full h-full">
-    <div class="w-50 flex flex-col bg-[var(--left-menu-bg-color)]">
-      <div class="w-full h-12 flex items-center text-base px-4 text-white">
-        <img src="@/assets/logo.svg" class="w-9 h-9" />Admin
+    <div class="w-50 flex flex-col">
+      <div class="logo">
+        <img src="@/assets/logo.svg" class="w-9 h-9"/>Admin
       </div>
-      <el-aside class="flex-1 !w-full">
+      <el-aside class="flex-1 !w-full bg-[var(--left-menu-bg-color)]">
         <el-scrollbar>
           <el-menu :default-openeds="['1', '3']">
-            <el-sub-menu index="1">
-              <template #title>
-                <el-icon>
-                  <message />
-                </el-icon>
-                Navigator One
-              </template>
-              <el-menu-item-group>
-                <template #title>Group 1</template>
-                <el-menu-item index="1-1">Option 1</el-menu-item>
-                <el-menu-item index="1-2">Option 2</el-menu-item>
-              </el-menu-item-group>
-              <el-menu-item-group title="Group 2">
-                <el-menu-item index="1-3">Option 3</el-menu-item>
-              </el-menu-item-group>
-              <el-sub-menu index="1-4">
-                <template #title>Option4</template>
-                <el-menu-item index="1-4-1">Option 4-1</el-menu-item>
-              </el-sub-menu>
-            </el-sub-menu>
+            <el-menu-item index="1">Navigator One</el-menu-item>
             <el-sub-menu index="2">
               <template #title>
-                <el-icon>
-                  <icon-menu />
-                </el-icon>
                 Navigator Two
               </template>
-              <el-menu-item-group>
-                <template #title>Group 1</template>
-                <el-menu-item index="2-1">Option 1</el-menu-item>
-                <el-menu-item index="2-2">Option 2</el-menu-item>
-              </el-menu-item-group>
-              <el-menu-item-group title="Group 2">
-                <el-menu-item index="2-3">Option 3</el-menu-item>
-              </el-menu-item-group>
+              <el-menu-item index="2-1">Option 1</el-menu-item>
+              <el-menu-item index="2-2">Option 2</el-menu-item>
+              <el-menu-item index="2-3">Option 3</el-menu-item>
               <el-sub-menu index="2-4">
                 <template #title>Option 4</template>
                 <el-menu-item index="2-4-1">Option 4-1</el-menu-item>
@@ -49,19 +22,11 @@
             </el-sub-menu>
             <el-sub-menu index="3">
               <template #title>
-                <el-icon>
-                  <setting />
-                </el-icon>
                 Navigator Three
               </template>
-              <el-menu-item-group>
-                <template #title>Group 1</template>
-                <el-menu-item index="3-1">Option 1</el-menu-item>
-                <el-menu-item index="3-2">Option 2</el-menu-item>
-              </el-menu-item-group>
-              <el-menu-item-group title="Group 2">
-                <el-menu-item index="3-3">Option 3</el-menu-item>
-              </el-menu-item-group>
+              <el-menu-item index="3-1">Option 1</el-menu-item>
+              <el-menu-item index="3-2">Option 2</el-menu-item>
+              <el-menu-item index="3-3">Option 3</el-menu-item>
               <el-sub-menu index="3-4">
                 <template #title>Option 4</template>
                 <el-menu-item index="3-4-1">Option 4-1</el-menu-item>
@@ -75,19 +40,39 @@
       <el-header class="flex items-center">Header</el-header>
       <el-main class="h-full">
         <el-button type="primary">Button</el-button>
-        <router_view />
+        <router_view/>
       </el-main>
       <el-footer class="flex items-center">Footer</el-footer>
     </el-container>
   </el-container>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+</script>
 
 <style scoped lang="scss">
+.logo {
+  @apply w-full  flex items-center text-base px-4;
+  height: $item-height;
+}
+
 :deep(.el-menu) {
   border-right: none;
-  background-color: var(--el-menu-bg-color);
+  // 设置子菜单的背景颜色
+  .el-menu-item ,
+  .el-sub-menu__title{
+    color: var(--left-menu-text-color) !important;
+    &:hover {
+      color: var(--left-menu-text-active-color) !important;
+    }
+  }
+
+  .el-sub-menu__title,
+  .el-menu-item:not(.is-active) {
+    background-color: var(--left-menu-bg-light-color) !important;
+  }
+
+  //background-color: var(--el-menu-bg-color);
   //  // 设置选中时子标题的颜色
   //  .is-active {
   //    & > .el-sub-menu__title {
