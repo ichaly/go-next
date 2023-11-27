@@ -1,0 +1,19 @@
+@forward "element-plus/theme-chalk/src/common/var" with  (
+    $colors: (
+        "primary": ("base": #409eff,),
+        "success": ("base": #67c23a,),
+        "warning": ("base": #e6a23c,),
+        "danger": ("base": #db2828,),
+        "error": ("base": #f56c6c,),
+        "info": ("base": #909399,),
+    ),
+    $header:(
+      'height': 48px,
+    ),
+    $footer:(
+      'height': 48px,
+    ),
+    $button-padding-horizontal: ("default": 50px)
+);
+
+@use "element-plus/theme-chalk/src/dark/css-vars" as *;
