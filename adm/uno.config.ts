@@ -9,10 +9,6 @@ import {
 } from 'unocss'
 
 export default defineConfig({
-  shortcuts: [
-    ['line', 'border-solid border-[var(--el-menu-border-color)] border-0 border-b-1'],
-    ['line-t', 'border-solid border-[var(--el-menu-border-color)] border-0 border-t-1']
-  ],
   presets: [
     presetUno(),
     presetIcons({
