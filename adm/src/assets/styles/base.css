@@ -47,23 +47,6 @@
     --left-menu-text-active-color: #fff;
     --left-menu-collapse-bg-active-color: var(--el-color-primary);
     /* left menu end */
-
-    --el-menu-bg-color: #001529;
-
-    --el-menu-active-color: var(--el-color-primary);
-    --el-menu-text-color: var(--el-text-color-primary);
-    --el-menu-hover-text-color: var(--el-color-primary);
-    --el-menu-hover-bg-color: var(--el-color-primary-light-9);
-    --el-menu-item-height: 56px;
-    --el-menu-sub-item-height: calc(var(--el-menu-item-height) - 6px);
-    --el-menu-horizontal-height: 60px;
-    --el-menu-horizontal-sub-item-height: 36px;
-    --el-menu-item-font-size: var(--el-font-size-base);
-    --el-menu-item-hover-fill: var(--el-color-primary-light-9);
-    --el-menu-border-color: var(--el-border-color);
-    --el-menu-base-level-padding: 20px;
-    --el-menu-level-padding: 20px;
-    --el-menu-icon-width: 24px;
 }
 
 @media (prefers-color-scheme: dark) {
