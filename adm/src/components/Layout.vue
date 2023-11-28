@@ -67,7 +67,7 @@ const [isCollapse, toggleCollapse] = useToggle(true)
 }
 
 :deep(.el-menu) {
-  max-width: 200px;
+  width: var(--left-menu-max-width);
   // 去掉右侧的边框
   border-right: none;
   background-color: var(--left-menu-bg-color) !important;
@@ -95,6 +95,17 @@ const [isCollapse, toggleCollapse] = useToggle(true)
     .el-menu-item:not(.is-active) {
       background-color: var(--left-menu-bg-light-color) !important;
     }
+  }
+}
+
+// 折叠时的最小宽度
+:deep(.el-menu--collapse) {
+  width: var(--left-menu-min-width);
+
+  & > .is-active,
+  & > .is-active > .el-sub-menu__title {
+    color: var(--left-menu-text-active-color) !important;
+    background-color: var(--left-menu-collapse-bg-active-color) !important;
   }
 }
 </style>
