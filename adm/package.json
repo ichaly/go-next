@@ -12,6 +12,9 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@iconify-json/ep": "^1.1.13",
+    "@iconify-json/icon-park": "^1.1.13",
+    "@iconify-json/ri": "^1.1.14",
     "@vueuse/core": "^10.6.1",
     "element-plus": "^2.4.2",
     "pinia": "^2.1.7",
