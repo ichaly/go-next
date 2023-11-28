@@ -7,7 +7,13 @@
       </div>
       <el-aside class="flex-1 w-auto bg-[var(--left-menu-bg-color)]">
         <el-scrollbar>
-          <el-menu default-active="2" :collapse="isCollapse">
+          <el-menu
+            default-active="2"
+            :collapse="isCollapse"
+            textColor="var(--left-menu-text-color)"
+            backgroundColor="var(--left-menu-bg-color)"
+            activeTextColor="var(--left-menu-text-active-color)"
+          >
             <el-sub-menu index="1">
               <template #title>
                 <el-icon><i class="i-ep:location" /></el-icon>
