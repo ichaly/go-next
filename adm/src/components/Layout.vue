@@ -52,7 +52,7 @@
           </el-icon>
         </flat-button>
         <div class="flex-1">
-          <el-breadcrumb separator="/">
+          <el-breadcrumb separator="/" class="hidden md:block">
             <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
             <el-breadcrumb-item><a href="/">用户管理</a></el-breadcrumb-item>
             <el-breadcrumb-item>用户详情</el-breadcrumb-item>
@@ -130,15 +130,20 @@
         </el-dropdown>
       </el-header>
       <el-main class="h-full">
-        <router_view />
+        <router-view />
       </el-main>
-      <el-footer class="flex items-center">Footer</el-footer>
+      <el-footer
+        class="text-gray-500 text-sm flex flex-col items-center justify-center md:flex-row md:justify-between b-0 b-solid b-t-1 b-[var(--el-border-color)]"
+      >
+        <div>Released under the MIT License.</div>
+        <div>Copyright © 2023 iChaly.</div>
+      </el-footer>
     </el-container>
   </el-container>
 </template>
 
 <script setup lang="ts">
-const [isCollapse, toggleCollapse] = useToggle()
+const [isCollapse, toggleCollapse] = useToggle(true)
 const { isFullscreen, toggle: toggleFullscreen } = useFullscreen()
 </script>
 
