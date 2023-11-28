@@ -47,6 +47,8 @@
     --left-menu-text-active-color: #fff;
     --left-menu-collapse-bg-active-color: var(--el-color-primary);
     /* left menu end */
+
+    --transition-time-02: 0.3s;
 }
 
 @media (prefers-color-scheme: dark) {

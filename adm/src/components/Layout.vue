@@ -1,8 +1,11 @@
 <template>
   <el-container class="w-full h-full">
-    <div class="w-50 flex flex-col">
-      <div class="logo"><img src="@/assets/logo.svg" class="w-10 h-10" />Vue Admin</div>
-      <el-aside class="flex-1 !w-full bg-[var(--left-menu-bg-color)]">
+    <div :class="['flex', 'flex-col', 'w-auto']">
+      <div class="logo">
+        <img src="@/assets/logo.svg" class="w-8 h-8" />
+        <span class="ml-4" v-if="!isCollapse">Vue Admin</span>
+      </div>
+      <el-aside class="flex-1 w-auto bg-[var(--left-menu-bg-color)]">
         <el-scrollbar>
           <el-menu default-active="2" :collapse="isCollapse">
             <el-sub-menu index="1">
@@ -53,7 +56,7 @@
 </template>
 
 <script setup lang="ts">
-const [isCollapse, toggleCollapse] = useToggle()
+const [isCollapse, toggleCollapse] = useToggle(true)
 </script>
 
 <style scoped lang="scss">
@@ -64,6 +67,7 @@ const [isCollapse, toggleCollapse] = useToggle()
 }
 
 :deep(.el-menu) {
+  max-width: 200px;
   // 去掉右侧的边框
   border-right: none;
   background-color: var(--left-menu-bg-color) !important;
