@@ -1,45 +1,43 @@
 <template>
   <el-container class="w-full h-full">
-    <div class="flex flex-col w-auto">
+    <el-aside class="!w-auto bg-[var(--left-menu-bg-color)]">
       <logo />
-      <el-aside class="flex-1 !w-auto bg-[var(--left-menu-bg-color)]">
-        <el-scrollbar>
-          <el-menu
-            default-active="2"
-            :collapse="isCollapse"
-            textColor="var(--left-menu-text-color)"
-            backgroundColor="var(--left-menu-bg-color)"
-            activeTextColor="var(--left-menu-text-active-color)"
-          >
-            <el-sub-menu index="1">
-              <template #title>
-                <el-icon><i class="i-ep:location" /></el-icon>
-                <span>Navigator One</span>
-              </template>
-              <el-menu-item index="1-1">item one</el-menu-item>
-              <el-menu-item index="1-2">item two</el-menu-item>
-              <el-menu-item index="1-3">item three</el-menu-item>
-              <el-sub-menu index="1-4">
-                <template #title><span>item four</span></template>
-                <el-menu-item index="1-4-1">item one</el-menu-item>
-              </el-sub-menu>
+      <el-scrollbar>
+        <el-menu
+          default-active="2"
+          :collapse="isCollapse"
+          textColor="var(--left-menu-text-color)"
+          backgroundColor="var(--left-menu-bg-color)"
+          activeTextColor="var(--left-menu-text-active-color)"
+        >
+          <el-sub-menu index="1">
+            <template #title>
+              <el-icon><i class="i-ep:location" /></el-icon>
+              <span>Navigator One</span>
+            </template>
+            <el-menu-item index="1-1">item one</el-menu-item>
+            <el-menu-item index="1-2">item two</el-menu-item>
+            <el-menu-item index="1-3">item three</el-menu-item>
+            <el-sub-menu index="1-4">
+              <template #title><span>item four</span></template>
+              <el-menu-item index="1-4-1">item one</el-menu-item>
             </el-sub-menu>
-            <el-menu-item index="2">
-              <el-icon><i class="i-ep:menu" /></el-icon>
-              <template #title>Navigator Two</template>
-            </el-menu-item>
-            <el-menu-item index="3">
-              <el-icon><i class="i-ep:document" /></el-icon>
-              <template #title>Navigator Three</template>
-            </el-menu-item>
-            <el-menu-item index="4">
-              <el-icon><i class="i-ep:setting" /></el-icon>
-              <template #title>Navigator Four</template>
-            </el-menu-item>
-          </el-menu>
-        </el-scrollbar>
-      </el-aside>
-    </div>
+          </el-sub-menu>
+          <el-menu-item index="2">
+            <el-icon><i class="i-ep:menu" /></el-icon>
+            <template #title>Navigator Two</template>
+          </el-menu-item>
+          <el-menu-item index="3">
+            <el-icon><i class="i-ep:document" /></el-icon>
+            <template #title>Navigator Three</template>
+          </el-menu-item>
+          <el-menu-item index="4">
+            <el-icon><i class="i-ep:setting" /></el-icon>
+            <template #title>Navigator Four</template>
+          </el-menu-item>
+        </el-menu>
+      </el-scrollbar>
+    </el-aside>
     <el-container>
       <el-header class="flex items-center b-0 b-b-1 b-solid b-[var(--el-border-color)]">
         <flat-button @click="toggleCollapse()">
