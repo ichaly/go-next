@@ -46,15 +46,14 @@
     <el-container>
       <el-header class="flex items-center b-0 b-b-1 b-solid b-[var(--el-border-color)]">
         <flat-button @click="toggleCollapse()">
-          <el-icon :size="18">
-            <i class="i-icon-park-outline:menu-fold-one" v-if="isCollapse" />
-            <i class="i-icon-park-outline:menu-unfold-one" v-else />
+          <el-icon :size="18" :class="['transition-transform', { '-scale-x-100': isCollapse }]">
+            <i class="i-icon-park-outline:menu-unfold-one" />
           </el-icon>
         </flat-button>
-        <div class="flex-1">
+        <div class="flex-1 pl-2">
           <el-breadcrumb separator="/" class="hidden md:block">
             <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-            <el-breadcrumb-item><a href="/">用户管理</a></el-breadcrumb-item>
+            <el-breadcrumb-item><a href="/adm/public">用户管理</a></el-breadcrumb-item>
             <el-breadcrumb-item>用户详情</el-breadcrumb-item>
           </el-breadcrumb>
         </div>
@@ -63,18 +62,18 @@
             <i class="i-icon-park-outline:search" />
           </el-icon>
         </flat-button>
-        <flat-button>
-          <el-badge :value="200" :max="99">
-            <el-icon :size="18">
-              <i class="i-icon-park-outline:remind" />
-            </el-icon>
-          </el-badge>
-        </flat-button>
         <flat-button @click="toggleFullscreen()">
           <el-icon :size="18">
             <i class="i-icon-park-outline:off-screen-one" v-if="isFullscreen" />
             <i class="i-icon-park-outline:full-screen-one" v-else />
           </el-icon>
+        </flat-button>
+        <flat-button>
+          <el-badge :value="200" :max="99" class="h-4.5">
+            <el-icon :size="18">
+              <i class="i-icon-park-outline:remind" />
+            </el-icon>
+          </el-badge>
         </flat-button>
         <el-dropdown class="h-full">
           <flat-button>
@@ -93,7 +92,7 @@
             </el-dropdown-menu>
           </template>
         </el-dropdown>
-        <el-dropdown>
+        <el-dropdown class="h-full">
           <flat-button>
             <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png">
               user
@@ -197,7 +196,8 @@ const { isFullscreen, toggle: toggleFullscreen } = useFullscreen()
   }
 }
 
-:deep(.el-button + .el-button) {
-  margin-left: 0;
+//解决下拉菜单的focus样式有个黑框的问题
+:deep(.el-tooltip__trigger:focus-visible) {
+  outline: unset;
 }
 </style>

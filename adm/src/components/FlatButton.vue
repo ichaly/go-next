@@ -1,5 +1,12 @@
 <template>
-  <el-button text class="!px-4 !h-full !rounded-none !outline-none">
+  <div class="flat-btn">
     <slot />
-  </el-button>
+  </div>
 </template>
+<style scoped lang="scss">
+.flat-btn {
+  @apply h-full px-4 cursor-pointer flex place-items-center;
+  @apply text-[var(--el-button-text-color)] text-[length:var(--el-font-size-base)];
+  @apply hover:bg-[var(--el-fill-color-light)] hover:text-[var(--el-color-primary)];
+}
+</style>
