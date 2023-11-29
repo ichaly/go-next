@@ -1,10 +1,7 @@
 <template>
   <el-container class="w-full h-full">
     <div class="flex flex-col w-auto">
-      <div class="logo">
-        <img src="@/assets/logo.svg" class="w-8 h-8" />
-        <span class="ml-4" v-if="!isCollapse">Vue Admin</span>
-      </div>
+      <logo />
       <el-aside class="flex-1 !w-auto bg-[var(--left-menu-bg-color)]">
         <el-scrollbar>
           <el-menu
@@ -142,17 +139,12 @@
 </template>
 
 <script setup lang="ts">
-const [isCollapse, toggleCollapse] = useToggle(true)
-const { isFullscreen, toggle: toggleFullscreen } = useFullscreen()
+const setting = useSettingStore()
+const { toggleCollapse, toggleFullscreen } = setting
+const { isCollapse, isFullscreen } = toRefs(setting)
 </script>
 
 <style scoped lang="scss">
-.logo {
-  @apply w-full flex items-center text-base px-4 text-white;
-  height: $item-height;
-  background-color: var(--left-menu-bg-color);
-}
-
 :deep(.el-menu) {
   width: var(--left-menu-max-width);
   // 去掉右侧的边框

@@ -14,6 +14,7 @@ export default defineConfig({
     vue(),
     UnoCSS(),
     AutoImport({
+      dirs: ['src/stores'],
       imports: ['vue', 'vue-router', '@vueuse/core'],
       resolvers: [
         ElementPlusResolver({
