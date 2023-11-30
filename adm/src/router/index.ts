@@ -6,7 +6,11 @@ import Home from '@/views/Home.vue'
 import NotFound from '@/views/NotFound.vue'
 import Forbidden from '@/views/Forbidden.vue'
 
-const rootRoutePage404: RouteRecordRaw[] = [
+const errorPageRoute: RouteRecordRaw[] = [
+  {
+    path: '/403',
+    component: Forbidden
+  },
   {
     path: '/404',
     component: () => NotFound
@@ -15,10 +19,6 @@ const rootRoutePage404: RouteRecordRaw[] = [
     path: '/:pathMatch(.*)',
     redirect: '/404'
   }
-  // {
-  //   path: '/:pathMatch(index/.*)',
-  //   redirect: '/index/404'
-  // }
 ]
 
 const router = createRouter({
@@ -40,22 +40,13 @@ const router = createRouter({
           path: '/home',
           component: Home,
           meta: {
-            title: 'title',
-            icon: 'i-ep:setting'
+            title: '首页',
+            icon: 'i-ep:home-filled'
           }
         },
-        {
-          name: '401',
-          path: '/401',
-          component: Forbidden,
-          meta: {
-            title: 'title',
-            icon: 'i-ep:setting'
-          }
-        }
+        ...errorPageRoute
       ]
-    },
-    ...rootRoutePage404
+    }
   ]
 })
 
