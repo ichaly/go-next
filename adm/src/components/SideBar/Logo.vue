@@ -1,6 +1,6 @@
 <template>
   <div class="logo">
-    <img src="@/assets/logo.svg" class="w-8 h-8" />
+    <img src="@/assets/images/logo.svg" class="w-8 h-8" />
     <span class="ml-4" v-if="!isCollapse">Vue Admin</span>
   </div>
 </template>

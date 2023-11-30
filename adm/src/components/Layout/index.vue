@@ -4,37 +4,15 @@
       <logo />
       <el-scrollbar class="flex-1">
         <el-menu
+          router
+          @select="selectMenuItem"
           default-active="2"
           :collapse="isCollapse"
-          textColor="var(--left-menu-text-color)"
-          backgroundColor="var(--left-menu-bg-color)"
-          activeTextColor="var(--left-menu-text-active-color)"
+          text-color="var(--left-menu-text-color)"
+          background-color="var(--left-menu-bg-color)"
+          active-text-color="var(--left-menu-text-active-color)"
         >
-          <el-sub-menu index="1">
-            <template #title>
-              <el-icon><i class="i-ep:location" /></el-icon>
-              <span>Navigator One</span>
-            </template>
-            <el-menu-item index="1-1">item one</el-menu-item>
-            <el-menu-item index="1-2">item two</el-menu-item>
-            <el-menu-item index="1-3">item three</el-menu-item>
-            <el-sub-menu index="1-4">
-              <template #title><span>item four</span></template>
-              <el-menu-item index="1-4-1">item one</el-menu-item>
-            </el-sub-menu>
-          </el-sub-menu>
-          <el-menu-item index="2">
-            <el-icon><i class="i-ep:menu" /></el-icon>
-            <template #title>Navigator Two</template>
-          </el-menu-item>
-          <el-menu-item index="3">
-            <el-icon><i class="i-ep:document" /></el-icon>
-            <template #title>Navigator Three</template>
-          </el-menu-item>
-          <el-menu-item index="4">
-            <el-icon><i class="i-ep:setting" /></el-icon>
-            <template #title>Navigator Four</template>
-          </el-menu-item>
+          <MenuTree />
         </el-menu>
       </el-scrollbar>
     </el-aside>
@@ -137,9 +115,14 @@
 </template>
 
 <script setup lang="ts">
+const router = useRouter()
 const setting = useSettingStore()
 const { toggleCollapse, toggleFullscreen } = setting
 const { isCollapse, isFullscreen } = toRefs(setting)
+const selectMenuItem = (index: any, path: any, item: any, result: any) => {
+  console.log(index, path, item, result)
+  router.push(index)
+}
 </script>
 
 <style scoped lang="scss">
