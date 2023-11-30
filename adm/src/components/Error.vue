@@ -20,13 +20,13 @@
               {{ description }}
             </div>
             <el-button
-              @click="onBack()"
-              type="primary"
-              size="large"
               round
+              size="large"
+              type="primary"
+              @click="onBack()"
               class="bullshit-return-home"
             >
-              {{ time }}s&nbsp;返回
+              返回首页&nbsp;({{ time }}s)
             </el-button>
           </div>
         </el-col>
@@ -49,7 +49,7 @@ const src = new URL(`../assets/images/${type}.png`, import.meta.url).href
 
 const router = useRouter()
 const onBack = () => {
-  router.go(-1)
+  router.push('/')
 }
 
 const time = ref(duration)
