@@ -1,8 +1,8 @@
 <template>
   <el-container class="w-full h-full">
-    <el-aside class="!w-auto bg-[var(--left-menu-bg-color)]">
+    <el-aside class="!w-auto bg-[var(--left-menu-bg-color)] flex flex-col">
       <logo />
-      <el-scrollbar>
+      <el-scrollbar class="flex-1">
         <el-menu
           default-active="2"
           :collapse="isCollapse"
