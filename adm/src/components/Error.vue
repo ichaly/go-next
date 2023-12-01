@@ -26,7 +26,7 @@
               @click="onBack()"
               class="bullshit-return-home"
             >
-              返回首页&nbsp;({{ time }}s)
+              返回首页（{{ time }}s）
             </el-button>
           </div>
         </el-col>
