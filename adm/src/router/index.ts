@@ -25,7 +25,7 @@ const router = createRouter({
           component: Home,
           meta: {
             title: '首页',
-            icon: 'i-ep:home-filled'
+            icon: 'i-icon-park-outline:factory-building'
           }
         },
         {
