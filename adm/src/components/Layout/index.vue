@@ -23,9 +23,11 @@
           </el-icon>
         </flat-button>
         <div class="flex-1 pl-2">
-          <el-breadcrumb separator="/" class="hidden md:block">
+          <el-breadcrumb class="hidden md:block">
             <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-            <el-breadcrumb-item><a href="/adm/public">用户管理</a></el-breadcrumb-item>
+            <el-breadcrumb-item>
+              <router-link to="/adm/public">用户管理</router-link>
+            </el-breadcrumb-item>
             <el-breadcrumb-item>用户详情</el-breadcrumb-item>
           </el-breadcrumb>
         </div>
