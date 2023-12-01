@@ -24,7 +24,7 @@ type Prop = {
   description: string
 }
 const { duration, type } = withDefaults(defineProps<Prop>(), {
-  duration: 500
+  duration: 5
 })
 
 const src = new URL(`../assets/images/${type}.svg`, import.meta.url).href
