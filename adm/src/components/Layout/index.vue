@@ -4,10 +4,9 @@
       <logo />
       <el-scrollbar class="flex-1">
         <el-menu
-          router
-          @select="selectMenuItem"
-          default-active="2"
           :collapse="isCollapse"
+          @select="selectMenuItem"
+          default-active="/index1/sub1"
           text-color="var(--left-menu-text-color)"
           background-color="var(--left-menu-bg-color)"
           active-text-color="var(--left-menu-text-active-color)"
