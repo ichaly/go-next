@@ -116,6 +116,8 @@
 </template>
 
 <script setup lang="ts">
+const route = useRoute()
+console.log(route.matched)
 const router = useRouter()
 const setting = useSettingStore()
 const { toggleCollapse, toggleFullscreen } = setting
