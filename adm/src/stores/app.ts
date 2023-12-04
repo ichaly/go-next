@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 
-export const useSettingStore = defineStore('setting', () => {
+export const useAppStore = defineStore('app', () => {
   const [isCollapse, toggleCollapse] = useToggle(false)
   const { isFullscreen, toggle: toggleFullscreen } = useFullscreen()
 
