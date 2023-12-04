@@ -6,7 +6,7 @@
 </template>
 
 <script setup lang="ts">
-const { isCollapse } = toRefs(useAppStore())
+const { isCollapse } = toRefs(useRootStore())
 </script>
 
 <style scoped lang="scss">

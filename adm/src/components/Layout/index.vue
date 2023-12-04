@@ -117,9 +117,9 @@
 
 <script setup lang="ts">
 const router = useRouter()
-const app = useAppStore()
-const { toggleCollapse, toggleFullscreen } = app
-const { isCollapse, isFullscreen } = toRefs(app)
+const root = useRootStore()
+const { toggleCollapse, toggleFullscreen } = root
+const { isCollapse, isFullscreen } = toRefs(root)
 const selectMenuItem = (index: any, path: any, item: any, result: any) => {
   console.log(index, path, item, result)
   router.push(index)
