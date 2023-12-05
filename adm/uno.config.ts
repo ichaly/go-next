@@ -13,7 +13,9 @@ export default defineConfig({
   presets: [
     presetUno(),
     presetIcons({
+      // autoInstall: true
       // cdn: 'https://esm.sh/',
+      // cdn: 'https://cdn.skypack.dev/'
       collections: {
         ep: () => import('@iconify-json/ep/icons.json').then((i) => i.default),
         ri: () => import('@iconify-json/ri/icons.json').then((i) => i.default),

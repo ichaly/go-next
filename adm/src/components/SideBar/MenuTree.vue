@@ -1,27 +1,23 @@
 <template>
-  <template v-for="item in list" :key="item.path">
-    <el-sub-menu :index="item.path" v-if="item.children?.length">
+  <template v-for='item in menus' :key='item.path'>
+    <el-sub-menu :index='item.name' v-if='item.children?.length'>
       <template #title>
-        <el-icon><i :class="item.icon" /></el-icon>
-        <span>{{ item.name }}</span>
+        <el-icon><i :class='item.icon' /></el-icon>
+        <span>{{ item.title }}</span>
       </template>
-      <MenuTree :list="item.children" />
+      <MenuTree :menus='item.children' />
     </el-sub-menu>
-    <el-menu-item :index="item.path" v-else>
-      <el-icon><i :class="item.icon" /></el-icon>
-      <span>{{ item.name }}</span>
+    <el-menu-item :index='item.name' v-else>
+      <el-icon><i :class='item.icon' /></el-icon>
+      <span>{{ item.title }}</span>
     </el-menu-item>
   </template>
 </template>
-<script setup lang="ts">
-type Node = {
-  name: string
-  path: string
-  icon?: string
-  children?: Node[]
-}
-withDefaults(defineProps<{ list?: Node[] }>(), {
-  list: () => [
+<script setup lang='ts'>
+import type { Menu } from '@/components/Layout/index.vue'
+
+withDefaults(defineProps<{ menus?: Menu[] }>(), {
+  menus: () => [
     {
       name: 'Navigator One',
       path: '/index1',
@@ -70,4 +66,4 @@ withDefaults(defineProps<{ list?: Node[] }>(), {
 })
 </script>
 
-<style scoped lang="ts"></style>
+<style scoped lang='ts'></style>
