@@ -1,6 +1,4 @@
 import { defineStore } from 'pinia'
-import type { Menu } from '@/components/Layout/index.vue'
-import type { Permission } from '@/apis/permission'
 import { getPermission } from '@/apis/permission'
 
 function formatMenu(items: Permission[]) {

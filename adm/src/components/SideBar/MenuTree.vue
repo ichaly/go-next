@@ -14,7 +14,6 @@
   </template>
 </template>
 <script setup lang='ts'>
-import type { Menu } from '@/components/Layout/index.vue'
 
 withDefaults(defineProps<{ menus?: Menu[] }>(), {
   menus: () => [

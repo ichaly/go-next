@@ -1,22 +1,5 @@
 import type { MockMethod } from 'vite-plugin-mock'
 
-export type Permission = {
-  id: number
-  name: string
-  pid?: number
-  title: string
-  icon?: string
-  weight?: number
-  hidden?: boolean
-  external?: boolean
-  type: 'menu' | 'action'
-}
-
-export type Response<T> = {
-  code: number
-  data: T
-}
-
 export default [
   {
     url: '/api/permission/list',

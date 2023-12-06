@@ -125,14 +125,6 @@
 </template>
 
 <script setup lang='ts'>
-export interface Menu {
-  name: string
-  pid?: number
-  icon?: string
-  title?: string
-  children?: Menu[]
-}
-
 const router = useRouter()
 const rootStore = useRootStore()
 const { toggleCollapse, toggleFullscreen } = rootStore
