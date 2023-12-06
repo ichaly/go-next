@@ -121,6 +121,7 @@
     <i class='i-icon-park-outline:add-user' />
     <i class='i-icon-park-outline:personal-privacy' />
     <i class='i-icon-park-outline:data-user' />
+    <i class='i-icon-park-outline:table-file' />
   </div>
 </template>
 

@@ -26,6 +26,7 @@ export default [
             name: 'permission',
             title: '系统设置',
             weight: 2,
+            hidden: true,
             type: 'menu'
           },
           {
@@ -39,7 +40,7 @@ export default [
           },
           {
             id: 4,
-            name: 'role-list',
+            name: 'RoleList',
             pid: 2,
             title: '角色管理',
             icon: 'i-icon-park-outline:audit',
@@ -72,6 +73,15 @@ export default [
             title: '个人主页',
             weight: 3,
             hidden: true,
+            type: 'menu'
+          },
+          {
+            id: 8,
+            pid: 0,
+            icon: 'i-icon-park-outline:table-file',
+            name: 'table',
+            title: '基础表格',
+            weight: 3,
             type: 'menu'
           }
         ]
