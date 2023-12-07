@@ -1,11 +1,5 @@
-<script setup lang='ts'>
+<script setup lang="ts"></script>
 
-</script>
+<template>UserList</template>
 
-<template>
-  UserList
-</template>
-
-<style scoped lang='scss'>
-
-</style>
+<style scoped lang="scss"></style>

@@ -1,32 +1,15 @@
-// const router = useBaseRouter()
-
+import type { RouteLocationRaw, Router } from 'vue-router'
+//利用autoimports的别名机制完成偷梁换柱,使路由支持打开外部链接
 export function useRouter() {
-  // console.log(router)
-  // router.push = (to: RouteLocationRaw): Promise<NavigationFailure | void | undefined> => {
-  //   if (typeof to === 'string') {
-  //     //正则判断是不是网页链接
-  //     if (/^https?:\/\//.test(to)) {
-  //       window.open(to)
-  //       return Promise.resolve()
-  //     }
-  //     //判断是否以斜杠开头,如果不是则在前边拼接斜杠
-  //     if (!/^\//.test(to)) {
-  //       to = `/${to}`
-  //     }
-  //     // } else if (to instanceof MatcherLocationAsPath) {
-  //     //   //正则判断是不是网页链接
-  //     //   if (/^https?:\/\//.test(to.path)) {
-  //     //     window.open(to.path)
-  //     //     return Promise.resolve()
-  //     //   }
-  //     //   //判断是否以斜杠开头,如果不是则在前边拼接斜杠
-  //     //   if (!/^\//.test(to.path)) {
-  //     //     to.path = `/${to.path}`
-  //     //   }
-  //   }
-  //
-  //   return router.push(to)
-  // }
-
-  return useBaseRouter()
+  const { push, ...rest } = useBaseRouter()
+  return {
+    push: (to: RouteLocationRaw) => {
+      if (typeof to === 'string' && /^https?:\/\//.test(to)) {
+        window.open(to)
+        return Promise.resolve()
+      }
+      return push(to)
+    },
+    ...rest
+  } as Router
 }

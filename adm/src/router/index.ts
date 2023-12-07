@@ -16,9 +16,11 @@ Object.keys(pages).map((path) => {
   let name = path.match(/\/src\/views\/modules\/(.*)\.vue$/)?.[1]
 
   //正则匹配中括号中的文字并使用冒号开头的方式替换
-  name = name?.replace(/\[[^\]]+\]/g, (match) => {
-    return ':' + match.slice(1, -1)
-  }).toLowerCase()
+  name = name
+    ?.replace(/\[[^\]]+\]/g, (match) => {
+      return ':' + match.slice(1, -1)
+    })
+    .toLowerCase()
 
   //如果名称存在，则将组件加载路径添加到pages对象中
   if (name) {
@@ -26,7 +28,7 @@ Object.keys(pages).map((path) => {
   }
 })
 
-const callbacks: Function [] = []
+const callbacks: Function[] = []
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),

@@ -1,4 +1,4 @@
-<script setup lang='ts'>
+<script setup lang="ts">
 const route = useRoute()
 console.log(route)
 </script>
@@ -7,6 +7,4 @@ console.log(route)
   {{ route }}
 </template>
 
-<style scoped lang='scss'>
-
-</style>
+<style scoped lang="scss"></style>
