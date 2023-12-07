@@ -1,11 +1,12 @@
 import { defineStore } from 'pinia'
 import { getPermission } from '@/apis/permission'
-import { addRouter, resetRouter, views } from '@/router'
+import { addRouter, getRouters, resetRouter, views } from '@/router'
 
 function formatMenu(items: Permission[]) {
   let temp: Record<number, Menu> = {}
   let tree: Menu[] = []
   for (const i of items) {
+    i.name = i.name.toLowerCase()
     //如果不是路由，或者没有对应的页面，则跳过
     if (i.type !== 'menu' || !views[i.name]) {
       continue
@@ -54,6 +55,7 @@ export const useRootStore = defineStore('root', () => {
       resetRouter()
       //更新新菜单
       menus.value = formatMenu(res.data ?? [])
+      console.log(getRouters())
     })
   }
 
