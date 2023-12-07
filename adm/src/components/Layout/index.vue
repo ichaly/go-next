@@ -136,7 +136,11 @@ const selectMenuItem = (index: any, path: any, item: any, result: any) => {
     window.open(index)
     return
   }
-  router.push(path)
+  //判断是否以斜杠开头,如果不是则在前边拼接斜杠
+  if (!/^\//.test(index)) {
+    index = `/${index}`
+  }
+  router.push(index)
 }
 </script>
 

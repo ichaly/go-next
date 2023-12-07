@@ -36,6 +36,10 @@ const router = createRouter({
       redirect: '/404'
     },
     {
+      path: '/404',
+      component: NotFound
+    },
+    {
       path: '/login',
       component: Login
     },
@@ -47,10 +51,6 @@ const router = createRouter({
         {
           path: '/403',
           component: Forbidden
-        },
-        {
-          path: '/404',
-          component: NotFound
         },
         {
           path: '',

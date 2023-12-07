@@ -23,17 +23,16 @@ export default [
             id: 2,
             pid: 0,
             icon: 'i-icon-park-outline:setting-two',
-            name: 'permission',
+            name: 'setting',
             title: '系统设置',
             weight: 2,
-            hidden: true,
             type: 'menu'
           },
           {
             id: 3,
             pid: 2,
             icon: 'i-icon-park-outline:permissions',
-            name: 'permission-list',
+            name: 'permission',
             title: '权限管理',
             weight: 1,
             type: 'menu'
@@ -45,13 +44,14 @@ export default [
             title: '角色管理',
             icon: 'i-icon-park-outline:audit',
             weight: 2,
-            type: 'menu'
+            type: 'menu',
+            hidden: true
           },
           {
             id: 5,
             pid: 2,
             icon: 'i-icon-park-outline:data-user',
-            name: 'user-list',
+            name: 'userlist',
             title: '用户管理',
             weight: 3,
             type: 'menu'
@@ -60,10 +60,11 @@ export default [
             id: 6,
             pid: 5,
             icon: 'i-icon-park-outline:add-user',
-            name: 'add-user',
+            name: 'adduser',
             title: '添加用户',
             weight: 4,
-            type: 'action'
+            type: 'menu',
+            hidden: true
           },
           {
             id: 7,
@@ -72,7 +73,6 @@ export default [
             name: 'personal',
             title: '个人主页',
             weight: 3,
-            hidden: true,
             type: 'menu'
           },
           {

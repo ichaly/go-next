@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { getPermission } from '@/apis/permission'
-import { addRouter, getRouters, resetRouter, views } from '@/router'
+import { addRouter, resetRouter, views } from '@/router'
 
 function formatMenu(items: Permission[]) {
   let temp: Record<number, Menu> = {}
@@ -13,7 +13,7 @@ function formatMenu(items: Permission[]) {
     }
     //添加动态路由到名称为root到根路由下保证每个页面都会使用Layout组件装饰
     addRouter({
-      path: `/${i.name}`,
+      path: `${i.name}`,
       component: views[i.name],
       meta: {
         icon: i.icon,
@@ -55,7 +55,6 @@ export const useRootStore = defineStore('root', () => {
       resetRouter()
       //更新新菜单
       menus.value = formatMenu(res.data ?? [])
-      console.log(getRouters())
     })
   }
 
