@@ -1,23 +1,22 @@
 import { defineStore } from 'pinia'
 import { getPermission } from '@/apis/permission'
-import { addRouter, pages, resetRouter } from '@/router'
+import { addRouter, resetRouter, views } from '@/router'
 
 function formatMenu(items: Permission[]) {
   let temp: Record<number, Menu> = {}
   let tree: Menu[] = []
   for (const i of items) {
-    i.name = i.name.toLowerCase()
     //如果不是路由，或者没有对应的页面，则跳过
-    if (i.type !== 'menu' || !pages[i.name]) {
+    if (i.type !== 'menu' || !views[i.name]) {
       continue
     }
     //添加动态路由到名称为root到根路由下保证每个页面都会使用Layout组件装饰
     addRouter({
       path: `/${i.name}`,
-      component: pages[i.name],
+      component: views[i.name],
       meta: {
-        title: i.title,
-        icon: i.icon
+        icon: i.icon,
+        title: i.title
       }
     })
     //如果隐藏则不添加到菜单

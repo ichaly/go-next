@@ -7,20 +7,26 @@ import NotFound from '@/views/NotFound.vue'
 import Home from '@/views/Home.vue'
 import type { App } from 'vue'
 
-const views = import.meta.glob('/src/views/modules/**/*.vue')
+const pages = import.meta.glob('/src/views/modules/**/*.vue')
 
-export const pages: typeof views = {}
-
-const callbacks: Function [] = []
+export const views: Record<string, RawRouteComponent> = {}
 
 // 索引组件名称和组件加载路径
-Object.keys(views).map((path) => {
-  const name = path.match(/\/src\/views\/modules\/(.*)\.vue$/)?.[1].toLowerCase()
+Object.keys(pages).map((path) => {
+  let name = path.match(/\/src\/views\/modules\/(.*)\.vue$/)?.[1]
+
+  //正则匹配中括号中的文字并使用冒号开头的方式替换
+  name = name?.replace(/\[[^\]]+\]/g, (match) => {
+    return ':' + match.slice(1, -1)
+  })
+
+  //如果名称存在，则将组件加载路径添加到pages对象中
   if (name) {
-    pages[name] = views[path]
+    views[name] = pages[path]
   }
-  // name && router?.addRoute('root', { name, path: `/${name}`, component: views[path] })
 })
+
+const callbacks: Function [] = []
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -73,10 +79,14 @@ export function resetRouter() {
   }
 }
 
+export function setupRouter(app: App) {
+  app.use(router)
+}
+
 export function addRouter(route: RouteRecordRaw) {
   callbacks.push(router.addRoute('root', route))
 }
 
-export function setupRouter(app: App) {
-  app.use(router)
+export function getRouters() {
+  return router.getRoutes()
 }

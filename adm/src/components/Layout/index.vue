@@ -131,7 +131,12 @@ const rootStore = useRootStore()
 const { toggleCollapse, toggleFullscreen } = rootStore
 const { menus, isCollapse, isFullscreen } = toRefs(rootStore)
 const selectMenuItem = (index: any, path: any, item: any, result: any) => {
-  router.push(index)
+  //正则判断是不是网页链接
+  if (/^https?:\/\//.test(index)) {
+    window.open(index)
+    return
+  }
+  router.push(path)
 }
 </script>
 
