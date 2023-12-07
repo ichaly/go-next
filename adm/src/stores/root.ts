@@ -3,8 +3,8 @@ import { getPermission } from '@/apis/permission'
 import { addRouter, resetRouter, views } from '@/router'
 
 function formatMenu(items: Permission[]) {
-  let temp: Record<number, Menu> = {}
-  let tree: Menu[] = []
+  const temp: Record<number, Menu> = {}
+  const tree: Menu[] = []
   for (const i of items) {
     i.name = i.name.toLowerCase()
     //如果不是路由，或者没有对应的页面，则跳过

@@ -130,7 +130,7 @@ const router = useRouter()
 const rootStore = useRootStore()
 const { toggleCollapse, toggleFullscreen } = rootStore
 const { menus, isCollapse, isFullscreen } = toRefs(rootStore)
-const selectMenuItem = (index: any, path: any, item: any, result: any) => {
+const selectMenuItem = (index: any) => {
   router.push(index)
 }
 </script>
