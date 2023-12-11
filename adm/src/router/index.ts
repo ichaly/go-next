@@ -1,7 +1,7 @@
 import type { RouteRecordRaw } from 'vue-router'
 import { createRouter, createWebHistory } from 'vue-router'
-import Layout from '@/components/Layout/index.vue'
 import Login from '@/views/Login.vue'
+import Layout from '@/components/Layout.vue'
 import Forbidden from '@/views/Forbidden.vue'
 import NotFound from '@/views/NotFound.vue'
 import Home from '@/views/Home.vue'
