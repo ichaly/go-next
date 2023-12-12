@@ -14,54 +14,5 @@
   </template>
 </template>
 <script setup lang="ts">
-withDefaults(defineProps<{ menus?: Menu[] }>(), {
-  menus: () => [
-    {
-      name: 'Navigator One',
-      path: '/index1',
-      icon: 'i-ep:location',
-      children: [
-        {
-          name: 'item one',
-          path: '/index1/sub1'
-        },
-        {
-          name: 'item two',
-          path: '/index1/sub2'
-        },
-        {
-          name: 'item three',
-          path: '/index1/sub3'
-        },
-        {
-          name: 'item four',
-          path: '/index1/sub4',
-          children: [
-            {
-              name: 'item on',
-              path: '/index1/sub4/sub1'
-            }
-          ]
-        }
-      ]
-    },
-    {
-      name: 'Navigator Two',
-      path: '/index2',
-      icon: 'i-ep:menu'
-    },
-    {
-      name: 'Navigator Three',
-      path: 'http://baidu.com',
-      icon: 'i-ep:document'
-    },
-    {
-      name: 'Navigator Four',
-      path: '/home',
-      icon: 'i-ep:setting'
-    }
-  ]
-})
+defineProps<{ menus?: Item[] }>()
 </script>
-
-<style scoped lang="ts"></style>

@@ -4,7 +4,6 @@ import Login from '@/views/Login.vue'
 import Layout from '@/components/Layout.vue'
 import Forbidden from '@/views/Forbidden.vue'
 import NotFound from '@/views/NotFound.vue'
-import Home from '@/views/Home.vue'
 import type { App } from 'vue'
 
 const pages = import.meta.glob('/src/views/modules/**/*.vue')
@@ -49,21 +48,25 @@ const router = createRouter({
       path: '/',
       name: 'root',
       component: Layout,
+      meta: {
+        icon: 'i-icon-park-outline:home',
+        title: '首页'
+      },
       children: [
         {
           path: '/403',
           component: Forbidden
-        },
-        {
-          path: '',
-          name: 'home',
-          component: Home,
-          meta: {
-            icon: '',
-            title: '首页',
-            weight: 100
-          }
         }
+        // {
+        //   path: '',
+        //   name: 'home',
+        //   component: Home,
+        //   meta: {
+        //     icon: '',
+        //     title: '首页',
+        //     weight: 100
+        //   }
+        // }
       ]
     }
   ]

@@ -1,11 +1,18 @@
-interface Permission {
+interface Item {
   id: number
   pid: number
   name: string
   title: string
   icon?: string
+  type: 'menu' | 'action'
+
   weight?: number
   hidden?: boolean
   external?: boolean
-  type: 'menu' | 'action'
+
+  children?: Item[]
 }
+
+type Lazy<T> = () => Promise<T>
+
+type RawRouteComponent = RouteComponent | Lazy<RouteComponent>

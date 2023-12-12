@@ -63,8 +63,7 @@ export default [
             name: 'adduser',
             title: '添加用户',
             weight: 4,
-            type: 'menu',
-            hidden: true
+            type: 'menu'
           },
           {
             id: 7,

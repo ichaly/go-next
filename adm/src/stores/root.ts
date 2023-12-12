@@ -2,9 +2,9 @@ import { defineStore } from 'pinia'
 import { getPermission } from '@/apis/permission'
 import { addRouter, resetRouter, views } from '@/router'
 
-function formatMenu(items: Permission[]) {
-  const temp: Record<number, Menu> = {}
-  const tree: Menu[] = []
+function formatMenu(items: Item[]) {
+  const dict: Record<number, Partial<Item>> = {}
+  const tree: Item[] = []
   for (const i of items) {
     i.name = i.name.toLowerCase()
     //如果不是路由，或者没有对应的页面，则跳过
@@ -17,28 +17,23 @@ function formatMenu(items: Permission[]) {
       component: views[i.name],
       meta: {
         icon: i.icon,
-        title: i.title
+        title: i.title,
+        items: []
       }
     })
     //如果隐藏则不添加到菜单
     if (i.hidden) {
       continue
     }
-    temp[i.id] = {
-      ...i,
-      children: temp[i.id]?.children ?? []
-    }
-    const item = temp[i.id]
-    if (item.pid === 0) {
-      tree.push(item)
+    dict[i.id] = { ...i, children: dict[i.id]?.children ?? [] }
+    const temp: Item = <Item>dict[i.id]
+    if (temp.pid === 0) {
+      tree.push(temp)
     } else {
-      if (!temp[i.pid]) {
-        temp[i.pid] = {
-          name: '',
-          children: []
-        }
+      if (!dict[i.pid]) {
+        dict[i.pid] = { children: [] }
       }
-      temp[i.pid].children?.push(item)
+      dict[i.pid].children?.push(temp)
     }
   }
   return tree
@@ -47,7 +42,7 @@ function formatMenu(items: Permission[]) {
 export const useRootStore = defineStore('root', () => {
   const [isCollapse, toggleCollapse] = useToggle(false)
   const { isFullscreen, toggle: toggleFullscreen } = useFullscreen()
-  const menus: Ref<Menu[]> = ref([])
+  const menus: Ref<Item[]> = ref([])
 
   const loadMenus = () => {
     getPermission().then((res) => {
