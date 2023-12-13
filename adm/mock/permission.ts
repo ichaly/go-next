@@ -82,15 +82,6 @@ export default [
             title: '基础表格',
             weight: 3,
             type: 'menu'
-          },
-          {
-            id: 9,
-            pid: 0,
-            icon: 'i-icon-park-outline:table-file',
-            name: 'RoleManager:List/Role:id',
-            title: '测试链接',
-            weight: 1,
-            type: 'menu'
           }
         ]
       }

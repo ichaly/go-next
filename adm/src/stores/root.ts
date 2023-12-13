@@ -44,17 +44,14 @@ export const useRootStore = defineStore('root', () => {
   const { isFullscreen, toggle: toggleFullscreen } = useFullscreen()
   const menus: Ref<Item[]> = ref([])
 
-  const loadMenus = () => {
-    getPermission().then((res) => {
-      //移除之前的路由
-      resetRouter()
-      //更新新菜单
-      menus.value = formatMenu(res.data ?? [])
-    })
+  const loadMenus = async () => {
+    let res = await getPermission()
+    //移除之前的路由
+    resetRouter()
+    //更新新菜单
+    menus.value = formatMenu(res.data ?? [])
   }
 
-  //先自动加载一次数据
-  loadMenus()
   return {
     menus,
     loadMenus,

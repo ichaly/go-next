@@ -57,16 +57,6 @@ const router = createRouter({
           path: '/403',
           component: Forbidden
         }
-        // {
-        //   path: '',
-        //   name: 'home',
-        //   component: Home,
-        //   meta: {
-        //     icon: '',
-        //     title: '首页',
-        //     weight: 100
-        //   }
-        // }
       ]
     }
   ]
