@@ -13,7 +13,7 @@ const route = useRoute()
 const { menus } = toRefs(useRootStore())
 const search = (items: Item[]): Item[] => {
   for (let item of items) {
-    if (`/${item.name}` === route.path) {
+    if (item.name === route.path) {
       return [item]
     } else if (item.children?.length) {
       let nodes = search(item.children)

@@ -47,6 +47,19 @@ const router = createRouter({
     {
       path: '/',
       name: 'root',
+      redirect: (to) => {
+        const { menus } = useRootStore()
+        const firstMenu = (menus: Item[]): Item => {
+          const menu = menus[0]
+          if (menu.children?.length) {
+            return firstMenu(menu.children)
+          } else {
+            return menu
+          }
+        }
+        const { name } = firstMenu(menus)
+        return name
+      },
       component: Layout,
       meta: {
         icon: 'i-icon-park-outline:home',
