@@ -5,35 +5,36 @@ import { addRouter, resetRouter, views } from '@/router'
 function formatMenu(items: Item[]) {
   const dict: Record<number, Partial<Item>> = {}
   const tree: Item[] = []
-  for (const i of items) {
-    i.name = i.name.toLowerCase()
+  for (const item of items) {
+    item.name = item.name.toLowerCase()
     //如果不是路由，或者没有对应的页面，则跳过
-    if (i.type !== 'menu' || !views[i.name]) {
+    if (item.type !== 'menu' || !views[item.name]) {
       continue
     }
     //添加动态路由到名称为root到根路由下保证每个页面都会使用Layout组件装饰
     addRouter({
-      path: `${i.name}`,
-      component: views[i.name],
+      path: `${item.name}`,
+      component: views[item.name],
       meta: {
-        icon: i.icon,
-        title: i.title,
+        icon: item.icon,
+        title: item.title,
         items: []
       }
     })
     //如果隐藏则不添加到菜单
-    if (i.hidden) {
+    if (item.hidden) {
       continue
     }
-    dict[i.id] = { ...i, children: dict[i.id]?.children ?? [] }
-    const temp: Item = <Item>dict[i.id]
+    const { name, ...rest } = item
+    dict[item.id] = { name: `/${name}`, ...rest, children: dict[item.id]?.children ?? [] }
+    const temp: Item = <Item>dict[item.id]
     if (temp.pid === 0) {
       tree.push(temp)
     } else {
-      if (!dict[i.pid]) {
-        dict[i.pid] = { children: [] }
+      if (!dict[item.pid]) {
+        dict[item.pid] = { children: [] }
       }
-      dict[i.pid].children?.push(temp)
+      dict[item.pid].children?.push(temp)
     }
   }
   return tree

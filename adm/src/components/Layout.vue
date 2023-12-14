@@ -1,17 +1,17 @@
 <template>
-  <el-container class="w-full h-full">
-    <el-aside class="!w-auto bg-[var(--left-menu-bg-color)] flex flex-col">
+  <el-container class='w-full h-full'>
+    <el-aside class='!w-auto bg-[var(--left-menu-bg-color)] flex flex-col'>
       <LogoView />
-      <el-scrollbar class="flex-1">
+      <el-scrollbar class='flex-1'>
         <el-menu
-          :collapse="isCollapse"
-          @select="selectMenuItem"
-          default-active="/index1/sub1"
-          text-color="var(--left-menu-text-color)"
-          background-color="var(--left-menu-bg-color)"
-          active-text-color="var(--left-menu-text-active-color)"
+          :collapse='isCollapse'
+          @select='selectMenuItem'
+          :default-active='$route.path'
+          text-color='var(--left-menu-text-color)'
+          background-color='var(--left-menu-bg-color)'
+          active-text-color='var(--left-menu-text-active-color)'
         >
-          <MenuTree :menus="menus" />
+          <MenuTree :menus='menus' />
         </el-menu>
       </el-scrollbar>
     </el-aside>
@@ -19,7 +19,7 @@
       <el-header>
         <Header />
       </el-header>
-      <el-main class="h-full">
+      <el-main class='h-full'>
         <router-view />
       </el-main>
       <el-footer>
@@ -29,7 +29,7 @@
   </el-container>
 </template>
 
-<script setup lang="ts">
+<script setup lang='ts'>
 const router = useRouter()
 const rootStore = useRootStore()
 const { menus, isCollapse } = toRefs(rootStore)
@@ -38,7 +38,7 @@ const selectMenuItem = (index: any) => {
 }
 </script>
 
-<style scoped lang="scss">
+<style scoped lang='scss'>
 :deep(.el-menu) {
   width: var(--left-menu-max-width);
   // 去掉右侧的边框
