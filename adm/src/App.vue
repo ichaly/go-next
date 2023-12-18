@@ -13,5 +13,8 @@ import { RouterView } from 'vue-router'
     <i class="i-icon-park-outline:personal-privacy" />
     <i class="i-icon-park-outline:data-user" />
     <i class="i-icon-park-outline:table-file" />
+    <i class="i-icon-park-outline:edit-one" />
+    <i class="i-icon-park-outline:view-list" />
+    <i class="i-icon-park-outline:doc-detail" />
   </div>
 </template>
