@@ -2,7 +2,7 @@
   <div class="flex items-center b-0 b-b-1 b-solid b-[var(--el-border-color)] h-full">
     <flat-button @click="toggleCollapse()">
       <el-icon :size="18" :class="['transition-transform', { '-scale-x-100': isCollapse }]">
-        <i class="i-icon-park-outline:menu-unfold-one" />
+        <i class="i-icon-park-outline:indent-left" />
       </el-icon>
     </flat-button>
     <div class="flex-1 pl-2">
