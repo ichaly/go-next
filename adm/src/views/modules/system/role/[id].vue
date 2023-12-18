@@ -1,4 +1,4 @@
-<template>Personal</template>
+<template>Role Detail</template>
 
 <script setup lang="ts"></script>
 

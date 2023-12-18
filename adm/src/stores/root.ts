@@ -5,37 +5,45 @@ import { addRouter, resetRouter, views } from '@/router'
 function formatMenu(items: Item[]) {
   const dict: Record<number, Partial<Item>> = {}
   const tree: Item[] = []
+  //结构化菜单
   for (const item of items) {
-    item.name = item.name.toLowerCase()
-    //如果不是路由，或者没有对应的页面，则跳过
-    if (item.type !== 'menu' || !views[item.name]) {
+    const { id, pid, name, ...rest } = item
+    //如果不是菜单，或者不在菜单中显示则跳过
+    if (item.type !== 'menu' || item.hidden) {
       continue
     }
-    //添加动态路由到名称为root到根路由下保证每个页面都会使用Layout组件装饰
-    addRouter({
-      path: `${item.name}`,
-      component: views[item.name],
-      meta: {
-        icon: item.icon,
-        title: item.title,
-        items: []
-      }
-    })
-    //如果隐藏则不添加到菜单
-    if (item.hidden) {
-      continue
-    }
-    const { name, ...rest } = item
-    dict[item.id] = { name: `/${name}`, ...rest, children: dict[item.id]?.children ?? [] }
-    const temp: Item = <Item>dict[item.id]
-    if (temp.pid === 0) {
-      tree.push(temp)
+    //填充树形结构和索引结构
+    dict[id] = { id, pid, name, ...rest, children: [] }
+    if (pid === 0) {
+      tree.push(<Item>dict[id])
     } else {
-      if (!dict[item.pid]) {
-        dict[item.pid] = { children: [] }
+      if (!dict[pid]) {
+        dict[pid] = { children: [] }
       }
-      dict[item.pid].children?.push(temp)
+      dict[pid].children?.push(<Item>dict[id])
     }
+  }
+  //递归查询所有的祖辈节点
+  const findParents = (item: Item): Item[] => {
+    if (item.pid === 0) {
+      return [item]
+    } else {
+      return findParents(<Item>dict[item.pid]).concat(item)
+    }
+  }
+  //动态添加路由
+  for (const item of items) {
+    const { name } = item
+    //如果不是路由，或者没有对应的页面则跳过
+    if (item.type !== 'menu' || !views[name]) {
+      continue
+    }
+    //添加动态路由到名称为root到根路由下
+    addRouter({
+      path: name,
+      component: views[name],
+      meta: { items: findParents(item) }
+    })
   }
   return tree
 }
@@ -46,8 +54,8 @@ export const useRootStore = defineStore('root', () => {
   const menus: Ref<Item[]> = ref([])
 
   const loadMenus = async () => {
-    let res = await getPermission()
-    //移除之前的路由
+    const res = await getPermission()
+    //移除之前的动态路由
     resetRouter()
     //更新新菜单
     menus.value = formatMenu(res.data ?? [])

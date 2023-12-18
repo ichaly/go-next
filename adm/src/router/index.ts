@@ -15,17 +15,18 @@ Object.keys(pages).map((path) => {
   let name = path.match(/\/src\/views\/modules\/(.*)\.vue$/)?.[1]
 
   //正则匹配中括号中的文字并使用冒号开头的方式替换
-  name = name
-    ?.replace(/\[[^\]]+\]/g, (match) => {
-      return ':' + match.slice(1, -1)
-    })
-    .toLowerCase()
+  name =
+    '/' +
+    name
+      ?.replace(/\[[^\]]+\]/g, (match) => {
+        return ':' + match.slice(1, -1)
+      })
+      .toLowerCase()
 
-  //如果名称存在，则将组件加载路径添加到pages对象中
-  if (name) {
-    views[name] = pages[path]
-  }
+  views[name] = pages[path]
 })
+
+console.log(views)
 
 const callbacks: Function[] = []
 
@@ -47,19 +48,19 @@ const router = createRouter({
     {
       path: '/',
       name: 'root',
-      redirect: (to) => {
-        const { menus } = useRootStore()
-        const firstMenu = (menus: Item[]): Item => {
-          const menu = menus[0]
-          if (menu.children?.length) {
-            return firstMenu(menu.children)
-          } else {
-            return menu
-          }
-        }
-        const { name } = firstMenu(menus)
-        return name
-      },
+      // redirect: (to) => {
+      //   const { menus } = useRootStore()
+      //   const firstMenu = (menus: Item[]): Item => {
+      //     const menu = menus[0]
+      //     if (menu?.children?.length) {
+      //       return firstMenu(menu.children)
+      //     } else {
+      //       return menu
+      //     }
+      //   }
+      //   const { name } = firstMenu(menus)
+      //   return name
+      // },
       component: Layout,
       meta: {
         icon: 'i-icon-park-outline:home',

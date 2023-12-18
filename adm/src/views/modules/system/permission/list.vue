@@ -1,4 +1,4 @@
-<template>Personal</template>
+<template>Permission List</template>
 
 <script setup lang="ts"></script>
 

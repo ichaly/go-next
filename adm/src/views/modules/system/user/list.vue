@@ -1,4 +1,4 @@
-<template>Personal</template>
+<template>User List</template>
 
 <script setup lang="ts"></script>
 
