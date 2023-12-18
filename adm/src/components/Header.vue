@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center b-0 b-b-1 b-solid b-[var(--el-border-color)] h-full">
+  <div class="flex items-center h-full">
     <flat-button @click="toggleCollapse()">
       <el-icon :size="18" :class="['transition-transform', { '-scale-x-100': isCollapse }]">
         <i class="i-icon-park-outline:indent-left" />

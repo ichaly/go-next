@@ -19,6 +19,7 @@
       <el-header>
         <Header />
       </el-header>
+      <TabBar />
       <el-main class="h-full">
         <router-view />
       </el-main>
