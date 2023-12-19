@@ -15,15 +15,13 @@ Object.keys(pages).map((path) => {
   let name = path.match(/\/src\/views\/modules\/(.*)\.vue$/)?.[1]
 
   //正则匹配中括号中的文字并使用冒号开头的方式替换
-  name =
-    '/' +
-    name
-      ?.replace(/\[[^\]]+\]/g, (match) => {
-        return ':' + match.slice(1, -1)
-      })
-      .toLowerCase()
+  name = name?.replace(/\[[^\]]+\]/g, (match) => {
+    return ':' + match.slice(1, -1)
+  }).toLowerCase()
 
-  views[name] = pages[path]
+  if (name) {
+    views[`/${name}`] = pages[path]
+  }
 })
 
 const callbacks: Function[] = []
@@ -46,19 +44,22 @@ const router = createRouter({
     {
       path: '/',
       name: 'root',
-      // redirect: (to) => {
-      //   const { menus } = useRootStore()
-      //   const firstMenu = (menus: Item[]): Item => {
-      //     const menu = menus[0]
-      //     if (menu?.children?.length) {
-      //       return firstMenu(menu.children)
-      //     } else {
-      //       return menu
-      //     }
-      //   }
-      //   const { name } = firstMenu(menus)
-      //   return name
-      // },
+      redirect: (to) => {
+        const { menus } = useRootStore()
+        if (!menus.length) {
+          return '/login'
+        }
+        const firstMenu = (menus: Item[]): Item => {
+          const menu = menus[0]
+          if (menu?.children?.length) {
+            return firstMenu(menu.children)
+          } else {
+            return menu
+          }
+        }
+        const { name } = firstMenu(menus)
+        return name
+      },
       component: Layout,
       meta: {
         title: '首页'
