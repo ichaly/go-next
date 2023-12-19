@@ -15,9 +15,11 @@ Object.keys(pages).map((path) => {
   let name = path.match(/\/src\/views\/modules\/(.*)\.vue$/)?.[1]
 
   //正则匹配中括号中的文字并使用冒号开头的方式替换
-  name = name?.replace(/\[[^\]]+\]/g, (match) => {
-    return ':' + match.slice(1, -1)
-  }).toLowerCase()
+  name = name
+    ?.replace(/\[[^\]]+\]/g, (match) => {
+      return ':' + match.slice(1, -1)
+    })
+    .toLowerCase()
 
   if (name) {
     views[`/${name}`] = pages[path]
