@@ -19,7 +19,7 @@
       <el-header>
         <Header />
       </el-header>
-      <TabBar />
+      <History />
       <el-main class="h-full">
         <router-view />
       </el-main>

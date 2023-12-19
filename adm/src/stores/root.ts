@@ -42,7 +42,11 @@ function formatMenu(items: Item[]) {
     addRouter({
       path: name,
       component: views[name],
-      meta: { items: findParents(item) }
+      meta: {
+        title: item.title,
+        default: item.default,
+        items: findParents(item)
+      }
     })
   }
   return tree

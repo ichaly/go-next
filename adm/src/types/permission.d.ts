@@ -8,6 +8,7 @@ interface Item {
 
   weight?: number
   hidden?: boolean
+  default?: boolean
   external?: boolean
 
   children?: Item[]

@@ -17,7 +17,8 @@ export default [
             weight: 1,
             hidden: false,
             external: false,
-            type: 'menu'
+            type: 'menu',
+            default: true
           },
           {
             id: 2,

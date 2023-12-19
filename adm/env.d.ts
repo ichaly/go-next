@@ -4,6 +4,9 @@ import 'vue-router'
 declare module 'vue-router' {
   interface RouteMeta {
     items?: Item[]
+    icon?: string
+    title?: string
+    default?: boolean
   }
 }
 

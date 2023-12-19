@@ -1,23 +1,18 @@
 <template>
-  <div class='router-history'>
+  <div class="router-history">
     <el-tabs
-      type='card'
-      v-model='activeTab'
-      @tab-click='changeTab'
-      @tab-remove='removeTab'
-      @contextmenu.prevent='openContextMenu($event)'
-      :closable="!(histories.length === 1 && $route.path === '')"
+      type="card"
+      v-model="$route.path"
+      @tab-click="changeTab"
+      @tab-remove="removeTab"
+      @contextmenu.prevent="openContextMenu($event)"
+      :closable="!(histories.length === 1 && $route.meta.default)"
     >
-      <el-tab-pane
-        v-for='item in histories'
-        :key='item.name'
-        :label='item.title'
-        :name='item.name'
-      >
+      <el-tab-pane v-for="{ name, title } in histories" :key="name" :name="name" :label="title">
         <template #label>
           <span>
-            <i class='dot' />
-            {{ item.title }}
+            <i class="dot" />
+            {{ title }}
           </span>
         </template>
       </el-tab-pane>
@@ -25,37 +20,33 @@
   </div>
 </template>
 
-<script setup lang='ts'>
+<script setup lang="ts">
 import type { TabPaneName } from 'element-plus'
 
-const router = useRouter()
 const histories: Ref<Item[]> = ref([
   {
     id: 1,
     pid: 0,
     type: 'menu',
-    name: 'home',
+    name: '/dashboard',
     title: '首页'
   },
   {
     id: 2,
     pid: 0,
     type: 'menu',
-    name: 'about',
+    name: '/about',
     title: '关于'
   }
 ])
 const activeTab = ref('')
 
-const changeTab = (tab: TabPaneName) => {
-}
-const removeTab = (tab: TabPaneName) => {
-}
-const openContextMenu = (e: any) => {
-}
+const changeTab = (tab: TabPaneName) => {}
+const removeTab = (tab: TabPaneName) => {}
+const openContextMenu = (e: any) => {}
 </script>
 
-<style scoped lang='scss'>
+<style scoped lang="scss">
 .el-tabs__item .dot {
   content: '';
   width: 9px;

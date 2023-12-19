@@ -26,8 +26,6 @@ Object.keys(pages).map((path) => {
   views[name] = pages[path]
 })
 
-console.log(views)
-
 const callbacks: Function[] = []
 
 const router = createRouter({
@@ -63,7 +61,6 @@ const router = createRouter({
       // },
       component: Layout,
       meta: {
-        icon: 'i-icon-park-outline:home',
         title: '首页'
       },
       children: [
