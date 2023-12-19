@@ -1,17 +1,17 @@
 <template>
-  <div class="router-history">
+  <div class='router-history'>
     <el-tabs
-      type="card"
-      v-model="$route.path"
-      @tab-click="changeTab"
-      @tab-remove="removeTab"
-      @contextmenu.prevent="openContextMenu($event)"
-      :closable="!(histories.length === 1 && $route.meta.default)"
+      type='card'
+      :closable='closable'
+      v-model='$route.path'
+      @tab-change='changeTab'
+      @tab-remove='removeTab'
+      @contextmenu.prevent='openContextMenu($event)'
     >
-      <el-tab-pane v-for="{ name, title } in histories" :key="name" :name="name" :label="title">
+      <el-tab-pane v-for='({meta:{ title }},name) in histories' :key='name' :name='name' :label='title'>
         <template #label>
           <span>
-            <i class="dot" />
+            <i class='dot' />
             {{ title }}
           </span>
         </template>
@@ -20,33 +20,36 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup lang='ts'>
 import type { TabPaneName } from 'element-plus'
+import type { RouteLocationNormalizedLoaded } from 'vue-router'
 
-const histories: Ref<Item[]> = ref([
-  {
-    id: 1,
-    pid: 0,
-    type: 'menu',
-    name: '/dashboard',
-    title: '首页'
-  },
-  {
-    id: 2,
-    pid: 0,
-    type: 'menu',
-    name: '/about',
-    title: '关于'
+const route = useRoute()
+const router = useRouter()
+const histories: Ref<Record<string, RouteLocationNormalizedLoaded>> = ref({})
+const closable = computed(() => !((Object.keys(histories.value)).length === 1 && route.meta.default))
+// 路由切换
+const changeTab = (tab: TabPaneName) => {
+  router.push(histories.value[tab])
+}
+//删除路由
+const removeTab = (tab: TabPaneName) => {
+  delete (histories.value[tab])
+  const keys = Object.keys(histories.value)
+  if (keys.length === 0) {
+    router.push('/')
+  } else {
+    router.push(keys[0])
   }
-])
-const activeTab = ref('')
-
-const changeTab = (tab: TabPaneName) => {}
-const removeTab = (tab: TabPaneName) => {}
-const openContextMenu = (e: any) => {}
+}
+const openContextMenu = (e: any) => {
+}
+watchEffect(() => {
+  histories.value[route.path] = { ...route }
+})
 </script>
 
-<style scoped lang="scss">
+<style scoped lang='scss'>
 .el-tabs__item .dot {
   content: '';
   width: 9px;
