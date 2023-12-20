@@ -1,59 +1,65 @@
 <template>
-  <div class='router-history'>
+  <div class="router-history">
     <el-tabs
-      type='card'
-      :closable='closable'
-      v-model='$route.path'
-      @tab-change='changeTab'
-      @tab-remove='removeTab'
+      type="card"
+      :closable="closable"
+      v-model="$route.path"
+      @tab-change="changeTab"
+      @tab-remove="removeTab"
     >
       <el-tab-pane
-        v-for='({ meta: { title } }, name) in histories'
-        :key='name'
-        :name='name'
-        :label='title'
+        v-for="({ meta: { title } }, name) in histories"
+        :key="name"
+        :name="name"
+        :label="title"
       >
         <template #label>
           <el-dropdown
-            :id='name'
-            ref='dropdownRef'
-            trigger='contextmenu'
-            placement='bottom-start'
-            @visible-change='onVisibleChange($event, name)'
+            :id="name"
+            ref="dropdownRef"
+            trigger="contextmenu"
+            placement="bottom-start"
+            @visible-change="onVisibleChange($event, name)"
           >
-            <span class='label'>
-              <i class='dot' />
+            <span class="label">
+              <i class="dot" />
               {{ title }}
             </span>
             <template #dropdown>
               <el-dropdown-menu>
-                <el-dropdown-item @click='removeTab(name)'>
-                  <el-icon :size='18'>
-                    <i class='i-icon-park-outline:close' />
+                <el-dropdown-item @click="removeTab(name)">
+                  <el-icon :size="18">
+                    <i class="i-icon-park-outline:close" />
                   </el-icon>
                   关闭当前标签页
                 </el-dropdown-item>
-                <el-dropdown-item @click="removeTab(name, 'left')" v-if="isFirstOrLast(name, 'left')">
-                  <el-icon :size='18'>
-                    <i class='i-icon-park-outline:to-left' />
+                <el-dropdown-item
+                  @click="removeTab(name, 'left')"
+                  v-if="isFirstOrLast(name, 'left')"
+                >
+                  <el-icon :size="18">
+                    <i class="i-icon-park-outline:to-left" />
                   </el-icon>
                   关闭左侧标签页
                 </el-dropdown-item>
-                <el-dropdown-item @click="removeTab(name, 'right')" v-if="isFirstOrLast(name, 'right')">
-                  <el-icon :size='18'>
-                    <i class='i-icon-park-outline:to-right' />
+                <el-dropdown-item
+                  @click="removeTab(name, 'right')"
+                  v-if="isFirstOrLast(name, 'right')"
+                >
+                  <el-icon :size="18">
+                    <i class="i-icon-park-outline:to-right" />
                   </el-icon>
                   关闭右侧标签页
                 </el-dropdown-item>
-                <el-dropdown-item @click="removeTab(name, 'other')" v-if='size > 1'>
-                  <el-icon :size='18'>
-                    <i class='i-icon-park-outline:off-screen-two' />
+                <el-dropdown-item @click="removeTab(name, 'other')" v-if="size > 1">
+                  <el-icon :size="18">
+                    <i class="i-icon-park-outline:off-screen-two" />
                   </el-icon>
                   关闭其他标签页
                 </el-dropdown-item>
                 <el-dropdown-item @click="removeTab(name, 'all')">
-                  <el-icon :size='18'>
-                    <i class='i-icon-park-outline:full-screen-two' />
+                  <el-icon :size="18">
+                    <i class="i-icon-park-outline:full-screen-two" />
                   </el-icon>
                   关闭全部标签页
                 </el-dropdown-item>
@@ -66,13 +72,18 @@
   </div>
 </template>
 
-<script setup lang='ts'>
+<script setup lang="ts">
 import type { TabPaneName } from 'element-plus'
 import type { RouteLocationNormalizedLoaded } from 'vue-router'
 
 const route = useRoute()
 const router = useRouter()
-const histories: Ref<Record<string, RouteLocationNormalizedLoaded>> = ref({})
+
+const histories = useStorage<Record<string, RouteLocationNormalizedLoaded>>(
+  'router-history',
+  {},
+  sessionStorage
+)
 
 const size = computed(() => Object.keys(histories.value).length)
 const closable = computed(() => !(Object.keys(histories.value).length === 1 && route.meta.default))
@@ -97,14 +108,14 @@ const removeTab = (tab: TabPaneName, type?: string) => {
       })
       break
     case 'other':
-      keys.forEach(item => {
+      keys.forEach((item) => {
         if (item !== tab) {
           delete histories.value[item]
         }
       })
       break
     case 'all':
-      keys.forEach(item => {
+      keys.forEach((item) => {
         delete histories.value[item]
       })
       break
@@ -139,7 +150,7 @@ watchEffect(() => {
 })
 </script>
 
-<style scoped lang='scss'>
+<style scoped lang="scss">
 .el-tabs__item .dot {
   content: '';
   width: 9px;
