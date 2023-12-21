@@ -1,9 +1,6 @@
 import type { RouteRecordRaw } from 'vue-router'
 import { createRouter, createWebHistory } from 'vue-router'
-import Login from '@/views/Login.vue'
 import Layout from '@/components/Layout.vue'
-import Forbidden from '@/views/Forbidden.vue'
-import NotFound from '@/views/NotFound.vue'
 import type { App } from 'vue'
 
 const pages = import.meta.glob('/src/views/modules/**/*.vue')
@@ -37,11 +34,11 @@ const router = createRouter({
     },
     {
       path: '/404',
-      component: NotFound
+      component: () => import('@/views/NotFound.vue')
     },
     {
       path: '/login',
-      component: Login
+      component: () => import('@/views/Login.vue')
     },
     {
       path: '/',
@@ -70,7 +67,7 @@ const router = createRouter({
       children: [
         {
           path: '/403',
-          component: Forbidden
+          component: () => import('@/views/Forbidden.vue')
         }
       ]
     }
