@@ -64,6 +64,7 @@ const router = createRouter({
       },
       component: Layout,
       meta: {
+        name: '/',
         title: '首页'
       },
       children: [

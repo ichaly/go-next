@@ -3,9 +3,10 @@ import 'vue-router'
 
 declare module 'vue-router' {
   interface RouteMeta {
-    items?: Item[]
+    name: string
     icon?: string
     title?: string
+    items?: Item[]
     default?: boolean
   }
 }

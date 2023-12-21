@@ -43,6 +43,7 @@ function formatMenu(items: Item[]) {
       path: name,
       component: views[name],
       meta: {
+        name,
         title: item.title,
         default: item.default,
         items: findParents(item)
