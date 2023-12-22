@@ -1,29 +1,26 @@
+import type { App } from 'vue'
 import type { RouteRecordRaw } from 'vue-router'
 import { createRouter, createWebHistory } from 'vue-router'
 import Layout from '@/components/Layout.vue'
-import type { App } from 'vue'
-
-const pages = import.meta.glob('/src/views/modules/**/*.vue')
-
-export const views: Record<string, RawRouteComponent> = {}
+import NotFound from '@/views/NotFound.vue'
+import Forbidden from '@/views/Forbidden.vue'
 
 // 索引组件名称和组件加载路径
-Object.keys(pages).map((path) => {
+export const views: Record<string, RawRouteComponent> = Object.entries(
+  import.meta.glob('/src/views/modules/**/*.vue')
+).reduce((result: Record<string, RawRouteComponent>, [path, component]) => {
   let name = path.match(/\/src\/views\/modules\/(.*)\.vue$/)?.[1]
-
   //正则匹配中括号中的文字并使用冒号开头的方式替换
   name = name
     ?.replace(/\[[^\]]+\]/g, (match) => {
       return ':' + match.slice(1, -1)
     })
     .toLowerCase()
-
   if (name) {
-    views[`/${name}`] = pages[path]
+    result[`/${name}`] = useLoadingComponent(component)
   }
-})
-
-const callbacks: Function[] = []
+  return result
+}, {})
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -34,11 +31,11 @@ const router = createRouter({
     },
     {
       path: '/404',
-      component: () => import('@/views/NotFound.vue')
+      component: NotFound
     },
     {
       path: '/login',
-      component: () => import('@/views/Login.vue')
+      component: useLoadingComponent(() => import('@/views/Login.vue'))
     },
     {
       path: '/',
@@ -67,7 +64,7 @@ const router = createRouter({
       children: [
         {
           path: '/403',
-          component: () => import('@/views/Forbidden.vue')
+          component: Forbidden
         }
       ]
     }
@@ -79,6 +76,8 @@ router.beforeEach((to, from, next) => {
   useTitle(to.meta.title)
   next()
 })
+
+const callbacks: Function[] = []
 
 export function resetRouter() {
   while (callbacks.length) {
@@ -92,8 +91,4 @@ export function setupRouter(app: App) {
 
 export function addRouter(route: RouteRecordRaw) {
   callbacks.push(router.addRoute('root', route))
-}
-
-export function getRouters() {
-  return router.getRoutes()
 }

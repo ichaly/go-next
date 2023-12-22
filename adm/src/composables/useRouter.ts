@@ -1,6 +1,6 @@
 import type { RouteLocationRaw, Router } from 'vue-router'
 
-//利用autoimports的别名机制完成偷梁换柱,使路由支持打开外部链接
+//利用AutoImports的别名机制完成偷梁换柱,使路由支持打开外部链接
 export function useRouter(): Router {
   const { push, ...rest } = useBaseRouter()
   return {
