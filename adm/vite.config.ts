@@ -4,6 +4,7 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import UnoCSS from 'unocss/vite'
 import { viteMockServe } from 'vite-plugin-mock'
+import topLevelAwait from 'vite-plugin-top-level-await'
 
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
@@ -18,6 +19,10 @@ export default defineConfig(({ command }) => ({
     viteMockServe({
       mockPath: './mock',
       enable: command === 'serve'
+    }),
+    topLevelAwait({
+      promiseExportName: '__tla',
+      promiseImportName: i => `__tla_${i}`
     }),
     AutoImport({
       dirs: ['src/stores', 'src/composables'],
