@@ -1,30 +1,30 @@
 <template>
-  <div class="router-history">
+  <div class='router-history'>
     <el-tabs
-      type="card"
-      :closable="closable"
-      v-model="$route.path"
-      @tab-change="changeTab"
-      @tab-remove="removeTab"
+      type='card'
+      :closable='closable'
+      v-model='$route.path'
+      @tab-change='changeTab'
+      @tab-remove='removeTab'
     >
-      <el-tab-pane v-for="{ name, title } in histories" :key="name" :name="name" :label="title">
+      <el-tab-pane v-for='{ name, title } in histories' :key='name' :name='name' :label='title'>
         <template #label>
           <el-dropdown
-            :id="name"
-            ref="dropdownRef"
-            trigger="contextmenu"
-            placement="bottom-start"
-            @visible-change="onVisibleChange($event, name)"
+            :id='name'
+            ref='dropdownRef'
+            trigger='contextmenu'
+            placement='bottom-start'
+            @visible-change='onVisibleChange($event, name)'
           >
-            <span class="label">
-              <i class="dot" />
+            <span class='label'>
+              <i class='dot' />
               {{ title }}
             </span>
             <template #dropdown>
               <el-dropdown-menu>
-                <el-dropdown-item @click="removeTab(name)">
-                  <el-icon :size="18">
-                    <i class="i-icon-park-outline:close" />
+                <el-dropdown-item @click='removeTab(name)'>
+                  <el-icon :size='18'>
+                    <i class='i-icon-park-outline:close' />
                   </el-icon>
                   关闭当前标签页
                 </el-dropdown-item>
@@ -32,8 +32,8 @@
                   @click="removeTab(name, 'left')"
                   v-if="isFirstOrLast(name, 'left')"
                 >
-                  <el-icon :size="18">
-                    <i class="i-icon-park-outline:to-left" />
+                  <el-icon :size='18'>
+                    <i class='i-icon-park-outline:to-left' />
                   </el-icon>
                   关闭左侧标签页
                 </el-dropdown-item>
@@ -41,20 +41,20 @@
                   @click="removeTab(name, 'right')"
                   v-if="isFirstOrLast(name, 'right')"
                 >
-                  <el-icon :size="18">
-                    <i class="i-icon-park-outline:to-right" />
+                  <el-icon :size='18'>
+                    <i class='i-icon-park-outline:to-right' />
                   </el-icon>
                   关闭右侧标签页
                 </el-dropdown-item>
-                <el-dropdown-item @click="removeTab(name, 'other')" v-if="size > 1">
-                  <el-icon :size="18">
-                    <i class="i-icon-park-outline:off-screen-two" />
+                <el-dropdown-item @click="removeTab(name, 'other')" v-if='size > 1'>
+                  <el-icon :size='18'>
+                    <i class='i-icon-park-outline:off-screen-two' />
                   </el-icon>
                   关闭其他标签页
                 </el-dropdown-item>
                 <el-dropdown-item @click="removeTab(name, 'all')">
-                  <el-icon :size="18">
-                    <i class="i-icon-park-outline:full-screen-two" />
+                  <el-icon :size='18'>
+                    <i class='i-icon-park-outline:full-screen-two' />
                   </el-icon>
                   关闭全部标签页
                 </el-dropdown-item>
@@ -67,9 +67,10 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup lang='ts'>
 import type { TabPaneName } from 'element-plus'
 import type { RouteMeta } from 'vue-router'
+import Sortable from 'sortablejs'
 
 const route = useRoute()
 const router = useRouter()
@@ -129,9 +130,28 @@ const isFirstOrLast = (name: string, type: string) => {
 watchEffect(() => {
   histories.value[route.path] = route.meta
 })
+
+onMounted(() => {
+  //找到想要拖拽的那一列
+  const el: HTMLElement | null = document.querySelector('.router-history .el-tabs__nav')
+  el && Sortable.create(el, {
+    onEnd: ({ newIndex, oldIndex }) => {
+      const keys = Object.keys(histories.value)
+      if (oldIndex != undefined && newIndex != undefined) {
+        const currRow = keys.splice(oldIndex, 1)[0]
+        keys.splice(newIndex, 0, currRow)
+        const newArray: Record<string, RouteMeta> = {}
+        for (let key of keys) {
+          newArray[key] = histories.value[key]
+        }
+        histories.value = newArray
+      }
+    }
+  })
+})
 </script>
 
-<style scoped lang="scss">
+<style scoped lang='scss'>
 .el-tabs__item .dot {
   content: '';
   width: 9px;

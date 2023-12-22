@@ -22,6 +22,7 @@
     "axios": "^1.6.2",
     "element-plus": "^2.4.4",
     "pinia": "^2.1.7",
+    "sortablejs": "^1.15.1",
     "vue": "^3.3.12",
     "vue-router": "^4.2.5"
   },
@@ -29,6 +30,7 @@
     "@rushstack/eslint-patch": "^1.6.1",
     "@tsconfig/node18": "^18.2.2",
     "@types/node": "^18.19.3",
+    "@types/sortablejs": "^1.15.7",
     "@vitejs/plugin-vue": "^4.5.2",
     "@vue/eslint-config-prettier": "^8.0.0",
     "@vue/eslint-config-typescript": "^12.0.0",
