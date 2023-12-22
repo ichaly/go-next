@@ -1,4 +1,6 @@
-<template>User Editor</template>
+<template>
+  <div>User Editor</div>
+</template>
 
 <script setup lang="ts"></script>
 

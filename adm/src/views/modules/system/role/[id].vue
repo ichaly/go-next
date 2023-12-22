@@ -1,4 +1,6 @@
-<template>Role Detail</template>
+<template>
+  <div>Role Detail</div>
+</template>
 
 <script setup lang="ts"></script>
 

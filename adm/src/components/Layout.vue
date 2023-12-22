@@ -5,8 +5,8 @@
       <el-scrollbar class="flex-1">
         <el-menu
           :collapse="isCollapse"
-          @select="selectMenuItem"
           :default-active="$route.path"
+          @select="(index) => $router.push(index)"
           text-color="var(--left-menu-text-color)"
           background-color="var(--left-menu-bg-color)"
           active-text-color="var(--left-menu-text-active-color)"
@@ -21,7 +21,13 @@
       </el-header>
       <History />
       <el-main class="h-full">
-        <router-view />
+        <router-view v-slot="{ Component, route }">
+          <transition mode="out-in" name="el-fade-in-linear">
+            <keep-alive>
+              <component :is="Component" :key="route.path" />
+            </keep-alive>
+          </transition>
+        </router-view>
       </el-main>
       <el-footer>
         <Footer />
@@ -31,12 +37,8 @@
 </template>
 
 <script setup lang="ts">
-const router = useRouter()
 const rootStore = useRootStore()
 const { menus, isCollapse } = toRefs(rootStore)
-const selectMenuItem = (index: any) => {
-  router.push(index)
-}
 </script>
 
 <style scoped lang="scss">

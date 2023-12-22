@@ -1,4 +1,6 @@
-<template>User List</template>
+<template>
+  <div>User List</div>
+</template>
 
 <script setup lang="ts"></script>
 

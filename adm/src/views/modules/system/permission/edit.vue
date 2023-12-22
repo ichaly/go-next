@@ -1,4 +1,6 @@
-<template>Permission Editor</template>
+<template>
+  <div>Permission Editor</div>
+</template>
 
 <script setup lang="ts"></script>
 

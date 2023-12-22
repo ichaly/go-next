@@ -1,4 +1,6 @@
-<template>Permission List</template>
+<template>
+  <div>Permission List</div>
+</template>
 
 <script setup lang="ts"></script>
 

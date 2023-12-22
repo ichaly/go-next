@@ -1,4 +1,6 @@
-<template>User Detail</template>
+<template>
+  <div>User Detail</div>
+</template>
 
 <script setup lang="ts"></script>
 
