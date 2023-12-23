@@ -22,12 +22,13 @@ export default defineConfig(({ command }) => ({
     }),
     topLevelAwait({
       promiseExportName: '__tla',
-      promiseImportName: i => `__tla_${i}`
+      promiseImportName: (i) => `__tla_${i}`
     }),
     AutoImport({
       dirs: ['src/stores', 'src/composables'],
       imports: [
-        'vue', '@vueuse/core',
+        'vue',
+        '@vueuse/core',
         {
           'vue-router': [
             'useLink',
@@ -45,6 +46,7 @@ export default defineConfig(({ command }) => ({
       ]
     }),
     Components({
+      dirs: ['src/components'],
       resolvers: [
         ElementPlusResolver({
           importStyle: 'sass'

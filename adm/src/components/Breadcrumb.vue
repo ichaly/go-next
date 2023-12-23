@@ -1,5 +1,5 @@
 <template>
-  <el-breadcrumb class="hidden md:block" :separator-icon="ArrowRight">
+  <el-breadcrumb class="hidden md:block" :separator-icon="IconArrowRight">
     <el-breadcrumb-item>首页</el-breadcrumb-item>
     <el-breadcrumb-item v-for="item in $route.meta.items" :key="item.name">
       {{ item.title }}
@@ -8,5 +8,5 @@
 </template>
 
 <script setup lang="ts">
-import ArrowRight from '@/components/ArrowRight.vue'
+import IconArrowRight from '@/components/icons/IconArrowRight.vue'
 </script>

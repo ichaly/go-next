@@ -8,11 +8,7 @@
     <div class="flex-1 pl-2">
       <Breadcrumb />
     </div>
-    <flat-button>
-      <el-icon :size="18">
-        <i class="i-icon-park-outline:search" />
-      </el-icon>
-    </flat-button>
+    <Search />
     <flat-button @click="toggleFullscreen()">
       <el-icon :size="18">
         <i class="i-icon-park-outline:off-screen-one" v-if="isFullscreen" />
