@@ -40,7 +40,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'root',
-      redirect: (to) => {
+      redirect: () => {
         const { menus } = useRootStore()
         if (!menus.length) {
           return '/login'

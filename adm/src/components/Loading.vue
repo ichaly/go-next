@@ -1,7 +1,7 @@
 <template>
-  <div class='w-full h-full flex flex-col center'>
-    <div class='loader'></div>
-    <div class='load_title'>正在努力加载中</div>
+  <div class="w-full h-full flex flex-col center">
+    <div class="loader"></div>
+    <div class="load_title">正在努力加载中</div>
   </div>
 </template>
 <style scoped>
