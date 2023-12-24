@@ -44,7 +44,9 @@ function formatMenu(items: Item[]) {
       component: views[name],
       meta: {
         name,
+        icon: item.icon,
         title: item.title,
+        hidden: item.hidden,
         default: item.default,
         items: findParents(item)
       }

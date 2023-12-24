@@ -7,6 +7,7 @@ declare module 'vue-router' {
     icon?: string
     title?: string
     items?: Item[]
+    hidden?: boolean
     default?: boolean
   }
 }

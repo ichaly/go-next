@@ -21,6 +21,7 @@
     "@vueuse/core": "^10.7.0",
     "axios": "^1.6.2",
     "element-plus": "^2.4.4",
+    "fuse.js": "^7.0.0",
     "pinia": "^2.1.7",
     "sortablejs": "^1.15.1",
     "vue": "^3.3.12",
