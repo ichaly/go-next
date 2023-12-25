@@ -71,7 +71,7 @@
 
 <script setup lang="ts">
 import type { RouteMeta } from 'vue-router'
-import Fuse from 'fuse.js'
+import Fuse, { type FuseResult } from 'fuse.js'
 
 const onDialogOpen = () => {
   nextTick(() => {
@@ -86,27 +86,18 @@ const result = ref<RouteMeta[]>([])
 const input = ref<HTMLElement | null>(null)
 const router = useRouter()
 const routers = router.getRoutes().map((item) => item.meta)
-const fuse = new Fuse(routers, {
-  keys: ['title']
+const fuse = new Fuse<RouteMeta>(routers, {
+  keys: ['title'],
+  shouldSort: true,
+  includeScore: true
 })
-const formatText = (item: RouteMeta) => {
-  if (!item.items) return ''
-  let res = ''
-  const length = item.items.length
-  for (let i = 0; i < length; i++) {
-    const c = item.items[i]
-    if (i !== 0) {
-      res += ' > '
-    }
-    res += c.title
-  }
-  return res
+const formatText = (item: RouteMeta): string => {
+  return item.items?.map((c, i) => (i > 0 ? ` > ${c.title}` : c.title)).join('') || ''
 }
 const handleSearch = (val: string | number) => {
-  val = val.toString().trim()
   result.value = fuse
-    .search(val)
-    .map((item) => item.item)
+    .search(String(val).trim())
+    .map((value: FuseResult<RouteMeta>) => value.item)
     .splice(0, 5)
   activeIndex.value = 0
 }
@@ -223,10 +214,9 @@ onKeyStroke('Escape', onClose)
     padding-bottom: 2px;
     border-radius: 2px;
     background-color: linear-gradient(-225deg, #d5dbe4, #f8f8f8);
-    box-shadow:
-      inset 0 -2px 0 0 #cdcde6,
-      inset 0 0 1px 1px #fff,
-      0 1px 2px 1px rgb(30 35 90 / 40%);
+    box-shadow: inset 0 -2px 0 0 #cdcde6,
+    inset 0 0 1px 1px #fff,
+    0 1px 2px 1px rgb(30 35 90 / 40%);
 
     &:nth-child(2),
     &:nth-child(3),
