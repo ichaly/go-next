@@ -1,8 +1,6 @@
 <template>
-  <div class="h-full">
-    <flat-button @click="visible = true">
-      <IconSearch />
-    </flat-button>
+  <flat-button @click="visible = true">
+    <IconSearch />
     <el-dialog v-model="visible" :show-close="false" @open="onDialogOpen">
       <template #header>
         <el-input
@@ -66,7 +64,7 @@
         </div>
       </template>
     </el-dialog>
-  </div>
+  </flat-button>
 </template>
 
 <script setup lang="ts">
