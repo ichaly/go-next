@@ -15,14 +15,13 @@
         <i class="i-icon-park-outline:full-screen-one" v-else />
       </el-icon>
     </flat-button>
-    <Popover />
+    <Notify />
     <Translate />
     <Avatar />
   </div>
 </template>
 
 <script setup lang="ts">
-
 const rootStore = useRootStore()
 const { toggleCollapse, toggleFullscreen } = rootStore
 const { isCollapse, isFullscreen } = toRefs(rootStore)
