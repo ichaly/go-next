@@ -1,4 +1,5 @@
 import { fileURLToPath, URL } from 'node:url'
+import fg from 'fast-glob'
 
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
@@ -10,22 +11,22 @@ import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import type { ComponentResolver } from 'unplugin-vue-components/types'
-import * as fs from 'fs'
 
-export interface IndexResolverOptions {}
+export interface IndexResolverOptions {
+  exclude?: RegExp,
+}
 
 function IndexResolver(options: IndexResolverOptions): ComponentResolver[] {
   return [
     {
       type: 'component',
       resolve: async (name: string) => {
-        let url = fileURLToPath(new URL(`./src/components/${name}/index.ts`, import.meta.url))
-        if (fs.existsSync(url)) {
-          return { name: 'default', from: url }
-        }
-        url = fileURLToPath(new URL(`./src/components/${name}/index.vue`, import.meta.url))
-        if (fs.existsSync(url)) {
-          return { name: 'default', from: url }
+        if (options.exclude && name.match(options.exclude))
+          return
+        let files = fg.globSync(`./src/components/${name}/index.{ts,js,vue}`)
+        for (let file of files) {
+          let from = fileURLToPath(new URL(file, import.meta.url))
+          return { name: 'default', from }
         }
       }
     }
@@ -73,7 +74,9 @@ export default defineConfig(({ command }) => ({
         ElementPlusResolver({
           importStyle: 'sass'
         }),
-        IndexResolver({})
+        IndexResolver({
+          exclude: /(RouterLink|RouterView)$/
+        })
       ]
     })
   ],
