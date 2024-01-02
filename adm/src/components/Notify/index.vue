@@ -27,7 +27,7 @@
 import { type ListItem, tabListData } from './data'
 import { ElMessage } from 'element-plus'
 
-const activeName = ref('1')
+const activeName = ref('2')
 const listData = ref(tabListData)
 
 const onNoticeClick = (record: ListItem) => {

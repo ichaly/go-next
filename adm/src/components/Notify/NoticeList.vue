@@ -3,17 +3,8 @@
     <li class="item" v-for="item in getData" :key="item.id">
       <el-avatar v-if="item.avatar" :size="30" class="avatar" :src="item.avatar" />
       <div class="content">
-        <el-tooltip :content="item.title" placement="top">
-          <span class="title">{{ item.title }}</span>
-        </el-tooltip>
-        <el-tooltip
-          :content="item.description"
-          placement="top"
-          v-if="item.description"
-          popper-class="tooltip"
-        >
-          <span class="desc">{{ item.description }}</span>
-        </el-tooltip>
+        <Ellipsis :content="item.title" class="m-b-2" />
+        <Ellipsis :content="item.description" :line="2" class="m-b-1" />
         <span class="datetime">{{ item.datetime }}</span>
       </div>
     </li>
@@ -71,17 +62,6 @@ const getData = computed(() => {
 
     & .content {
       @apply flex-1 flex flex-col overflow-hidden text-black;
-
-      & .title {
-        @apply truncate m-b-2;
-      }
-
-      & .desc {
-        @apply m-b-1 text-ellipsis overflow-hidden;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-      }
 
       & .datetime {
         @apply text-xs text-slate-400;
