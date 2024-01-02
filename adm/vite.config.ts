@@ -27,8 +27,8 @@ function IndexResolver(options: IndexResolverOptions): ComponentResolver[] {
     optionsResolved = {
       exclude: /(RouterLink|RouterView)$/,
       sortFn: (a, b) => {
-        let aExt = a.slice(a.lastIndexOf('.') + 1)
-        let bExt = b.slice(b.lastIndexOf('.') + 1)
+        const aExt = a.slice(a.lastIndexOf('.') + 1)
+        const bExt = b.slice(b.lastIndexOf('.') + 1)
         return include.indexOf(aExt) - include.indexOf(bExt)
       },
       ...options
@@ -44,8 +44,8 @@ function IndexResolver(options: IndexResolverOptions): ComponentResolver[] {
         if (options.exclude && name.match(options.exclude))
           return
         const files = fg.globSync(`./src/components/${name}/index.{vue,ts,tsx,js,jsx}`).sort(options.sortFn)
-        for (let file of files) {
-          let from = fileURLToPath(new URL(file, import.meta.url))
+        for (const file of files) {
+          const from = fileURLToPath(new URL(file, import.meta.url))
           return { name: 'default', from }
         }
       }

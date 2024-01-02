@@ -9,7 +9,10 @@ import {
 } from 'unocss'
 
 export default defineConfig({
-  shortcuts: [['center', 'items-center justify-center']],
+  shortcuts: [
+    { 'center': 'items-center justify-center' },
+    { 'b-light': 'b-[var(--el-border-color-light)]' }
+  ],
   presets: [
     presetUno(),
     presetIcons({
