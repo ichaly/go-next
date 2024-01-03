@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { getPermission } from '@/apis/permission'
-import { addRouter, resetRouter, views } from '@/router'
+import { addRouter, resetRouter, views } from '@/plugins/router'
 
 function formatMenu(items: Item[]) {
   const dict: Record<number, Partial<Item>> = {}

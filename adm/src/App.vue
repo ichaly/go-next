@@ -1,9 +1,5 @@
-<script setup lang="ts">
-import { RouterView } from 'vue-router'
-</script>
-
 <template>
-  <RouterView />
+  <RouterView v-if="isAlive" />
   <div v-if="false">
     <i class="i-icon-park-outline:system" />
     <i class="i-icon-park-outline:setting-two" />
@@ -18,3 +14,15 @@ import { RouterView } from 'vue-router'
     <i class="i-icon-park-outline:doc-detail" />
   </div>
 </template>
+<script setup lang="ts">
+import { RELOAD_KEY } from '@/plugins/router'
+
+const isAlive = ref(true)
+const reload = () => {
+  isAlive.value = false
+  nextTick(() => {
+    isAlive.value = true
+  })
+}
+provide(RELOAD_KEY, reload)
+</script>

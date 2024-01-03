@@ -71,6 +71,7 @@ export default defineConfig(({ command }) => ({
       dirs: ['src/stores', 'src/composables'],
       imports: [
         'vue',
+        'vue-i18n',
         '@vueuse/core',
         {
           'vue-router': [

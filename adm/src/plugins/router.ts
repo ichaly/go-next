@@ -1,4 +1,4 @@
-import type { App } from 'vue'
+import type { App, InjectionKey } from 'vue'
 import type { RouteRecordRaw } from 'vue-router'
 import { createRouter, createWebHistory } from 'vue-router'
 import Layout from '@/components/Layout.vue'
@@ -92,3 +92,7 @@ export function setupRouter(app: App) {
 export function addRouter(route: RouteRecordRaw) {
   callbacks.push(router.addRoute('root', route))
 }
+
+// 辅助路由在App.vue中使用if刷新页面防止整个页面重载闪
+export type RouterReload = () => void;
+export const RELOAD_KEY: InjectionKey<RouterReload> = Symbol('reload')
