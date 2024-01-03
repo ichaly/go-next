@@ -1,6 +1,5 @@
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 import axios, { AxiosError } from 'axios'
-import { ElMessage } from 'element-plus'
 // 数据返回的接口
 // 定义请求响应参数，不含data
 export interface Result {

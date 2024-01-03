@@ -23,6 +23,7 @@
     "axios": "^1.6.3",
     "element-plus": "^2.4.4",
     "fuse.js": "^7.0.0",
+    "lodash": "^4.17.21",
     "pinia": "^2.1.7",
     "sortablejs": "^1.15.1",
     "vue": "^3.4.3",
@@ -31,6 +32,7 @@
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.6.1",
     "@tsconfig/node18": "^18.2.2",
+    "@types/lodash": "^4.14.202",
     "@types/node": "^18.19.4",
     "@types/sortablejs": "^1.15.7",
     "@vitejs/plugin-vue": "^4.6.2",

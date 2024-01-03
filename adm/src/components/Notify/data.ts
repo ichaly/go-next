@@ -18,7 +18,6 @@ export interface TabItem {
   key: string
   name: string
   list: ListItem[]
-  unreadlist?: ListItem[]
 }
 
 export const tabListData: TabItem[] = [
@@ -155,7 +154,7 @@ export const tabListData: TabItem[] = [
         description: '任务需要在 2017-01-12 20:00 前启动',
         datetime: '',
         extra: '未开始',
-        color: '',
+        color: 'info',
         type: '3'
       },
       {
@@ -165,7 +164,7 @@ export const tabListData: TabItem[] = [
         description: '冠霖 需在 2017-01-07 前完成代码变更任务',
         datetime: '',
         extra: '马上到期',
-        color: 'red',
+        color: 'danger',
         type: '3'
       },
       {
@@ -175,7 +174,7 @@ export const tabListData: TabItem[] = [
         description: '指派竹尔于 2017-01-09 前完成更新并发布',
         datetime: '',
         extra: '已耗时 8 天',
-        color: 'gold',
+        color: 'warning',
         type: '3'
       },
       {
@@ -185,7 +184,7 @@ export const tabListData: TabItem[] = [
         description: '指派竹尔于 2017-01-09 前完成更新并发布',
         datetime: '',
         extra: '进行中',
-        color: 'blue',
+        color: '',
         type: '3'
       }
     ]

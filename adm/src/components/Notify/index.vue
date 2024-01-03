@@ -1,8 +1,8 @@
 <template>
-  <el-popover :visible="true" placement="bottom" :width="260" trigger="hover">
+  <el-popover placement="bottom" :width="280" trigger="hover">
     <template #reference>
       <flat-button>
-        <el-badge :value="200" :max="99" class="h-4.5">
+        <el-badge :value="total" :max="99" class="h-4.5">
           <el-icon :size="18">
             <i class="i-icon-park-outline:remind" />
           </el-icon>
@@ -13,9 +13,8 @@
       <el-tab-pane :name="item.key" v-for="item in listData" :key="item.key">
         <template #label>
           {{ item.name }}
-          <span v-if="item.list.length !== 0">({{ item.list.length }})</span>
+          <span v-if="item.list.length !== 0">{{ getTotal(item.list) }}</span>
         </template>
-        <!-- 绑定title-click事件的通知列表中标题是“可点击”的-->
         <NoticeList :list="item.list" v-if="item.key === '1'" @title-click="onNoticeClick" />
         <NoticeList :list="item.list" v-else />
       </el-tab-pane>
@@ -25,15 +24,21 @@
 
 <script setup lang="ts">
 import { type ListItem, tabListData } from './data'
-import { ElMessage } from 'element-plus'
 
-const activeName = ref('2')
+const activeName = ref('1')
 const listData = ref(tabListData)
-
+const total = computed(() => {
+  return listData.value.reduce((pre, cur) => {
+    return pre + cur.list.filter((item) => !item.titleDelete).length
+  }, 0)
+})
+const getTotal = computed(() => (list: ListItem[]) => {
+  const length = list.filter((item) => !item.titleDelete).length
+  return length ? `(${length})` : ''
+})
 const onNoticeClick = (record: ListItem) => {
-  ElMessage({
-    message: '你点击了通知，ID=' + record.id,
-    type: 'success'
+  ElMessage.success({
+    message: '你点击了通知，ID=' + record.id
   })
   // 可以直接将其标记为已读（为标题添加删除线）,此处演示的代码会切换删除线状态
   record.titleDelete = !record.titleDelete
