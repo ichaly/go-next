@@ -1,3 +1,5 @@
+import type { EpPropMergeType } from 'element-plus/lib/utils'
+
 export interface ListItem {
   id: string
   avatar: string
@@ -11,7 +13,7 @@ export interface ListItem {
   description: string
   clickClose?: boolean
   extra?: string
-  color?: string
+  color?: EpPropMergeType<StringConstructor, '' | 'success' | 'warning' | 'info' | 'danger', unknown>
 }
 
 export interface TabItem {
