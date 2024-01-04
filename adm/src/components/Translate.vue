@@ -7,8 +7,13 @@
     </flat-button>
     <template #dropdown>
       <el-dropdown-menu>
-        <el-dropdown-item v-for="({label, value}) in langs" :command="value" :disabled="current===value" :key="value">
-          <span>{{ label }}</span>
+        <el-dropdown-item
+          v-for="lang in $i18n.availableLocales"
+          :key="lang"
+          :command="lang"
+          :disabled="current === lang"
+        >
+          <span>{{ $i18n.locale }}</span>
         </el-dropdown-item>
       </el-dropdown-menu>
     </template>
@@ -21,10 +26,7 @@ import { RELOAD_KEY } from '@/plugins/router'
 const { locale } = useI18n()
 const reload = inject(RELOAD_KEY)
 const storage = useStorage('lang', 'zh')
-const langs = ref([
-  { label: '简体中文', value: 'zh' },
-  { label: 'English', value: 'en' }
-])
+
 const current = computed(() => {
   return locale.value || storage.value
 })
