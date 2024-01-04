@@ -13,7 +13,7 @@
           :command="lang"
           :disabled="current === lang"
         >
-          <span>{{ $i18n.locale }}</span>
+          <span>{{ $t('name', 1, { locale: lang }) }}</span>
         </el-dropdown-item>
       </el-dropdown-menu>
     </template>
