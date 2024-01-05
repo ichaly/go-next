@@ -1,7 +1,7 @@
 #!/usr/bin/env ts-node
 import * as fs from 'fs'
 
-const data = JSON.parse(fs.readFileSync(`${__dirname}/../../../package.json`, 'utf8'))
+const data = JSON.parse(fs.readFileSync(`${__dirname}/../package.json`, 'utf8'))
 const collection = [...Object.keys(data.dependencies), ...Object.keys(data.devDependencies)].filter(
   (i) => i.startsWith('@iconify-json/')
 )
@@ -16,7 +16,7 @@ for (const module of collection) {
     ${keys.map((i) => `'i-${icons.prefix}:${i}',`).join('\n    ')}
   ],
 }`
-    fs.writeFile(`${__dirname}/data/icons.${icons.prefix}.ts`, tpl, (err) => {
+    fs.writeFile(`${__dirname}/../src/components/IconPicker/data/icons.${icons.prefix}.ts`, tpl, (err) => {
       if (err) throw err
     })
   })
