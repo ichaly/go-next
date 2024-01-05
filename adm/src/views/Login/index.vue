@@ -149,6 +149,12 @@ const onSubmit = async (formEl: FormInstance | undefined) => {
 </script>
 
 <style scoped lang="scss">
+:deep(.el-tabs__nav-wrap) {
+  &::after {
+    height: 1px;
+  }
+}
+
 .root {
   @apply flex h-screen w-full items-center justify-center bg-cover bg-center bg-no-repeat;
 
