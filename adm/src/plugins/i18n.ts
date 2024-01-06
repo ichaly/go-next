@@ -1,6 +1,6 @@
 import { createI18n } from 'vue-i18n'
 
-const storage = useStorage('lang', 'zh')
+const storage = useStorage('lang', 'cn')
 
 const messages = Object.entries(
   import.meta.glob<Record<string, unknown>>('/src/langs/*.ts', { eager: true })

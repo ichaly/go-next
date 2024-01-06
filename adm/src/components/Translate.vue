@@ -24,7 +24,7 @@ import { RELOAD_KEY } from '@/plugins/router'
 
 const { locale } = useI18n()
 const reload = inject(RELOAD_KEY)
-const storage = useStorage('lang', 'zh')
+const storage = useStorage('lang', 'cn')
 
 const onCommand = (val: string) => {
   locale.value = val
