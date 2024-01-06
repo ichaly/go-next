@@ -1,5 +1,7 @@
 export default {
   name: 'English',
-  message: 'Hello',
-  say: 'Hello {name}'
+  dashboard: {
+    message: 'Hello',
+    say: 'Hello {name}'
+  }
 }
