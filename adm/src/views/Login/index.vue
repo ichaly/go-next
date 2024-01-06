@@ -57,7 +57,7 @@
                         </template>
                       </el-input>
                       <div class="w-3"></div>
-                      <el-button type="primary">发送验证码</el-button>
+                      <el-button type="primary">获取验证码</el-button>
                     </div>
                   </el-form-item>
                   <el-button type="primary" class="w-full" @click="onSubmit(mobileRef)">登录/注册</el-button>
@@ -162,7 +162,7 @@ const onSubmit = async (formEl: FormInstance | undefined) => {
   background-image: url('@/assets/images/login/bg.jpg');
 
   .form {
-    @apply relative flex overflow-hidden rounded-md bg-white shadow-md w-[400px] md:w-[650px];
+    @apply relative flex overflow-hidden rounded-md bg-white shadow-md w-[350px] md:w-[600px];
     height: 420px;
 
     .corner {
@@ -173,7 +173,7 @@ const onSubmit = async (formEl: FormInstance | undefined) => {
     }
 
     .left {
-      @apply h-full bg-center bg-no-repeat bg-[length:80%] w-0 md:w-[250px];
+      @apply h-full bg-center bg-no-repeat bg-[length:80%] w-0 md:w-[250px] op-70;
       background-color: var(--el-color-primary);
       background-image: url('@/assets/images/login/login.svg');
     }

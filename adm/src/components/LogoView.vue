@@ -1,7 +1,7 @@
 <template>
   <div class="logo">
     <img src="../assets/images/logo.svg" class="w-8 h-8" />
-    <span class="ml-4" v-if="!isCollapse">Vue Admin</span>
+    <span class="ml-4" v-if="!isCollapse">Go Next Admin</span>
   </div>
 </template>
 
