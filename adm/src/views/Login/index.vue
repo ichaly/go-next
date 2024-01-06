@@ -188,9 +188,9 @@ const onSubmitResult = (result: boolean) => {
     }
 
     .left {
-      @apply h-full bg-center bg-no-repeat bg-[length:80%] w-0 md:w-[250px] op-70;
+      @apply h-full bg-center bg-no-repeat bg-[length:80%] w-0 md:w-[250px] op-80;
       background-color: var(--el-color-primary);
-      background-image: url('@/assets/images/login/login.svg');
+      background-image: url('@/assets/images/login/online_posts.svg');
     }
 
     .right {
