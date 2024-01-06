@@ -11,7 +11,7 @@
           v-for="lang in $i18n.availableLocales"
           :key="lang"
           :command="lang"
-          :disabled="current === lang">
+          :disabled="locale === lang">
           <span v-t="{path:'name',locale:lang}"></span>
         </el-dropdown-item>
       </el-dropdown-menu>
@@ -26,15 +26,11 @@ const { locale } = useI18n()
 const reload = inject(RELOAD_KEY)
 const storage = useStorage('lang', 'zh')
 
-const current = computed(() => {
-  return locale.value || storage.value
-})
-
 const onCommand = (val: string) => {
   locale.value = val
   storage.value = val
-  reload?.()
+  nextTick(() => {
+    reload?.()
+  })
 }
 </script>
-
-<style scoped lang="scss"></style>
