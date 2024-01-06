@@ -37,8 +37,7 @@ const captchaVerifyCallback = async (captchaVerifyParam: {
   //   yourBizParam... // 业务参数
   // });
   //
-  console.log(captchaVerifyParam.sceneId)
-  return { captchaResult: true, bizResult: false }
+  return { captchaResult: true, bizResult: true }
 }
 
 // 业务请求验证结果回调函数

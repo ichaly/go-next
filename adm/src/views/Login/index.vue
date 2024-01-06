@@ -36,7 +36,9 @@
                     <el-checkbox v-model="isRemember" label="记住密码" size="large" />
                     <el-link type="primary">找回密码</el-link>
                   </el-row>
-                  <el-button type="primary" class="w-full" @click="onSubmit(accountRef)">立即登录</el-button>
+                  <Captcha @result="onSubmitResult">
+                    <el-button type="primary" class="w-full">立即登录</el-button>
+                  </Captcha>
                 </el-form>
               </el-tab-pane>
               <el-tab-pane name="second">
@@ -57,7 +59,7 @@
                         </template>
                       </el-input>
                       <div class="w-3"></div>
-                      <Captcha @result="onResult">
+                      <Captcha @result="onCaptchaResult">
                         <el-button type="primary">获取验证码</el-button>
                       </Captcha>
                     </div>
@@ -116,7 +118,7 @@ const platforms = ref<Array<Platform>>([
 const [isScan, toggleScan] = useToggle(false)
 const [isRemember] = useToggle(true)
 const content = ref('code123')
-const activeTab = ref('second')
+const activeTab = ref('first')
 
 const accountRef = ref<FormInstance>()
 const accountForm = reactive({
@@ -149,8 +151,15 @@ const onSubmit = async (formEl: FormInstance | undefined) => {
   })
 }
 
-const onResult = (result: boolean) => {
-  console.log('onResult', result)
+const onCaptchaResult = (result: boolean) => {
+  console.log('onCaptchaResult', result)
+}
+
+const onSubmitResult = (result: boolean) => {
+  console.log('onSubmitResult', result)
+  if (result) {
+    onSubmit(accountRef.value)
+  }
 }
 </script>
 
