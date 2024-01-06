@@ -32,11 +32,11 @@
                       </template>
                     </el-input>
                   </el-form-item>
-                  <el-button type="primary" class="w-full" @click="onSubmit(accountRef)">立即登录</el-button>
-                  <el-row class="w-full items-center" justify="space-between">
+                  <el-row class="w-full items-center m-b-4.5" justify="space-between">
                     <el-checkbox v-model="isRemember" label="记住密码" size="large" />
                     <el-link type="primary">找回密码</el-link>
                   </el-row>
+                  <el-button type="primary" class="w-full" @click="onSubmit(accountRef)">立即登录</el-button>
                 </el-form>
               </el-tab-pane>
               <el-tab-pane name="second">
@@ -60,8 +60,7 @@
                       <el-button type="primary">获取验证码</el-button>
                     </div>
                   </el-form-item>
-                  <el-button type="primary" class="w-full" @click="onSubmit(mobileRef)">登录/注册</el-button>
-                  <el-row class="desc w-full">
+                  <el-row class="desc w-full m-b-4.5">
                     <el-checkbox v-model="isRemember" size="large" />
                     <span class="ml-2"></span>
                     我已阅读并同意&nbsp;
@@ -69,6 +68,7 @@
                     &nbsp;和&nbsp;
                     <el-link type="primary" class="link">隐私政策</el-link>
                   </el-row>
+                  <el-button type="primary" class="w-full" @click="onSubmit(mobileRef)">登录/注册</el-button>
                 </el-form>
               </el-tab-pane>
             </el-tabs>
