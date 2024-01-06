@@ -1,5 +1,9 @@
 <template>
   <div class="root">
+    <div class="name">
+      <img src="@/assets/images/logo.svg" class="logo" />
+      <span class="text">Go Next Admin</span>
+    </div>
     <div class="form">
       <div class="corner text-4xl" @click="toggleScan()">
         <i class="i-ri:qr-code-line" v-if="isScan" />
@@ -171,13 +175,32 @@ const onSubmitResult = (result: boolean) => {
 }
 
 .root {
-  @apply flex h-screen w-full items-center justify-center bg-cover bg-center bg-no-repeat;
-
+  @apply flex flex-col h-screen w-full items-center justify-center bg-cover bg-center bg-no-repeat pb-50;
   background-color: #f0f2f5;
   background-image: url('@/assets/images/login/bg.jpg');
 
+  .name {
+    @apply flex flex-col center md:flex-row;
+    background: linear-gradient(to right, var(--el-color-primary), #F74952) no-repeat right bottom;
+    background-size: 0 2px;
+    transition: background-size 0.5s ease-in-out;
+
+    &:hover {
+      background-position-x: left;
+      background-size: 100% 2px;
+    }
+
+    .logo {
+      @apply w-24 md:w-12 md:mr-4;
+    }
+
+    .text {
+      @apply text-3xl font-bold cursor-pointer;
+    }
+  }
+
   .form {
-    @apply relative flex overflow-hidden rounded-md bg-white shadow-md w-[350px] md:w-[600px];
+    @apply relative flex overflow-hidden rounded-md bg-white shadow-md w-[350px] md:w-[600px] mt-10 md:mt-20;
     height: 420px;
 
     .corner {
