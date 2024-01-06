@@ -57,7 +57,9 @@
                         </template>
                       </el-input>
                       <div class="w-3"></div>
-                      <el-button type="primary">获取验证码</el-button>
+                      <Captcha @result="onResult">
+                        <el-button type="primary">获取验证码</el-button>
+                      </Captcha>
                     </div>
                   </el-form-item>
                   <el-row class="desc w-full m-b-4.5">
@@ -145,6 +147,10 @@ const onSubmit = async (formEl: FormInstance | undefined) => {
       console.log('error submit!', fields)
     }
   })
+}
+
+const onResult = (result: boolean) => {
+  console.log('onResult', result)
 }
 </script>
 
