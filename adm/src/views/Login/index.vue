@@ -191,11 +191,12 @@ const onSubmitResult = (result: boolean) => {
     }
 
     .logo {
-      @apply w-24 md:w-12 md:mr-4;
+      @apply w-24 md:w-14 md:mr-4;
     }
 
     .text {
       @apply text-3xl font-bold cursor-pointer;
+      font-family: Courier, monospace;
     }
   }
 
