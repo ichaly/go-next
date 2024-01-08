@@ -11,8 +11,9 @@
           v-for="lang in $i18n.availableLocales"
           :key="lang"
           :command="lang"
-          :disabled="locale === lang">
-          <span v-t="{path:'name',locale:lang}"></span>
+          :disabled="locale === lang"
+        >
+          <span v-t="{ path: 'name', locale: lang }"></span>
         </el-dropdown-item>
       </el-dropdown-menu>
     </template>

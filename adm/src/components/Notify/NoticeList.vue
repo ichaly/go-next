@@ -5,7 +5,7 @@
       <div class="content">
         <div class="title" @click="handleTitleClick(item)">
           <Ellipsis :content="item.title" class="!m-b-2">
-            <span :class="{'!line-through':item.titleDelete}">{{ item.title }}</span>
+            <span :class="{ '!line-through': item.titleDelete }">{{ item.title }}</span>
           </Ellipsis>
           <el-tag effect="light" v-if="item.extra" size="small" :type="item.color">
             {{ item.extra }}
@@ -22,7 +22,8 @@
       :pager-count="5"
       :current-page="current"
       @current-change="onCurrentChange"
-      :hide-on-single-page="true" />
+      :hide-on-single-page="true"
+    />
   </ul>
 </template>
 
@@ -30,15 +31,18 @@
 import type { ListItem } from '@/components/Notify/data'
 import isNumber from 'lodash/isNumber'
 
-const props = withDefaults(defineProps<{
-  list: ListItem[]
-  pageSize?: boolean | number
-  currentPage?: number
-  onTitleClick?: (item: ListItem) => void
-}>(), {
-  pageSize: 5,
-  currentPage: 1
-})
+const props = withDefaults(
+  defineProps<{
+    list: ListItem[]
+    pageSize?: boolean | number
+    currentPage?: number
+    onTitleClick?: (item: ListItem) => void
+  }>(),
+  {
+    pageSize: 5,
+    currentPage: 1
+  }
+)
 
 const current: Ref<number> = ref(props.currentPage || 1)
 const getData = computed((): ListItem[] => {

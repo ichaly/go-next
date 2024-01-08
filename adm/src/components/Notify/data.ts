@@ -13,7 +13,11 @@ export interface ListItem {
   description: string
   clickClose?: boolean
   extra?: string
-  color?: EpPropMergeType<StringConstructor, '' | 'success' | 'warning' | 'info' | 'danger', unknown>
+  color?: EpPropMergeType<
+    StringConstructor,
+    '' | 'success' | 'warning' | 'info' | 'danger',
+    unknown
+  >
 }
 
 export interface TabItem {

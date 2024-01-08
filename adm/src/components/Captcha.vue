@@ -63,8 +63,7 @@ const initCaptcha = () => {
         language: locale.value || 'cn' // 验证码语言类型，支持简体中文（cn）、繁体中文（tw）、英文（en）
       })
     }
-  } catch (e) {
-  }
+  } catch (e) {}
 }
 
 onMounted(() => {
@@ -74,14 +73,14 @@ onMounted(() => {
   script.src = '//o.alicdn.com/captcha-frontend/aliyunCaptcha/AliyunCaptcha.js'
   script.onload = initCaptcha
   // 引入失败
-  script.onerror = function() {
+  script.onerror = function () {
     console.log('AliyunCaptcha jssdk 资源加载失败了')
   }
   document.head.appendChild(script)
 })
 
 onUnmounted(() => {
-  let script = document.querySelector('script[data-sdk=\'captcha-v2\']')
+  let script = document.querySelector("script[data-sdk='captcha-v2']")
   script && document.head.removeChild(script)
 })
 </script>

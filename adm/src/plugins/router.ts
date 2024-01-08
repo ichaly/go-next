@@ -94,5 +94,5 @@ export function addRouter(route: RouteRecordRaw) {
 }
 
 // 辅助路由在App.vue中使用if刷新页面防止整个页面重载闪
-export type RouterReload = () => void;
+export type RouterReload = () => void
 export const RELOAD_KEY: InjectionKey<RouterReload> = Symbol('reload')

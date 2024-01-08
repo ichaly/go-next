@@ -1,6 +1,7 @@
 <template>
   <div class="root">
-    <div class="name">
+    <DigitalRain />
+    <div class="name z-1">
       <img src="@/assets/images/logo.svg" class="logo" />
       <span class="text">Go Next Admin</span>
     </div>
@@ -15,10 +16,16 @@
           <div class="account" v-if="!isScan">
             <el-tabs v-model="activeTab" stretch>
               <el-tab-pane name="first">
-                <template #label><span class="label">{{ $t('login.loginWithPassword') }}</span></template>
+                <template #label
+                ><span class="label">{{ $t('login.loginWithPassword') }}</span></template
+                >
                 <el-form :model="accountForm" ref="accountRef" :rules="accountRules">
                   <el-form-item prop="username">
-                    <el-input v-model="accountForm.username" clearable :placeholder="$t('login.usernamePlaceholder')">
+                    <el-input
+                      v-model="accountForm.username"
+                      clearable
+                      :placeholder="$t('login.usernamePlaceholder')"
+                    >
                       <template #prefix>
                         <i class="i-ri:user-5-line" />
                       </template>
@@ -30,14 +37,19 @@
                       type="password"
                       clearable
                       show-password
-                      :placeholder="$t('login.passwordPlaceholder')">
+                      :placeholder="$t('login.passwordPlaceholder')"
+                    >
                       <template #prefix>
                         <i class="i-ri:lock-password-line" />
                       </template>
                     </el-input>
                   </el-form-item>
                   <el-row class="w-full items-center m-b-4.5" justify="space-between">
-                    <el-checkbox v-model="isRemember" :label="$t('login.rememberPassword')" size="large" />
+                    <el-checkbox
+                      size="large"
+                      v-model="isRemember"
+                      :label="$t('login.rememberPassword')"
+                    />
                     <el-link type="primary">{{ $t('login.forgetPassword') }}</el-link>
                   </el-row>
                   <Captcha @result="onSubmitResult">
@@ -46,10 +58,16 @@
                 </el-form>
               </el-tab-pane>
               <el-tab-pane name="second">
-                <template #label><span class="label">{{ $t('login.loginWithMobile') }}</span></template>
+                <template #label>
+                  <span class="label">{{ $t('login.loginWithMobile') }}</span>
+                </template>
                 <el-form :model="mobileForm" ref="mobileRef" :rules="mobileRules">
                   <el-form-item prop="mobile">
-                    <el-input v-model="mobileForm.mobile" clearable :placeholder="$t('login.mobilePlaceholder')">
+                    <el-input
+                      clearable
+                      v-model="mobileForm.mobile"
+                      :placeholder="$t('login.mobilePlaceholder')"
+                    >
                       <template #prefix>
                         <i class="i-ri:tablet-line" />
                       </template>
@@ -57,7 +75,11 @@
                   </el-form-item>
                   <el-form-item prop="captcha">
                     <div class="flex w-full flex-row">
-                      <el-input v-model="mobileForm.captcha" clearable :placeholder="$t('login.captchaPlaceholder')">
+                      <el-input
+                        clearable
+                        v-model="mobileForm.captcha"
+                        :placeholder="$t('login.captchaPlaceholder')"
+                      >
                         <template #prefix>
                           <i class="i-ri:shield-user-line" />
                         </template>
@@ -94,7 +116,9 @@
           </div>
         </div>
         <div class="third">
-          <el-divider><span class="divider">{{ $t('login.otherPlatform') }}</span></el-divider>
+          <el-divider>
+            <span class="divider">{{ $t('login.otherPlatform') }}</span>
+          </el-divider>
           <div class="icons">
             <el-tooltip placement="bottom" v-for="(v, i) in platforms" :key="i" :content="v.title">
               <div class="icon" :style="`background-color:${v.color} ;`">
@@ -186,7 +210,7 @@ const onSubmitResult = (result: boolean) => {
 
   .name {
     @apply flex flex-col center md:flex-row;
-    background: linear-gradient(to right, var(--el-color-primary), #F74952) no-repeat right bottom;
+    background: linear-gradient(to right, var(--el-color-primary), #f74952) no-repeat right bottom;
     background-size: 0 2px;
     transition: background-size 0.5s ease-in-out;
 
