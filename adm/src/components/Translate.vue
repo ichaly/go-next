@@ -2,7 +2,7 @@
   <el-dropdown class="h-full" @command="onCommand">
     <flat-button>
       <el-icon :size="18">
-        <i class="i-icon-park-outline:translate" />
+        <i class="i-ri:translate-2" />
       </el-icon>
     </flat-button>
     <template #dropdown>

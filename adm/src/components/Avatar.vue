@@ -8,27 +8,27 @@
     <template #dropdown>
       <el-dropdown-menu>
         <el-dropdown-item>
-          <i class="i-icon-park-outline:user" />
+          <i class="i-ri:user-3-line text-lg" />
           <span>个人信息</span>
         </el-dropdown-item>
         <el-dropdown-item>
-          <i class="i-icon-park-outline:edit" />
+          <i class="i-ri:edit-line text-lg" />
           <span>修改密码</span>
         </el-dropdown-item>
         <el-dropdown-item divided>
-          <i class="i-icon-park-outline:help" />
+          <i class="i-ri:question-line text-lg" />
           <span>帮助文档</span>
         </el-dropdown-item>
         <el-dropdown-item>
-          <i class="i-icon-park-outline:tips" />
+          <i class="i-ri:lightbulb-flash-line text-lg" />
           <span>功能更新</span>
         </el-dropdown-item>
         <el-dropdown-item divided>
-          <i class="i-icon-park-outline:lock" />
+          <i class="i-ri:lock-line text-lg" />
           <span>锁定屏幕</span>
         </el-dropdown-item>
         <el-dropdown-item @click="$router.push('/login')">
-          <i class="i-icon-park-outline:power" />
+          <i class="i-ri:logout-box-r-line text-lg" />
           <span>退出登录</span>
         </el-dropdown-item>
       </el-dropdown-menu>

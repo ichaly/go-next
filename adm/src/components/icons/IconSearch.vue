@@ -1,5 +1,5 @@
 <template>
   <el-icon :size="18">
-    <i class="i-icon-park-outline:search" />
+    <i class="i-ri:search-line" />
   </el-icon>
 </template>

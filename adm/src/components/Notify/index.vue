@@ -4,7 +4,7 @@
       <flat-button>
         <el-badge :value="total" :max="99" class="h-4.5">
           <el-icon :size="18">
-            <i class="i-icon-park-outline:remind" />
+            <i class="i-ri:notification-3-line" />
           </el-icon>
         </el-badge>
       </flat-button>

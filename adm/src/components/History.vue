@@ -23,40 +23,40 @@
             <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item @click="removeTab(name)">
-                  <el-icon :size="18">
-                    <i class="i-icon-park-outline:close" />
+                  <el-icon :size="22">
+                    <i class="i-ri:close-fill" />
                   </el-icon>
-                  关闭当前标签页
+                  关闭当前
                 </el-dropdown-item>
                 <el-dropdown-item
                   @click="removeTab(name, 'left')"
                   v-if="isFirstOrLast(name, 'left')"
                 >
-                  <el-icon :size="18">
-                    <i class="i-icon-park-outline:to-left" />
+                  <el-icon :size="22">
+                    <i class="i-ri:contract-left-line" />
                   </el-icon>
-                  关闭左侧标签页
+                  关闭左侧
                 </el-dropdown-item>
                 <el-dropdown-item
                   @click="removeTab(name, 'right')"
                   v-if="isFirstOrLast(name, 'right')"
                 >
-                  <el-icon :size="18">
-                    <i class="i-icon-park-outline:to-right" />
+                  <el-icon :size="22">
+                    <i class="i-ri:contract-right-line" />
                   </el-icon>
-                  关闭右侧标签页
+                  关闭右侧
                 </el-dropdown-item>
                 <el-dropdown-item @click="removeTab(name, 'other')" v-if="size > 1">
-                  <el-icon :size="18">
-                    <i class="i-icon-park-outline:off-screen-two" />
+                  <el-icon :size="22">
+                    <i class="i-ri:contract-left-right-line" />
                   </el-icon>
-                  关闭其他标签页
+                  关闭其他
                 </el-dropdown-item>
                 <el-dropdown-item @click="removeTab(name, 'all')">
-                  <el-icon :size="18">
-                    <i class="i-icon-park-outline:full-screen-two" />
+                  <el-icon :size="22">
+                    <i class="i-ri:expand-left-right-line" />
                   </el-icon>
-                  关闭全部标签页
+                  关闭全部
                 </el-dropdown-item>
               </el-dropdown-menu>
             </template>

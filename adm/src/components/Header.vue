@@ -2,7 +2,7 @@
   <div class="flex items-center h-full">
     <flat-button @click="toggleCollapse()">
       <el-icon :size="18" :class="['transition-transform', { '-scale-x-100': isCollapse }]">
-        <i class="i-icon-park-outline:indent-left" />
+        <i class="i-ri:indent-decrease" />
       </el-icon>
     </flat-button>
     <div class="flex-1 pl-2">
@@ -11,8 +11,8 @@
     <Search />
     <flat-button @click="toggleFullscreen()">
       <el-icon :size="18">
-        <i class="i-icon-park-outline:off-screen-one" v-if="isFullscreen" />
-        <i class="i-icon-park-outline:full-screen-one" v-else />
+        <i class="i-ri:fullscreen-exit-line" v-if="isFullscreen" />
+        <i class="i-ri:fullscreen-line" v-else />
       </el-icon>
     </flat-button>
     <Notify />

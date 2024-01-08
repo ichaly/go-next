@@ -32,7 +32,7 @@
                       show-password
                       placeholder="请输入密码">
                       <template #prefix>
-                        <i class="i-ri:lock-line" />
+                        <i class="i-ri:lock-password-line" />
                       </template>
                     </el-input>
                   </el-form-item>

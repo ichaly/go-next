@@ -22,10 +22,7 @@ export default defineConfig({
       collections: {
         ep: () => import('@iconify-json/ep/icons.json').then((i) => i.default),
         ri: () => import('@iconify-json/ri/icons.json').then((i) => i.default),
-        mdi: () => import('@iconify-json/mdi/icons.json').then((i) => i.default),
-        carbon: () => import('@iconify-json/carbon/icons.json').then((i) => i.default),
-        'icon-park-outline': () =>
-          import('@iconify-json/icon-park-outline/icons.json').then((i) => i.default)
+        mdi: () => import('@iconify-json/mdi/icons.json').then((i) => i.default)
       }
     }),
     presetAttributify()
