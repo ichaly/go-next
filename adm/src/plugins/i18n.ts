@@ -12,6 +12,7 @@ const messages = Object.entries(
 export const i18n = createI18n({
   messages,
   legacy: false, // Componsition API需要设置为false
+  fallbackLocale: 'cn', // 默认语言
   locale: storage.value, // 当前使用的语言类型
   globalInjection: true // 可以在template模板中使用$t
 })
