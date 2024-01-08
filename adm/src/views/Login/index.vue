@@ -15,10 +15,10 @@
           <div class="account" v-if="!isScan">
             <el-tabs v-model="activeTab" stretch>
               <el-tab-pane name="first">
-                <template #label><span class="label">密码登录</span></template>
+                <template #label><span class="label">{{ $t('login.loginWithPassword') }}</span></template>
                 <el-form :model="accountForm" ref="accountRef" :rules="accountRules">
                   <el-form-item prop="username">
-                    <el-input v-model="accountForm.username" clearable placeholder="手机/邮箱/账号">
+                    <el-input v-model="accountForm.username" clearable :placeholder="$t('login.usernamePlaceholder')">
                       <template #prefix>
                         <i class="i-ri:user-5-line" />
                       </template>
@@ -30,26 +30,26 @@
                       type="password"
                       clearable
                       show-password
-                      placeholder="请输入密码">
+                      :placeholder="$t('login.passwordPlaceholder')">
                       <template #prefix>
                         <i class="i-ri:lock-password-line" />
                       </template>
                     </el-input>
                   </el-form-item>
                   <el-row class="w-full items-center m-b-4.5" justify="space-between">
-                    <el-checkbox v-model="isRemember" label="记住密码" size="large" />
-                    <el-link type="primary">找回密码</el-link>
+                    <el-checkbox v-model="isRemember" :label="$t('login.rememberPassword')" size="large" />
+                    <el-link type="primary">{{ $t('login.forgetPassword') }}</el-link>
                   </el-row>
                   <Captcha @result="onSubmitResult">
-                    <el-button type="primary" class="w-full">立即登录</el-button>
+                    <el-button type="primary" class="w-full">{{ $t('login.signIn') }}</el-button>
                   </Captcha>
                 </el-form>
               </el-tab-pane>
               <el-tab-pane name="second">
-                <template #label><span class="label">免密登录</span></template>
+                <template #label><span class="label">{{ $t('login.loginWithMobile') }}</span></template>
                 <el-form :model="mobileForm" ref="mobileRef" :rules="mobileRules">
                   <el-form-item prop="mobile">
-                    <el-input v-model="mobileForm.mobile" clearable placeholder="手机/邮箱">
+                    <el-input v-model="mobileForm.mobile" clearable :placeholder="$t('login.mobilePlaceholder')">
                       <template #prefix>
                         <i class="i-ri:tablet-line" />
                       </template>
@@ -57,42 +57,44 @@
                   </el-form-item>
                   <el-form-item prop="captcha">
                     <div class="flex w-full flex-row">
-                      <el-input v-model="mobileForm.captcha" clearable placeholder="请输入验证码">
+                      <el-input v-model="mobileForm.captcha" clearable :placeholder="$t('login.captchaPlaceholder')">
                         <template #prefix>
                           <i class="i-ri:shield-user-line" />
                         </template>
                       </el-input>
                       <div class="w-3"></div>
                       <Captcha @result="onCaptchaResult">
-                        <el-button type="primary">获取验证码</el-button>
+                        <el-button type="primary">{{ $t('login.getCaptcha') }}</el-button>
                       </Captcha>
                     </div>
                   </el-form-item>
                   <el-row class="desc w-full m-b-4.5">
                     <el-checkbox v-model="isRemember" size="large" />
                     <span class="ml-2"></span>
-                    我已阅读并同意&nbsp;
-                    <el-link type="primary" class="link">用户协议</el-link>
-                    &nbsp;和&nbsp;
-                    <el-link type="primary" class="link">隐私政策</el-link>
+                    <i18n-t keypath="login.protocol">
+                      <el-link type="primary" class="link">{{ $t('login.userAgreement') }}</el-link>
+                      <el-link type="primary" class="link">{{ $t('login.privacyPolicy') }}</el-link>
+                    </i18n-t>
                   </el-row>
-                  <el-button type="primary" class="w-full" @click="onSubmit(mobileRef)">登录/注册</el-button>
+                  <el-button type="primary" class="w-full" @click="onSubmit(mobileRef)">
+                    {{ $t('login.signUp') }}
+                  </el-button>
                 </el-form>
               </el-tab-pane>
             </el-tabs>
           </div>
           <div class="scan" v-else>
-            <div class="title">手机扫码，安全登陆</div>
+            <div class="title">{{ $t('login.scanTitle') }}</div>
             <qrcode-vue :value="content" size="132" class="code" />
             <div class="desc">
-              使用&nbsp;
-              <el-link type="primary" class="link">客户端</el-link>
-              &nbsp;扫描二维码安全快速登录
+              <i18n-t keypath="login.scanDescription">
+                <el-link type="primary" class="link">{{ $t('login.client') }}</el-link>
+              </i18n-t>
             </div>
           </div>
         </div>
         <div class="third">
-          <el-divider><span class="divider">其他方式登录</span></el-divider>
+          <el-divider><span class="divider">{{ $t('login.otherPlatform') }}</span></el-divider>
           <div class="icons">
             <el-tooltip placement="bottom" v-for="(v, i) in platforms" :key="i" :content="v.title">
               <div class="icon" :style="`background-color:${v.color} ;`">
