@@ -94,9 +94,11 @@
         <div class="third">
           <el-divider><span class="divider">其他方式登录</span></el-divider>
           <div class="icons">
-            <div class="icon" v-for="(v, i) in platforms" :key="i" :style="`background-color:${v.color} ;`">
-              <i :class="v.icon" />
-            </div>
+            <el-tooltip placement="bottom" v-for="(v, i) in platforms" :key="i" :content="v.title">
+              <div class="icon" :style="`background-color:${v.color} ;`">
+                <i :class="v.icon" />
+              </div>
+            </el-tooltip>
           </div>
         </div>
       </div>
@@ -111,13 +113,14 @@ import type { FormInstance, FormRules } from 'element-plus'
 interface Platform {
   icon: string
   color: string
+  title: string
 }
 
 const platforms = ref<Array<Platform>>([
-  { icon: 'i-ri:wechat-line', color: '#4caf50' },
-  { icon: 'i-ri:weibo-line', color: '#ff9800' },
-  { icon: 'i-ri:qq-line', color: '#2196f3' },
-  { icon: 'i-ri:github-line', color: '#000000' }
+  { icon: 'i-ri:wechat-line', color: '#4caf50', title: '微信' },
+  { icon: 'i-ri:weibo-line', color: '#ff9800', title: '微博' },
+  { icon: 'i-ri:qq-line', color: '#2196f3', title: 'QQ' },
+  { icon: 'i-ri:github-line', color: '#000000', title: 'Github' }
 ])
 const [isScan, toggleScan] = useToggle(false)
 const [isRemember] = useToggle(true)
