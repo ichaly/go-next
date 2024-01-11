@@ -5,11 +5,11 @@
   </div>
 </template>
 <style scoped lang="scss">
-@mixin border() {
+@mixin border($duration:2s) {
   border-radius: 50%;
   border: 3px solid transparent;
   border-top-color: #409eff;
-  animation: spin 2s linear infinite;
+  animation: spin $duration linear infinite;
 }
 
 @keyframes spin {
@@ -38,8 +38,7 @@
     content: '';
     position: absolute;
     inset: 15px;
-    @include border;
-    animation-duration: 3s;
+    @include border(3s);
   }
 }
 
