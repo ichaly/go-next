@@ -4,7 +4,14 @@
     <div class="load_title">正在努力加载中</div>
   </div>
 </template>
-<style scoped>
+<style scoped lang="scss">
+@mixin border() {
+  border-radius: 50%;
+  border: 3px solid transparent;
+  border-top-color: #409eff;
+  animation: spin 2s linear infinite;
+}
+
 @keyframes spin {
   0% {
     transform: rotate(0deg);
@@ -17,36 +24,22 @@
 .loader {
   width: 50px;
   height: 50px;
-  border-radius: 50%;
   position: relative;
-  border: 3px solid transparent;
-  border-top-color: #409eff;
-  animation: spin 2s linear infinite;
+  @include border;
 
   &:before {
     content: '';
     position: absolute;
-    top: 5px;
-    left: 5px;
-    right: 5px;
-    bottom: 5px;
-    border-radius: 50%;
-    border: 3px solid transparent;
-    border-top-color: #409eff;
-    animation: spin 2s linear infinite;
+    inset: 5px;
+    @include border;
   }
 
   &:after {
     content: '';
     position: absolute;
-    top: 15px;
-    left: 15px;
-    right: 15px;
-    bottom: 15px;
-    border-radius: 50%;
-    border: 3px solid transparent;
-    border-top-color: #409eff;
-    animation: spin 2s linear infinite;
+    inset: 15px;
+    @include border;
+    animation-duration: 3s;
   }
 }
 
