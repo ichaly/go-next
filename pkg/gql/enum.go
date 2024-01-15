@@ -5,10 +5,8 @@ import (
 	"reflect"
 )
 
-var _enumType = reflect.TypeOf((*GqlEnum)(nil)).Elem()
-
 type GqlEnum interface {
-	GqlObject
+	GqlDescription
 	EnumValues() map[string]*struct {
 		Value             interface{}
 		Description       string
@@ -17,8 +15,7 @@ type GqlEnum interface {
 }
 
 func (my *Engine) asEnum(typ reflect.Type) (graphql.Type, error) {
-	isEnum := typ.Implements(_enumType)
-	if !isEnum {
+	if _, isEnum := reflect.New(typ).Interface().(GqlEnum); !isEnum {
 		return nil, nil
 	}
 

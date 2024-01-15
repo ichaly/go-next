@@ -6,15 +6,12 @@ import (
 	"reflect"
 )
 
-var _idType = reflect.TypeOf((*GqlID)(nil)).Elem()
-
 type GqlID interface {
 	ID()
 }
 
 func (my *Engine) asId(typ reflect.Type) (graphql.Type, error) {
-	isId := typ.Implements(_idType)
-	if !isId {
+	if _, isId := reflect.New(typ).Interface().(GqlID); !isId {
 		return nil, nil
 	}
 

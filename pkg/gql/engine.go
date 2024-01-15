@@ -53,7 +53,7 @@ func (my *Engine) Register(node Schema) error {
 		args["delete"] = &graphql.ArgumentConfig{Type: graphql.Boolean}
 	}
 	description := ""
-	if n, ok := node.(GqlObject); ok {
+	if n, ok := node.(GqlDescription); ok {
 		description = n.Description()
 	}
 	host.AddFieldConfig(node.Name(), &graphql.Field{

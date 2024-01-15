@@ -6,17 +6,14 @@ import (
 	"reflect"
 )
 
-var _scalarType = reflect.TypeOf((*GqlScalar)(nil)).Elem()
-
 type GqlScalar interface {
-	GqlObject
+	GqlDescription
 	Marshal() interface{}
 	Unmarshal(value interface{})
 }
 
 func (my *Engine) asCustomScalar(typ reflect.Type) (graphql.Type, error) {
-	isScalar := typ.Implements(_scalarType)
-	if !isScalar {
+	if _, isScalar := reflect.New(typ).Interface().(GqlScalar); !isScalar {
 		return nil, nil
 	}
 

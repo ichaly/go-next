@@ -8,9 +8,7 @@ import (
 	"strings"
 )
 
-var _objectType = reflect.TypeOf((*GqlObject)(nil)).Elem()
-
-type GqlObject interface {
+type GqlDescription interface {
 	Description() string
 }
 
@@ -34,8 +32,8 @@ func (my *Engine) buildObject(base reflect.Type) (*graphql.Object, error) {
 	}
 
 	name, desc := typ.Name(), ""
-	if isObject := typ.Implements(_objectType); isObject {
-		desc = newPrototype(typ).(GqlObject).Description()
+	if v, ok := reflect.New(typ).Interface().(GqlDescription); ok {
+		desc = v.Description()
 	}
 	o := graphql.NewObject(graphql.ObjectConfig{
 		Name: name, Description: desc, Fields: graphql.Fields{},

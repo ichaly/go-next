@@ -22,7 +22,7 @@ func (my Kind) Value() (driver.Value, error) {
 }
 
 func (Kind) Description() string {
-	return "Content type"
+	return "内容类型"
 }
 
 func (Kind) EnumValues() map[string]*struct {
