@@ -11,7 +11,6 @@ type Schema interface {
 	Name() string
 	Host() interface{}
 	Type() interface{}
-	Description() string
 	Resolve(p graphql.ResolveParams) (interface{}, error)
 }
 

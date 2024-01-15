@@ -52,8 +52,12 @@ func (my *Engine) Register(node Schema) error {
 		args["data"] = &graphql.ArgumentConfig{Type: my.types[outType.Name()+"DataInput"]}
 		args["delete"] = &graphql.ArgumentConfig{Type: graphql.Boolean}
 	}
+	description := ""
+	if n, ok := node.(GqlObject); ok {
+		description = n.Description()
+	}
 	host.AddFieldConfig(node.Name(), &graphql.Field{
-		Type: wrapType(out, outType), Args: args, Resolve: node.Resolve, Description: node.Description(),
+		Type: wrapType(out, outType), Args: args, Resolve: node.Resolve, Description: description,
 	})
 	return nil
 }
