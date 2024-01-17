@@ -7,6 +7,11 @@ import (
 	"reflect"
 )
 
+type SchemaMeta[P any, R any] struct {
+	parentType P
+	returnType R
+}
+
 type Schema interface {
 	Name() string
 	Host() interface{}
