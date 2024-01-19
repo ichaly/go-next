@@ -14,5 +14,9 @@ var Modules = fx.Options(
 			Group:  "schema",
 			Target: NewContentMutation,
 		},
+		fx.Annotated{
+			Group:  "schema",
+			Target: NewContentCreatedBy,
+		},
 	),
 )
