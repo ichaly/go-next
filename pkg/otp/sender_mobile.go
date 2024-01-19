@@ -5,7 +5,7 @@ import (
 	dysmsapi "github.com/alibabacloud-go/dysmsapi-20170525/v3/client"
 	utilapi "github.com/alibabacloud-go/tea-utils/v2/service"
 	"github.com/alibabacloud-go/tea/tea"
-	"github.com/ichaly/go-next/app/sys"
+	"github.com/ichaly/go-next/lib/sys"
 	"github.com/ichaly/go-next/pkg/base"
 	"github.com/ichaly/go-next/pkg/util"
 	"github.com/ichaly/go-next/pkg/zlog"

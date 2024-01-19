@@ -4,8 +4,6 @@ go 1.21.1
 
 require (
 	github.com/go-resty/resty/v2 v2.10.0
-	github.com/ichaly/go-next/app v0.0.0-20231030151253-9bfb8ce9b7a0
-	github.com/ichaly/go-next/pkg v0.0.0-20231030151253-9bfb8ce9b7a0
 	github.com/joho/godotenv v1.5.1
 	github.com/rs/zerolog v1.31.0
 	github.com/spf13/cobra v1.7.0

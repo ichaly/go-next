@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/ichaly/go-next/app/sys"
+	"github.com/ichaly/go-next/lib/sys"
 	"github.com/ichaly/go-next/pkg/auth"
 	"github.com/ichaly/go-next/pkg/base"
 	"gorm.io/gorm"

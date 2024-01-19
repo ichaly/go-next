@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/ichaly/go-next/main/cmd"
+	"github.com/ichaly/go-next/main/cli"
 	"github.com/ichaly/go-next/pkg/zlog"
 	"github.com/joho/godotenv"
 	"github.com/rs/zerolog"
@@ -37,5 +37,5 @@ func main() {
 		log.Fatalf("Some error occured. Err: %s", err)
 	}
 
-	cmd.Execute()
+	cli.Execute()
 }

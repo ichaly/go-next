@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-oauth2/oauth2/v4"
 	"github.com/graphql-go/graphql/gqlerrors"
-	"github.com/ichaly/go-next/app/sys"
+	"github.com/ichaly/go-next/lib/sys"
 	"github.com/ichaly/go-next/pkg/base"
 	"github.com/ichaly/go-next/pkg/util"
 	"gorm.io/gorm"

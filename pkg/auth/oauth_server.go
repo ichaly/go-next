@@ -9,7 +9,7 @@ import (
 	"github.com/go-oauth2/oauth2/v4/manage"
 	"github.com/go-oauth2/oauth2/v4/server"
 	"github.com/golang-jwt/jwt"
-	"github.com/ichaly/go-next/app/sys"
+	"github.com/ichaly/go-next/lib/sys"
 	"github.com/ichaly/go-next/pkg/base"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"

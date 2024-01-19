@@ -3,7 +3,7 @@ package otp
 import (
 	"bytes"
 	"fmt"
-	"github.com/ichaly/go-next/app/sys"
+	"github.com/ichaly/go-next/lib/sys"
 	"github.com/ichaly/go-next/pkg/base"
 	"github.com/jordan-wright/email"
 	"html/template"

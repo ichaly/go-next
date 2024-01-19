@@ -25,7 +25,6 @@ require (
 	github.com/gorilla/sessions v1.2.1
 	github.com/graphql-go/graphql v0.8.1
 	github.com/iancoleman/strcase v0.3.0
-	github.com/ichaly/go-next/app v0.0.0-20231030151253-9bfb8ce9b7a0
 	github.com/invzhi/next v1.1.1
 	github.com/jordan-wright/email v4.0.1-0.20210109023952-943e75fe5223+incompatible
 	github.com/mitchellh/mapstructure v1.5.0

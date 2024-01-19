@@ -2,7 +2,7 @@ package user
 
 import (
 	"github.com/graphql-go/graphql"
-	"github.com/ichaly/go-next/app/sys"
+	"github.com/ichaly/go-next/lib/sys"
 	"github.com/ichaly/go-next/pkg/base"
 	"github.com/ichaly/go-next/pkg/gql"
 	"github.com/ichaly/go-next/pkg/util"

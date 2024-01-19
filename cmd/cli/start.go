@@ -1,7 +1,8 @@
-package cmd
+package cli
 
 import (
-	"github.com/ichaly/go-next/app"
+	"github.com/ichaly/go-next/api"
+	"github.com/ichaly/go-next/lib"
 	"github.com/ichaly/go-next/pkg"
 	"github.com/spf13/cobra"
 	"go.uber.org/fx"
@@ -19,7 +20,8 @@ var runCmd = &cobra.Command{
 			configFile = filepath.Join("./cfg", "dev.yml")
 		}
 		fx.New(
-			app.Modules,
+			api.Modules,
+			lib.Modules,
 			pkg.Modules,
 			fx.Supply(configFile),
 		).Run()
