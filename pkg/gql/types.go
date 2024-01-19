@@ -9,13 +9,10 @@ import (
 
 type SchemaMeta[P any, R any] struct {
 	parentType P
-	returnType R
+	resultType R
 }
 
 type Schema interface {
-	Name() string
-	Host() interface{}
-	Type() interface{}
 	Resolve(p graphql.ResolveParams) (interface{}, error)
 }
 

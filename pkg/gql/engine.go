@@ -6,6 +6,12 @@ import (
 	"reflect"
 )
 
+const (
+	QUERY        = "Query"
+	MUTATION     = "Mutation"
+	SUBSCRIPTION = "Subscription"
+)
+
 type Engine struct {
 	types map[string]graphql.Type
 }
@@ -19,58 +25,69 @@ func (my *Engine) Register(node Schema) error {
 		return fmt.Errorf("node can't be nil")
 	}
 
-	out := reflect.TypeOf(node.Type())
-	outType, err := parseType(out, "result",
+	nodeType := reflect.TypeOf(node)
+	if nodeType.Kind() == reflect.Ptr {
+		nodeType = nodeType.Elem()
+	}
+	field, ok := nodeType.FieldByName("SchemaMeta")
+	if !ok {
+		return fmt.Errorf("field 'Schema Meta' not found")
+	}
+
+	name := field.Tag.Get("name")
+	if name == "" {
+		name = nodeType.Name()
+	}
+	description := field.Tag.Get("description")
+	parentField, _ := nodeType.FieldByName("parentType")
+	resultField, _ := nodeType.FieldByName("resultType")
+
+	resultType, err := parseType(resultField.Type, "result",
 		my.asBuiltinScalar, my.asCustomScalar, my.asId, my.asEnum, my.asObject,
 	)
 	if err != nil {
 		return err
 	}
-	obj := reflect.TypeOf(node.Host())
-	objType, err := parseType(obj, "host",
+	parentType, err := parseType(parentField.Type, "parent",
 		my.asBuiltinScalar, my.asCustomScalar, my.asId, my.asEnum, my.asObject,
 	)
 	if err != nil {
 		return err
 	}
 
-	host, ok := objType.(*graphql.Object)
+	parent, ok := parentType.(*graphql.Object)
 	if !ok {
-		return fmt.Errorf("invalid host %s", node.Host())
+		return fmt.Errorf("invalid parent %s", parentField.Type)
 	}
 
 	var args graphql.FieldConfigArgument
-	if _, ok := outType.(*graphql.Object); ok {
+	if _, ok := resultType.(*graphql.Object); ok {
 		args = graphql.FieldConfigArgument{
 			"size":  {Type: graphql.Int},
 			"page":  {Type: graphql.Int},
-			"sort":  {Type: my.types[outType.Name()+"SortInput"]},
-			"where": {Type: my.types[outType.Name()+"WhereInput"]},
+			"sort":  {Type: my.types[resultType.Name()+"SortInput"]},
+			"where": {Type: my.types[resultType.Name()+"WhereInput"]},
 		}
 	}
-	if host.Name() == "mutation" {
-		args["data"] = &graphql.ArgumentConfig{Type: my.types[outType.Name()+"DataInput"]}
+	if parent.Name() == MUTATION {
+		args["data"] = &graphql.ArgumentConfig{Type: my.types[resultType.Name()+"DataInput"]}
 		args["delete"] = &graphql.ArgumentConfig{Type: graphql.Boolean}
 	}
-	description := ""
-	if n, ok := node.(GqlDescription); ok {
-		description = n.Description()
-	}
-	host.AddFieldConfig(node.Name(), &graphql.Field{
-		Type: wrapType(out, outType), Args: args, Resolve: node.Resolve, Description: description,
+	parent.AddFieldConfig(name, &graphql.Field{
+		Type: wrapType(resultField.Type, resultType), Args: args, Resolve: node.Resolve, Description: description,
 	})
 	return nil
 }
 
 func (my *Engine) Schema() (graphql.Schema, error) {
 	config := graphql.SchemaConfig{}
-	if q := my.checkObject("Query"); q != nil {
+	if q := my.checkObject(QUERY); q != nil {
 		config.Query = q
 	}
-	if m := my.checkObject("Mutation"); m != nil {
+	if m := my.checkObject(MUTATION); m != nil {
 		config.Mutation = m
 	}
-	if s := my.checkObject("Subscription"); s != nil {
+	if s := my.checkObject(SUBSCRIPTION); s != nil {
 		config.Subscription = s
 	}
 	return graphql.NewSchema(config)
