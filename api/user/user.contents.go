@@ -10,6 +10,8 @@ import (
 )
 
 type contents struct {
+	gql.SchemaMeta[sys.User, []*cms.Content] `name:"contents" description:"用户作品"`
+
 	db     *gorm.DB
 	loader *gql.Loader[uint64, []*cms.Content]
 }
@@ -18,22 +20,6 @@ func NewUserContents(db *gorm.DB) gql.Schema {
 	my := &contents{db: db}
 	my.loader = gql.NewBatchedLoader(my.batchContents)
 	return my
-}
-
-func (*contents) Name() string {
-	return "contents"
-}
-
-func (*contents) Description() string {
-	return "用户作品"
-}
-
-func (*contents) Host() interface{} {
-	return User
-}
-
-func (*contents) Type() interface{} {
-	return []*cms.Content{}
 }
 
 func (my *contents) Resolve(p graphql.ResolveParams) (interface{}, error) {

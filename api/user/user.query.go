@@ -10,30 +10,14 @@ import (
 	"gorm.io/gorm"
 )
 
-var User = &sys.User{}
-
 type query struct {
+	gql.SchemaMeta[gql.Query, []*sys.User] `name:"users" description:"用户列表"`
+
 	db *gorm.DB
 }
 
 func NewUserQuery(db *gorm.DB) gql.Schema {
 	return &query{db: db}
-}
-
-func (*query) Name() string {
-	return "users"
-}
-
-func (*query) Description() string {
-	return "用户列表"
-}
-
-func (*query) Host() interface{} {
-	return &gql.Query{}
-}
-
-func (my *query) Type() interface{} {
-	return []*sys.User{}
 }
 
 func (my *query) Resolve(p graphql.ResolveParams) (interface{}, error) {

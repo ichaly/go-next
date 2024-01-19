@@ -9,28 +9,14 @@ import (
 )
 
 type mutation struct {
+	gql.SchemaMeta[gql.Mutation, *sys.User] `name:"users" description:"用户管理"`
+
 	db       *gorm.DB
 	validate *base.Validate
 }
 
 func NewUserMutation(d *gorm.DB, v *base.Validate) gql.Schema {
 	return &mutation{db: d, validate: v}
-}
-
-func (*mutation) Name() string {
-	return "users"
-}
-
-func (*mutation) Description() string {
-	return "用户管理"
-}
-
-func (*mutation) Host() interface{} {
-	return &gql.Mutation{}
-}
-
-func (*mutation) Type() interface{} {
-	return User
 }
 
 func (my *mutation) Resolve(p graphql.ResolveParams) (interface{}, error) {

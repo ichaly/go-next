@@ -8,30 +8,14 @@ import (
 	"gorm.io/gorm"
 )
 
-var Content = &cms.Content{}
-
 type query struct {
+	gql.SchemaMeta[gql.Query, []*cms.Content] `name:"contents" description:"内容列表"`
+
 	db *gorm.DB
 }
 
 func NewContentQuery(db *gorm.DB) gql.Schema {
 	return &query{db: db}
-}
-
-func (*query) Name() string {
-	return "contents"
-}
-
-func (*query) Description() string {
-	return "内容列表"
-}
-
-func (*query) Host() interface{} {
-	return &gql.Query{}
-}
-
-func (*query) Type() interface{} {
-	return []*cms.Content{}
 }
 
 func (my *query) Resolve(p graphql.ResolveParams) (interface{}, error) {
