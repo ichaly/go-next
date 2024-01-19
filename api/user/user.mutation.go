@@ -26,7 +26,7 @@ func (*mutation) Description() string {
 }
 
 func (*mutation) Host() interface{} {
-	return gql.Mutation
+	return &gql.Mutation{}
 }
 
 func (*mutation) Type() interface{} {

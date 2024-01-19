@@ -64,13 +64,13 @@ func (my *Engine) Register(node Schema) error {
 
 func (my *Engine) Schema() (graphql.Schema, error) {
 	config := graphql.SchemaConfig{}
-	if q := my.checkObject("query"); q != nil {
+	if q := my.checkObject("Query"); q != nil {
 		config.Query = q
 	}
-	if m := my.checkObject("mutation"); m != nil {
+	if m := my.checkObject("Mutation"); m != nil {
 		config.Mutation = m
 	}
-	if s := my.checkObject("subscription"); s != nil {
+	if s := my.checkObject("Subscription"); s != nil {
 		config.Subscription = s
 	}
 	return graphql.NewSchema(config)

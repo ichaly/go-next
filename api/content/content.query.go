@@ -27,7 +27,7 @@ func (*query) Description() string {
 }
 
 func (*query) Host() interface{} {
-	return gql.Query
+	return &gql.Query{}
 }
 
 func (*query) Type() interface{} {

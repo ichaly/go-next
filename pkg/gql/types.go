@@ -22,20 +22,14 @@ type Schema interface {
 type typeParser func(typ reflect.Type) (graphql.Type, error)
 
 type (
-	query        struct{}
-	mutation     struct{}
-	subscription struct{}
+	Query        struct{}
+	Mutation     struct{}
+	Subscription struct{}
 	input        struct {
 		Name string
 		Desc string
 		Type graphql.Type
 	}
-)
-
-var (
-	Query        = &query{}
-	Mutation     = &mutation{}
-	Subscription = &subscription{}
 )
 
 var (
