@@ -17,7 +17,7 @@ func (my OauthKind) Value() (driver.Value, error) {
 }
 
 type Oauth struct {
-	Uid   base.ID   `gorm:"primaryKey;autoIncrement:false;comment:用户ID" json:",omitempty"`
+	Uid   base.Id   `gorm:"primaryKey;autoIncrement:false;comment:用户ID" json:",omitempty"`
 	Kind  OauthKind `gorm:"primaryKey;size:50;comment:类型"`
 	Value string    `gorm:"primaryKey;size:100;comment:值"`
 	base.Entity

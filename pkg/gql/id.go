@@ -1,7 +1,6 @@
 package gql
 
 import (
-	"fmt"
 	"github.com/graphql-go/graphql"
 	"reflect"
 )
@@ -24,8 +23,7 @@ func (my *Engine) asId(typ reflect.Type) (graphql.Type, error) {
 	case reflect.Uint64, reflect.Uint, reflect.Uint32,
 		reflect.Int64, reflect.Int, reflect.Int32,
 		reflect.String:
-	default:
-		panic(fmt.Errorf("%s cannot be used as an ID", base.String()))
+		return graphql.ID, nil
 	}
-	return graphql.ID, nil
+	return nil, nil
 }

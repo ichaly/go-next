@@ -62,7 +62,7 @@ func passwordAuthorizationHandler(c *base.Config, us *sys.UserService) func(cont
 				return "", err
 			}
 		}
-		return strconv.FormatUint(uint64(usr.ID), 10), nil
+		return strconv.FormatUint(uint64(usr.Id), 10), nil
 	}
 }
 

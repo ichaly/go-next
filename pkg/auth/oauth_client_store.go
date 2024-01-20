@@ -61,7 +61,7 @@ func (my *Client) encryptSecret(tx *gorm.DB) error {
 }
 
 func (my *Client) GetID() string {
-	return util.FormatLong(int64(my.ID))
+	return util.FormatLong(int64(my.Id))
 }
 
 func (my *Client) GetSecret() string {

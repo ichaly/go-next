@@ -37,7 +37,7 @@ func (my *createdBy) batchUsers(ctx context.Context, keys []*uint64) []*gql.Resu
 	//分组数据
 	values := make(map[uint64]*sys.User)
 	for _, v := range res {
-		values[uint64(v.ID)] = v
+		values[uint64(v.Id)] = v
 	}
 	//填充结果集
 	results := make([]*gql.Result[*sys.User], len(keys))

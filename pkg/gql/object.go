@@ -56,7 +56,8 @@ func (my *Engine) parseFields(typ reflect.Type, obj *graphql.Object, dep int) er
 		if !f.IsExported() {
 			continue
 		}
-		if f.Anonymous {
+
+		if f.Anonymous && f.Type.String() != "base.Id" {
 			sub, err := unwrap(f.Type)
 			if err != nil {
 				return err

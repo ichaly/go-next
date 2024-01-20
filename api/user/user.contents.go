@@ -23,7 +23,7 @@ func NewUserContents(db *gorm.DB) gql.Schema {
 }
 
 func (my *contents) Resolve(p graphql.ResolveParams) (interface{}, error) {
-	uid := uint64(p.Source.(*sys.User).ID)
+	uid := uint64(p.Source.(*sys.User).Id)
 	thunk := my.loader.Load(p.Context, uid)
 	return func() (interface{}, error) {
 		return thunk()

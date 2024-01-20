@@ -12,12 +12,12 @@ type userContextKeyType struct{}
 
 var UserContextKey = userContextKeyType{}
 
-type ID uint64
+type Id uint64
 
-func (my ID) ID() {}
+func (my Id) ID() {}
 
 type Primary struct {
-	ID ID `gorm:"primary_key;comment:主键;next:sonyflake;" json:",omitempty"`
+	Id `gorm:"primary_key;comment:主键;next:sonyflake;" json:",omitempty"`
 }
 
 type General struct {

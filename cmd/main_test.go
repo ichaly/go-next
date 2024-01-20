@@ -39,9 +39,9 @@ func TestConnect(t *testing.T) {
 				var demos []*Demo
 				_tx := tx.Clauses(clause.Locking{Strength: "UPDATE"}).Model(&Demo{}).Where("state = ?", 0)
 				_tx.Find(&demos)
-				var ids []base.ID
+				var ids []base.Id
 				for _, d := range demos {
-					ids = append(ids, d.ID)
+					ids = append(ids, d.Id)
 				}
 				time.Sleep(50 * time.Millisecond)
 				return tx.Model(&Demo{}).Save(&Demo{Name: fmt.Sprintf("用户%d", n)}).Error
@@ -85,7 +85,7 @@ func TestClient(t *testing.T) {
 	//secret := strings.ReplaceAll(uuid.Must(uuid.NewRandom()).String(), "-", "")
 	//t.Log(secret)
 	client := auth.Client{Secret: "90c5f47a4b1e42f48efb20e0ed30cae7", Domain: "http://127.0.0.1:8080/oauth/callback/go-next"}
-	client.ID = 12708495015018519
+	client.Id = 12708495015018519
 	err = db.Save(&client).Error
 	if err != nil {
 		t.Error(err)
