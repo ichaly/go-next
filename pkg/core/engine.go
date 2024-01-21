@@ -75,19 +75,19 @@ func (my *Engine) Register(node Schema) error {
 
 func (my *Engine) Schema() (graphql.Schema, error) {
 	config := graphql.SchemaConfig{}
-	if q := my.validSchema(QUERY); q != nil {
+	if q := my.checkSchema(QUERY); q != nil {
 		config.Query = q
 	}
-	if m := my.validSchema(MUTATION); m != nil {
+	if m := my.checkSchema(MUTATION); m != nil {
 		config.Mutation = m
 	}
-	if s := my.validSchema(SUBSCRIPTION); s != nil {
+	if s := my.checkSchema(SUBSCRIPTION); s != nil {
 		config.Subscription = s
 	}
 	return graphql.NewSchema(config)
 }
 
-func (my *Engine) validSchema(name string) *graphql.Object {
+func (my *Engine) checkSchema(name string) *graphql.Object {
 	val, ok := my.types[name]
 	if !ok {
 		return nil
