@@ -6,6 +6,11 @@ import (
 	"reflect"
 )
 
+func isImplements[V any](t reflect.Type) (V, bool) {
+	v, ok := reflect.New(t).Interface().(V)
+	return v, ok
+}
+
 func isNative(p reflect.Type) bool {
 	switch p.Kind() {
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
@@ -35,34 +40,19 @@ func unwrap(p reflect.Type) (reflect.Type, error) {
 	}
 }
 
-func nonNull(t graphql.Type) graphql.Type {
-	if _, ok := t.(*graphql.NonNull); !ok {
+func wrapType(p reflect.Type, t graphql.Type) graphql.Type {
+	var isPtr bool
+	if p.Kind() == reflect.Ptr {
+		isPtr = true
+		p = p.Elem()
+	}
+	if p.Kind() == reflect.Slice || p.Kind() == reflect.Array {
+		t = graphql.NewList(wrapType(p.Elem(), t))
+	}
+	if !isPtr {
 		t = graphql.NewNonNull(t)
 	}
 	return t
-}
-
-func newList(t graphql.Type) graphql.Type {
-	if _, ok := t.(*graphql.List); !ok {
-		t = graphql.NewList(t)
-	}
-	return t
-}
-
-func wrapType(p reflect.Type, t graphql.Type) graphql.Type {
-	switch p.Kind() {
-	case reflect.Slice, reflect.Array:
-		return newList(wrapType(p.Elem(), t))
-	case reflect.Ptr:
-		return t
-	default:
-		return nonNull(t)
-	}
-}
-
-func isImplements[V any](t reflect.Type) (V, bool) {
-	v, ok := reflect.New(t).Interface().(V)
-	return v, ok
 }
 
 func parseType(typ reflect.Type, errString string, parsers ...typeParser) (graphql.Type, error) {

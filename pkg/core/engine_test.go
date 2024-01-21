@@ -10,7 +10,7 @@ import (
 )
 
 type hello struct {
-	SchemaMeta[Query, string] `name:"hello1"`
+	SchemaMeta[Query, string] `name:"hello"`
 }
 
 func (my hello) Resolve(p graphql.ResolveParams) (interface{}, error) {
