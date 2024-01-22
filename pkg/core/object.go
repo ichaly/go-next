@@ -54,7 +54,7 @@ func (my *Engine) parseFields(typ reflect.Type, obj *graphql.Object) error {
 		}
 
 		fieldType, err := parseType(f.Type, "obj field",
-			my.asBuiltinScalar, my.asId, my.asObject,
+			my.asBuiltinScalar, my.asCustomScalar, my.asEnum, my.asId, my.asObject,
 		)
 		if err != nil {
 			return err
