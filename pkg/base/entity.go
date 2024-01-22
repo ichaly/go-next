@@ -17,7 +17,7 @@ type Id uint64
 func (my Id) ID() {}
 
 type Primary struct {
-	Id `gorm:"primary_key;comment:主键;next:sonyflake;" json:",omitempty"`
+	Id Id `gorm:"primary_key;comment:主键;next:sonyflake;" json:",omitempty"`
 }
 
 type General struct {
