@@ -1,6 +1,7 @@
 package base
 
 import (
+	"github.com/ichaly/go-next/pkg/util"
 	"github.com/sqids/sqids-go"
 	"gorm.io/datatypes"
 	"gorm.io/gorm"
@@ -15,11 +16,19 @@ var s, _ = sqids.New()
 
 type Id uint64
 
-func (my Id) ID() {}
+func (my *Id) ID() {}
 
-func (my Id) String() string {
-	id, _ := s.Encode([]uint64{uint64(my)})
-	return id
+func (my *Id) String() string {
+	return util.FormatLong(int64(*my))
+}
+
+func (my *Id) MarshalJSON() ([]byte, error) {
+	return []byte(util.FormatLong(int64(*my))), nil
+}
+
+func (my *Id) UnmarshalJSON(val []byte) error {
+	*my = Id(util.ParseLong(string(val)))
+	return nil
 }
 
 type Primary struct {
