@@ -70,7 +70,8 @@ func (my *Engine) parseFields(typ reflect.Type, obj *graphql.Object) error {
 
 		fieldName := strcase.ToLowerCamel(f.Name)
 		obj.AddFieldConfig(fieldName, &graphql.Field{
-			Type: wrapType(f.Type, fieldType),
+			Type:        wrapType(f.Type, fieldType),
+			Description: my.options.fieldDescriptionProvider(&f),
 		})
 	}
 	return nil

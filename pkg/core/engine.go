@@ -7,11 +7,12 @@ import (
 )
 
 type Engine struct {
-	types map[string]graphql.Type
+	options Options
+	types   map[string]graphql.Type
 }
 
-func NewEngine() *Engine {
-	return &Engine{types: map[string]graphql.Type{}}
+func NewEngine(opts ...EngineOption) *Engine {
+	return &Engine{types: map[string]graphql.Type{}, options: newOptions(opts...)}
 }
 
 func (my *Engine) Register(node Schema) error {
