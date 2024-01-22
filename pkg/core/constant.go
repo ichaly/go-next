@@ -26,3 +26,9 @@ const (
 	SUFFIX_DATA_INPUT  = "DataInput"
 	SUFFIX_WHERE_INPUT = "WhereInput"
 )
+
+// 路基表达式后缀
+const (
+	SUFFIX_EXPRESSION = "Expression"
+	SUFFIX_EXPR_LIST  = "ListExpression"
+)

@@ -55,18 +55,18 @@ func (my *Engine) Register(node Schema) error {
 	}
 
 	var args graphql.FieldConfigArgument
-	//if _, ok := resultType.(*graphql.Object); ok {
-	//	args = graphql.FieldConfigArgument{
-	//		"size":  {Type: graphql.Int},
-	//		"page":  {Type: graphql.Int},
-	//		"sort":  {Type: my.types[resultType.Name()+SUFFIX_SORT_INPUT]},
-	//		"where": {Type: my.types[resultType.Name()+SUFFIX_WHERE_INPUT]},
-	//	}
-	//}
-	//if parent.Name() == MUTATION {
-	//	args["data"] = &graphql.ArgumentConfig{Type: my.types[resultType.Name()+SUFFIX_DATA_INPUT]}
-	//	args["delete"] = &graphql.ArgumentConfig{Type: graphql.Boolean}
-	//}
+	if _, ok := resultType.(*graphql.Object); ok {
+		args = graphql.FieldConfigArgument{
+			"size":  {Type: graphql.Int},
+			"page":  {Type: graphql.Int},
+			"sort":  {Type: my.types[resultType.Name()+SUFFIX_SORT_INPUT]},
+			"where": {Type: my.types[resultType.Name()+SUFFIX_WHERE_INPUT]},
+		}
+	}
+	if parent.Name() == MUTATION {
+		args["data"] = &graphql.ArgumentConfig{Type: my.types[resultType.Name()+SUFFIX_DATA_INPUT]}
+		args["delete"] = &graphql.ArgumentConfig{Type: graphql.Boolean}
+	}
 	parent.AddFieldConfig(name, &graphql.Field{
 		Type: wrapType(resultField.Type, resultType), Args: args, Resolve: node.Resolve, Description: description,
 	})
