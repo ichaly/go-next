@@ -1,4 +1,4 @@
-package gql
+package dataloader
 
 import (
 	"context"
@@ -156,8 +156,8 @@ func WithClearCacheOnBatch[K comparable, V any]() Option[K, V] {
 	}
 }
 
-// withSilentLogger turns of log messages. It's used by the tests
-func withSilentLogger[K comparable, V any]() Option[K, V] {
+// WithSilentLogger turns of log messages. It's used by the tests
+func WithSilentLogger[K comparable, V any]() Option[K, V] {
 	return func(l *Loader[K, V]) {
 		l.silent = true
 	}

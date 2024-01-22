@@ -6,18 +6,13 @@ import (
 	"reflect"
 )
 
-const (
-	QUERY        = "Query"
-	MUTATION     = "Mutation"
-	SUBSCRIPTION = "Subscription"
-)
-
 type Engine struct {
-	types map[string]graphql.Type
+	options Options
+	types   map[string]graphql.Type
 }
 
-func NewEngine() *Engine {
-	return &Engine{types: map[string]graphql.Type{}}
+func NewEngine(opts ...EngineOption) *Engine {
+	return &Engine{types: map[string]graphql.Type{}, options: newOptions(opts...)}
 }
 
 func (my *Engine) Register(node Schema) error {
@@ -25,31 +20,33 @@ func (my *Engine) Register(node Schema) error {
 		return fmt.Errorf("node can't be nil")
 	}
 
-	nodeType := reflect.TypeOf(node)
-	if nodeType.Kind() == reflect.Ptr {
-		nodeType = nodeType.Elem()
+	nodeType, err := unwrap(reflect.TypeOf(node))
+	if err != nil {
+		return err
 	}
-	field, ok := nodeType.FieldByName("SchemaMeta")
+
+	if nodeType.Kind() != reflect.Struct {
+		return fmt.Errorf("reflect: NumField of non-struct type " + nodeType.String())
+	}
+
+	field, ok := nodeType.FieldByName(SCHEMA_META)
 	if !ok {
 		return fmt.Errorf("field 'Schema Meta' not found")
 	}
 
-	name := field.Tag.Get("name")
+	name, description := field.Tag.Get(TAG_NAME), field.Tag.Get(TAG_DESCRIPTION)
 	if name == "" {
 		name = nodeType.Name()
 	}
-	description := field.Tag.Get("description")
-	parentField, _ := nodeType.FieldByName("parentType")
-	resultField, _ := nodeType.FieldByName("resultType")
+	parentField, _ := nodeType.FieldByName(PARENT_TYPE)
+	resultField, _ := nodeType.FieldByName(RESULT_TYPE)
 
-	resultType, err := parseType(resultField.Type, "result",
-		my.asBuiltinScalar, my.asCustomScalar, my.asId, my.asEnum, my.asObject,
-	)
+	parentType, err := parseType(parentField.Type, "parent", my.asObject)
 	if err != nil {
 		return err
 	}
-	parentType, err := parseType(parentField.Type, "parent",
-		my.asBuiltinScalar, my.asCustomScalar, my.asId, my.asEnum, my.asObject,
+	resultType, err := parseType(resultField.Type, "result",
+		my.asBuiltinScalar, my.asCustomScalar, my.asEnum, my.asId, my.asObject,
 	)
 	if err != nil {
 		return err
@@ -65,12 +62,12 @@ func (my *Engine) Register(node Schema) error {
 		args = graphql.FieldConfigArgument{
 			"size":  {Type: graphql.Int},
 			"page":  {Type: graphql.Int},
-			"sort":  {Type: my.types[resultType.Name()+"SortInput"]},
-			"where": {Type: my.types[resultType.Name()+"WhereInput"]},
+			"sort":  {Type: my.types[resultType.Name()+SUFFIX_SORT_INPUT]},
+			"where": {Type: my.types[resultType.Name()+SUFFIX_WHERE_INPUT]},
 		}
 	}
 	if parent.Name() == MUTATION {
-		args["data"] = &graphql.ArgumentConfig{Type: my.types[resultType.Name()+"DataInput"]}
+		args["data"] = &graphql.ArgumentConfig{Type: my.types[resultType.Name()+SUFFIX_DATA_INPUT]}
 		args["delete"] = &graphql.ArgumentConfig{Type: graphql.Boolean}
 	}
 	parent.AddFieldConfig(name, &graphql.Field{
@@ -81,19 +78,19 @@ func (my *Engine) Register(node Schema) error {
 
 func (my *Engine) Schema() (graphql.Schema, error) {
 	config := graphql.SchemaConfig{}
-	if q := my.checkObject(QUERY); q != nil {
+	if q := my.checkSchema(QUERY); q != nil {
 		config.Query = q
 	}
-	if m := my.checkObject(MUTATION); m != nil {
+	if m := my.checkSchema(MUTATION); m != nil {
 		config.Mutation = m
 	}
-	if s := my.checkObject(SUBSCRIPTION); s != nil {
+	if s := my.checkSchema(SUBSCRIPTION); s != nil {
 		config.Subscription = s
 	}
 	return graphql.NewSchema(config)
 }
 
-func (my *Engine) checkObject(name string) *graphql.Object {
+func (my *Engine) checkSchema(name string) *graphql.Object {
 	val, ok := my.types[name]
 	if !ok {
 		return nil

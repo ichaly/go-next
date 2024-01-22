@@ -35,9 +35,9 @@ func (my *Engine) buildExpressionInput(t graphql.Type) graphql.Type {
 	}
 
 	if isList {
-		name = t.Name() + "ListExpression"
+		name = t.Name() + SUFFIX_EXPR_LIST
 	} else {
-		name = t.Name() + "Expression"
+		name = t.Name() + SUFFIX_EXPRESSION
 	}
 	typ, ok := my.types[name]
 	if ok {
@@ -58,7 +58,7 @@ func (my *Engine) buildExpressionInput(t graphql.Type) graphql.Type {
 }
 
 func (my *Engine) buildDataInput(object *graphql.Object) graphql.Type {
-	name := object.Name() + "DataInput"
+	name := object.Name() + SUFFIX_DATA_INPUT
 	val, ok := my.types[name]
 	if ok {
 		return val
@@ -77,7 +77,7 @@ func (my *Engine) buildDataInput(object *graphql.Object) graphql.Type {
 }
 
 func (my *Engine) buildSortInput(object *graphql.Object) graphql.Type {
-	name := object.Name() + "SortInput"
+	name := object.Name() + SUFFIX_SORT_INPUT
 	val, ok := my.types[name]
 	if ok {
 		return val
@@ -96,7 +96,7 @@ func (my *Engine) buildSortInput(object *graphql.Object) graphql.Type {
 }
 
 func (my *Engine) buildWhereInput(object *graphql.Object) graphql.Type {
-	name := object.Name() + "WhereInput"
+	name := object.Name() + SUFFIX_WHERE_INPUT
 	val, ok := my.types[name]
 	if ok {
 		return val

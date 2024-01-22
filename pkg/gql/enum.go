@@ -36,7 +36,11 @@ func (my *Engine) buildEnum(base reflect.Type) (*graphql.Enum, error) {
 	if val, ok := my.types[typ.Name()]; ok {
 		return val.(*graphql.Enum), nil
 	}
-	ptr := newPrototype(typ).(GqlEnum)
+	ptr, ok := isImplements[GqlEnum](typ)
+	if !ok {
+		return nil, err
+	}
+
 	name, desc := typ.Name(), ptr.Description()
 	values := graphql.EnumValueConfigMap{}
 	for k, v := range ptr.EnumValues() {

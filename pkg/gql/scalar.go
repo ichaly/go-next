@@ -35,7 +35,10 @@ func (my *Engine) buildCustomScalar(base reflect.Type) (*graphql.Scalar, error) 
 		return val.(*graphql.Scalar), nil
 	}
 
-	ptr := newPrototype(typ).(GqlScalar)
+	ptr, ok := isImplements[GqlScalar](typ)
+	if !ok {
+		return nil, nil
+	}
 
 	name, desc := typ.Name(), ptr.Description()
 	s := graphql.NewScalar(graphql.ScalarConfig{
@@ -47,14 +50,12 @@ func (my *Engine) buildCustomScalar(base reflect.Type) (*graphql.Scalar, error) 
 			return nil
 		},
 		ParseValue: func(value interface{}) interface{} {
-			s := newPrototype(typ).(GqlScalar)
-			s.Unmarshal(value)
-			return s
+			ptr.Unmarshal(value)
+			return ptr
 		},
 		ParseLiteral: func(value ast.Value) interface{} {
-			s := newPrototype(typ).(GqlScalar)
-			s.Unmarshal(value.GetValue())
-			return s
+			ptr.Unmarshal(value.GetValue())
+			return ptr
 		},
 	})
 	my.types[name] = s

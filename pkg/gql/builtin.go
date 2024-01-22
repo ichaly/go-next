@@ -30,16 +30,11 @@ func (my *Engine) asBuiltinScalar(typ reflect.Type) (graphql.Type, error) {
 		switch base.String() {
 		case "time.Time", "gorm.DeletedAt":
 			scalar = graphql.DateTime
-		case "boot.Void":
+		case "core.Void":
 			scalar = Void
-		case "boot.Cursor":
+		case "core.Cursor":
 			scalar = Cursor
 		}
 	}
-
-	if scalar == nil {
-		return nil, nil
-	}
-
 	return scalar, nil
 }

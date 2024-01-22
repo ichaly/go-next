@@ -1,10 +1,9 @@
 package base
 
 import (
-	"context"
+	"github.com/sqids/sqids-go"
 	"gorm.io/datatypes"
 	"gorm.io/gorm"
-	"strconv"
 	"time"
 )
 
@@ -12,9 +11,16 @@ type userContextKeyType struct{}
 
 var UserContextKey = userContextKeyType{}
 
+var s, _ = sqids.New()
+
 type Id uint64
 
 func (my Id) ID() {}
+
+func (my Id) String() string {
+	id, _ := s.Encode([]uint64{uint64(my)})
+	return id
+}
 
 type Primary struct {
 	Id Id `gorm:"primary_key;comment:主键;next:sonyflake;" json:",omitempty"`
@@ -43,40 +49,7 @@ type DeleteEntity struct {
 
 type AuditorEntity struct {
 	Entity    `mapstructure:",squash"`
-	CreatedBy *uint64 `gorm:"comment:创建人;" json:",omitempty"`
-	UpdatedBy *uint64 `gorm:"comment:更新人;" json:",omitempty"`
-	DeletedBy *uint64 `gorm:"comment:删除人;" json:",omitempty"`
-}
-
-func (my *AuditorEntity) BeforeCreate(tx *gorm.DB) error {
-	if val, ok := getCurrentUserFromContext(tx.Statement.Context); ok {
-		my.CreatedBy = val
-	}
-	return nil
-}
-
-func (my *AuditorEntity) BeforeUpdate(tx *gorm.DB) error {
-	if val, ok := getCurrentUserFromContext(tx.Statement.Context); ok {
-		my.UpdatedBy = val
-	}
-	return nil
-}
-
-func (my *AuditorEntity) BeforeDelete(tx *gorm.DB) error {
-	if val, ok := getCurrentUserFromContext(tx.Statement.Context); ok {
-		my.UpdatedBy = val
-	}
-	return nil
-}
-
-func getCurrentUserFromContext(ctx context.Context) (*uint64, bool) {
-	val, ok := ctx.Value(UserContextKey).(string)
-	if !ok || val == "" {
-		return nil, false
-	}
-	num, err := strconv.ParseUint(val, 10, 64)
-	if err != nil {
-		return nil, false
-	}
-	return &num, ok
+	CreatedBy *Id `gorm:"comment:创建人;" json:",omitempty"`
+	UpdatedBy *Id `gorm:"comment:更新人;" json:",omitempty"`
+	DeletedBy *Id `gorm:"comment:删除人;" json:",omitempty"`
 }

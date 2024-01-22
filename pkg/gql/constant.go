@@ -1,4 +1,4 @@
-package core
+package gql
 
 // 根结点的名称
 const (

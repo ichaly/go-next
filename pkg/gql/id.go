@@ -10,13 +10,13 @@ type GqlID interface {
 }
 
 func (my *Engine) asId(typ reflect.Type) (graphql.Type, error) {
-	if _, isId := reflect.New(typ).Interface().(GqlID); !isId {
-		return nil, nil
-	}
-
 	base, err := unwrap(typ)
 	if err != nil {
 		return nil, err
+	}
+
+	if _, isId := isImplements[GqlID](base); isId {
+		return graphql.ID, nil
 	}
 
 	switch base.Kind() {
@@ -24,6 +24,7 @@ func (my *Engine) asId(typ reflect.Type) (graphql.Type, error) {
 		reflect.Int64, reflect.Int, reflect.Int32,
 		reflect.String:
 		return graphql.ID, nil
+	default:
+		return nil, nil
 	}
-	return nil, nil
 }

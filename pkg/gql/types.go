@@ -16,13 +16,15 @@ type Schema interface {
 	Resolve(p graphql.ResolveParams) (interface{}, error)
 }
 
-type typeParser func(typ reflect.Type) (graphql.Type, error)
-
 type (
 	Query        struct{}
 	Mutation     struct{}
 	Subscription struct{}
-	input        struct {
+)
+
+type (
+	typeParser func(typ reflect.Type) (graphql.Type, error)
+	input      struct {
 		Name string
 		Desc string
 		Type graphql.Type
@@ -56,6 +58,37 @@ var (
 		//{Name: "notSimilar", Desc: "Value not matching regex pattern. Similar to the 'like' operator but with support for regex. Pattern must not match entire value."},
 	}
 )
+
+var SortDirection = graphql.NewEnum(graphql.EnumConfig{
+	Name:        "SortDirection",
+	Description: "The direction of result ordering",
+	Values: graphql.EnumValueConfigMap{
+		"ASC": &graphql.EnumValueConfig{
+			Value:       "ASC",
+			Description: "Ascending order",
+		},
+		"DESC": &graphql.EnumValueConfig{
+			Value:       "DESC",
+			Description: "Descending order",
+		},
+		"ASC_NULLS_FIRST": &graphql.EnumValueConfig{
+			Value:       "ASC_NULLS_FIRST",
+			Description: "Ascending nulls first order",
+		},
+		"DESC_NULLS_FIRST": &graphql.EnumValueConfig{
+			Value:       "DESC_NULLS_FIRST",
+			Description: "Descending nulls first order",
+		},
+		"ASC_NULLS_LAST": &graphql.EnumValueConfig{
+			Value:       "ASC_NULLS_LAST",
+			Description: "Ascending nulls last order",
+		},
+		"DESC_NULLS_LAST": &graphql.EnumValueConfig{
+			Value:       "DESC_NULLS_LAST",
+			Description: "Descending nulls last order",
+		},
+	},
+})
 
 var (
 	Void = graphql.NewScalar(graphql.ScalarConfig{
@@ -128,34 +161,3 @@ func parseLiteral(astValue ast.Value) interface{} {
 		return nil
 	}
 }
-
-var SortDirection = graphql.NewEnum(graphql.EnumConfig{
-	Name:        "SortDirection",
-	Description: "The direction of result ordering",
-	Values: graphql.EnumValueConfigMap{
-		"ASC": &graphql.EnumValueConfig{
-			Value:       "ASC",
-			Description: "Ascending order",
-		},
-		"DESC": &graphql.EnumValueConfig{
-			Value:       "DESC",
-			Description: "Descending order",
-		},
-		"ASC_NULLS_FIRST": &graphql.EnumValueConfig{
-			Value:       "ASC_NULLS_FIRST",
-			Description: "Ascending nulls first order",
-		},
-		"DESC_NULLS_FIRST": &graphql.EnumValueConfig{
-			Value:       "DESC_NULLS_FIRST",
-			Description: "Descending nulls first order",
-		},
-		"ASC_NULLS_LAST": &graphql.EnumValueConfig{
-			Value:       "ASC_NULLS_LAST",
-			Description: "Ascending nulls last order",
-		},
-		"DESC_NULLS_LAST": &graphql.EnumValueConfig{
-			Value:       "DESC_NULLS_LAST",
-			Description: "Descending nulls last order",
-		},
-	},
-})

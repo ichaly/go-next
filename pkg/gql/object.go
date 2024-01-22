@@ -5,6 +5,7 @@ import (
 	"github.com/graphql-go/graphql"
 	"github.com/iancoleman/strcase"
 	"reflect"
+	"slices"
 	"strings"
 )
 
@@ -13,35 +14,27 @@ type GqlDescription interface {
 }
 
 func (my *Engine) asObject(typ reflect.Type) (graphql.Type, error) {
-	object, err := my.buildObject(typ)
-	if err != nil {
-		return nil, err
-	}
-	return object, nil
-}
-
-func (my *Engine) buildObject(base reflect.Type) (*graphql.Object, error) {
-	typ, err := unwrap(base)
+	typ, err := unwrap(typ)
 	if err != nil {
 		return nil, err
 	}
 
-	obj, ok := my.types[typ.Name()]
-	if ok {
+	if obj, ok := my.types[typ.Name()]; ok {
 		return obj.(*graphql.Object), nil
 	}
 
 	name, desc := typ.Name(), ""
-	if v, ok := reflect.New(typ).Interface().(GqlDescription); ok {
+	if v, ok := isImplements[GqlDescription](typ); ok {
 		desc = v.Description()
 	}
+
 	o := graphql.NewObject(graphql.ObjectConfig{
 		Name: name, Description: desc, Fields: graphql.Fields{},
 	})
-	err = my.parseFields(typ, o, 0)
-	if err != nil {
+	if err = my.parseFields(typ, o); err != nil {
 		return nil, err
 	}
+
 	my.types[name] = o
 
 	my.buildDataInput(o)
@@ -50,31 +43,31 @@ func (my *Engine) buildObject(base reflect.Type) (*graphql.Object, error) {
 	return o, nil
 }
 
-func (my *Engine) parseFields(typ reflect.Type, obj *graphql.Object, dep int) error {
+func (my *Engine) parseFields(typ reflect.Type, obj *graphql.Object) error {
 	for i := 0; i < typ.NumField(); i++ {
 		f := typ.Field(i)
+		// 忽略私有字段
 		if !f.IsExported() {
 			continue
 		}
-
-		if f.Anonymous && f.Type.String() != "base.Id" {
-			sub, err := unwrap(f.Type)
-			if err != nil {
+		// 忽略字段
+		if slices.ContainsFunc(my.options.ignoreField, func(s string) bool {
+			return strings.ToLower(f.Name) == s
+		}) {
+			continue
+		}
+		// 递归匿名字段
+		if f.Anonymous {
+			if sub, err := unwrap(f.Type); err != nil {
 				return err
-			}
-			err = my.parseFields(sub, obj, dep+1)
-			if err != nil {
+			} else if err = my.parseFields(sub, obj); err != nil {
 				return err
 			}
 			continue
 		}
 
 		fieldType, err := parseType(f.Type, "obj field",
-			my.asBuiltinScalar,
-			my.asCustomScalar,
-			my.asId,
-			my.asEnum,
-			my.asObject,
+			my.asBuiltinScalar, my.asCustomScalar, my.asEnum, my.asId, my.asObject,
 		)
 		if err != nil {
 			return err
@@ -82,23 +75,13 @@ func (my *Engine) parseFields(typ reflect.Type, obj *graphql.Object, dep int) er
 		if fieldType == nil {
 			panic(fmt.Errorf("unsupported field type: %s", f.Type.String()))
 		}
+
 		fieldName := strcase.ToLowerCamel(f.Name)
 		obj.AddFieldConfig(fieldName, &graphql.Field{
 			Type:        wrapType(f.Type, fieldType),
-			Resolve:     defaultResolver,
-			Description: description(&f),
+			Resolve:     my.options.defaultResolver,
+			Description: my.options.fieldDescriptionProvider(&f),
 		})
 	}
 	return nil
-}
-
-func description(field *reflect.StructField) string {
-	tag := field.Tag.Get("gorm")
-	tags := strings.Split(tag, ";")
-	for _, t := range tags {
-		if strings.HasPrefix(t, "comment:") {
-			return t[8:]
-		}
-	}
-	return ""
 }

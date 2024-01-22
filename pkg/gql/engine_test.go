@@ -1,4 +1,4 @@
-package core
+package gql
 
 import (
 	"github.com/gin-gonic/gin"
