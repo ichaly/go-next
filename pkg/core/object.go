@@ -5,6 +5,8 @@ import (
 	"github.com/graphql-go/graphql"
 	"github.com/iancoleman/strcase"
 	"reflect"
+	"slices"
+	"strings"
 )
 
 type GqlDescription interface {
@@ -48,6 +50,12 @@ func (my *Engine) parseFields(typ reflect.Type, obj *graphql.Object) error {
 		if !f.IsExported() {
 			continue
 		}
+		// 忽略字段
+		if slices.ContainsFunc(my.options.ignoreField, func(s string) bool {
+			return strings.ToLower(f.Name) == s
+		}) {
+			continue
+		}
 		// 递归匿名字段
 		if f.Anonymous {
 			if sub, err := unwrap(f.Type); err != nil {
@@ -71,6 +79,7 @@ func (my *Engine) parseFields(typ reflect.Type, obj *graphql.Object) error {
 		fieldName := strcase.ToLowerCamel(f.Name)
 		obj.AddFieldConfig(fieldName, &graphql.Field{
 			Type:        wrapType(f.Type, fieldType),
+			Resolve:     my.options.defaultResolver,
 			Description: my.options.fieldDescriptionProvider(&f),
 		})
 	}

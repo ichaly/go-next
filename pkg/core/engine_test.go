@@ -5,34 +5,13 @@ import (
 	"github.com/gin-gonic/gin/binding"
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/graphql/gqlerrors"
-	"github.com/ichaly/go-next/lib/cms"
+	"github.com/ichaly/go-next/lib/sys"
 	"net/http"
 	"testing"
-	"time"
 )
 
-type Foo struct {
-}
-
-func (my Foo) Description() string {
-	return "foo"
-}
-
-func (my Foo) Marshal() interface{} {
-	return "Foo"
-}
-
-func (my Foo) Unmarshal(value interface{}) {
-	println(value)
-}
-
-type user struct {
-	Bar  Foo
-	Time time.Time
-}
-
 type hello struct {
-	SchemaMeta[Query, cms.Content] `name:"contents"`
+	SchemaMeta[Query, sys.User] `name:"users"`
 }
 
 func (my hello) Resolve(p graphql.ResolveParams) (interface{}, error) {

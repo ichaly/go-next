@@ -1,6 +1,7 @@
 package core
 
 import (
+	"github.com/graphql-go/graphql"
 	"reflect"
 	"strings"
 )
@@ -8,6 +9,8 @@ import (
 type EngineOption func(*Options)
 
 type Options struct {
+	ignoreField              []string
+	defaultResolver          func(p graphql.ResolveParams) (interface{}, error)
 	fieldDescriptionProvider func(field *reflect.StructField) string
 }
 
@@ -23,6 +26,8 @@ func newOptions(opts ...EngineOption) Options {
 			}
 			return ""
 		},
+		ignoreField:     []string{"password", "secret"},
+		defaultResolver: defaultResolver,
 	}
 
 	for _, o := range opts {
@@ -36,6 +41,21 @@ func WithFieldDescriptionProvider(f func(*reflect.StructField) string) EngineOpt
 	return func(o *Options) {
 		if f != nil {
 			o.fieldDescriptionProvider = f
+		}
+	}
+}
+
+func WithDefaultResolver(f func(p graphql.ResolveParams) (interface{}, error)) EngineOption {
+	return func(o *Options) {
+		if f != nil {
+			o.defaultResolver = f
+		}
+	}
+}
+func WithIgnoreField(a []string) EngineOption {
+	return func(o *Options) {
+		if len(a) > 0 {
+			o.ignoreField = a
 		}
 	}
 }
