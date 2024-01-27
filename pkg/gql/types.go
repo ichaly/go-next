@@ -1,6 +1,8 @@
 package gql
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/graphql/language/ast"
 	"github.com/graphql-go/graphql/language/kinds"
@@ -91,6 +93,45 @@ var SortDirection = graphql.NewEnum(graphql.EnumConfig{
 })
 
 var (
+	ID = graphql.NewScalar(graphql.ScalarConfig{
+		Name:        graphql.ID.Name(),
+		Description: graphql.ID.Description(),
+		Serialize: func(value interface{}) interface{} {
+			if v, ok := value.(json.Marshaler); ok {
+				if v == nil {
+					return nil
+				}
+				val, err := v.MarshalJSON()
+				if err != nil {
+					return nil
+				}
+				return val
+			}
+			return graphql.ID.Serialize(value)
+		},
+		ParseValue: func(value interface{}) interface{} {
+			if v, ok := value.(json.Unmarshaler); ok {
+				if v == nil {
+					return nil
+				}
+				err := v.UnmarshalJSON([]byte(fmt.Sprintf("%v", v)))
+				if err != nil {
+					return nil
+				}
+			}
+			return graphql.ID.ParseValue(value)
+		},
+		ParseLiteral: func(valueAST ast.Value) interface{} {
+			switch valueAST := valueAST.(type) {
+			case *ast.IntValue:
+				return valueAST.Value
+			case *ast.StringValue:
+				return valueAST.Value
+			}
+			return nil
+		},
+	})
+
 	Void = graphql.NewScalar(graphql.ScalarConfig{
 		Name:         "Void",
 		Description:  "void",
