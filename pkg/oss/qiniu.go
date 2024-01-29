@@ -26,14 +26,21 @@ func (my *QiNiu) Name() string {
 }
 
 func (my *QiNiu) AccessToken() string {
-	policy := storage.PutPolicy{Scope: my.bucket}
+	policy := storage.PutPolicy{
+		Scope:      my.bucket,
+		ReturnBody: `{"key":"$(key)","name":"$(x:name)"}`,
+	}
 	return policy.UploadToken(my.mac)
 }
 
 func (my *QiNiu) Upload(file multipart.File, size int64, name string) (string, error) {
 	cfg := storage.Config{UseHTTPS: true, Region: &storage.ZoneHuadong}
 	uploader := storage.NewFormUploader(&cfg)
-	ret := storage.PutRet{}
+	var ret struct {
+		Key    string
+		Name   string
+		Bucket string
+	}
 	if err := uploader.PutWithoutKey(
 		context.Background(), &ret,
 		my.AccessToken(), file, size,
