@@ -1,11 +1,10 @@
 package gql
 
 import (
-	"encoding/json"
-	"fmt"
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/graphql/language/ast"
 	"github.com/graphql-go/graphql/language/kinds"
+	"github.com/sqids/sqids-go"
 	"reflect"
 )
 
@@ -93,30 +92,19 @@ var SortDirection = graphql.NewEnum(graphql.EnumConfig{
 })
 
 var (
-	ID = graphql.NewScalar(graphql.ScalarConfig{
+	Encryption, _ = sqids.New()
+	ID            = graphql.NewScalar(graphql.ScalarConfig{
 		Name:        graphql.ID.Name(),
 		Description: graphql.ID.Description(),
 		Serialize: func(value interface{}) interface{} {
-			if v, ok := value.(json.Marshaler); ok {
-				if v == nil {
-					return nil
-				}
-				val, err := v.MarshalJSON()
-				if err != nil {
-					return nil
-				}
-				return val
-			}
 			return graphql.ID.Serialize(value)
 		},
 		ParseValue: func(value interface{}) interface{} {
-			if v, ok := value.(json.Unmarshaler); ok {
-				if v == nil {
-					return nil
-				}
-				err := v.UnmarshalJSON([]byte(fmt.Sprintf("%v", v)))
-				if err != nil {
-					return nil
+			//使用sqids尝试解析
+			if v, ok := value.(string); ok {
+				res := Encryption.Decode(v)
+				if str, err := Encryption.Encode(res); err == nil && str == v {
+					return res[0]
 				}
 			}
 			return graphql.ID.ParseValue(value)
