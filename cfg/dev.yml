@@ -33,3 +33,10 @@ database:
   name: gcms
   username: postgres
   password: postgres
+
+oss:
+  vendor: 七牛
+  bucket: eunut-tmp
+  domain: http://file.te0.cn
+  access_key: rDpoieuu5Jyl-i915MuVyNVT0dFQJPHBFGEG4TlK
+  secret_key: 6eVPc6EXTjaLVudIUQEU-QQviiA6r5YPbauVmAVY

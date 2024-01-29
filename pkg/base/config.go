@@ -17,6 +17,15 @@ type Config struct {
 	Captcha  *Captcha    `mapstructure:"captcha" jsonschema:"title=captcha"`
 	Email    *Email      `mapstructure:"email" jsonschema:"title=email"`
 	Mobile   *Mobile     `mapstructure:"mobile" jsonschema:"title=mobile"`
+	Oss      *Oss        `mapstructure:"oss" jsonschema:"title=oss"`
+}
+
+type Oss struct {
+	Vendor    string `mapstructure:"vendor"`
+	Domain    string `mapstructure:"domain"`
+	Bucket    string `mapstructure:"bucket"`
+	AccessKey string `mapstructure:"access_key"`
+	SecretKey string `mapstructure:"secret_key"`
 }
 
 type App struct {
