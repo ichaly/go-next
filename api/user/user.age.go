@@ -18,7 +18,7 @@ func NewUserAge() gql.Schema {
 func (my *age) Resolve(p graphql.ResolveParams) (interface{}, error) {
 	user := p.Source.(*sys.User)
 	if user.Birthday == nil || user.Birthday.IsZero() {
-		return nil, nil
+		return 0, nil
 	}
 	return time.Now().Year() - user.Birthday.Year(), nil
 }

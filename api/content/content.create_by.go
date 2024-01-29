@@ -11,7 +11,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type createdBy struct {
+type creator struct {
 	gql.SchemaMeta[cms.Content, *sys.User] `name:"createdBy" description:"作者信息"`
 
 	db     *gorm.DB
@@ -19,12 +19,12 @@ type createdBy struct {
 }
 
 func NewContentCreatedBy(db *gorm.DB) gql.Schema {
-	my := &createdBy{db: db}
+	my := &creator{db: db}
 	my.loader = dl.NewBatchedLoader(my.batchUsers)
 	return my
 }
 
-func (my *createdBy) Resolve(p graphql.ResolveParams) (interface{}, error) {
+func (my *creator) Resolve(p graphql.ResolveParams) (interface{}, error) {
 	uid := p.Source.(*cms.Content).CreatedBy
 	thunk := my.loader.Load(p.Context, uid)
 	return func() (interface{}, error) {
@@ -32,7 +32,7 @@ func (my *createdBy) Resolve(p graphql.ResolveParams) (interface{}, error) {
 	}, nil
 }
 
-func (my *createdBy) batchUsers(ctx context.Context, keys []*base.Id) []*dl.Result[*sys.User] {
+func (my *creator) batchUsers(ctx context.Context, keys []*base.Id) []*dl.Result[*sys.User] {
 	//从数据库获取数据
 	var res []*sys.User
 	err := my.db.WithContext(ctx).Model(&sys.User{}).Where("id in ?", keys).Find(&res).Error
