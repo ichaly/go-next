@@ -11,6 +11,7 @@ import (
 	"github.com/ichaly/go-next/pkg/util"
 	"go.uber.org/fx"
 	"io"
+	"mime/multipart"
 	"net/http"
 	"path"
 	"strconv"
@@ -63,17 +64,40 @@ func (my *oss) uploadHandler(c *gin.Context) {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"errors": gqlerrors.FormatErrors(err.(error))})
 		}
 	}()
-	file, header, err := c.Request.FormFile(KEY_FILE)
+	form, err := c.MultipartForm()
 	if err != nil {
 		panic(err)
 	}
-	name := header.Filename
-	var src io.Reader = file
+	files := form.File[KEY_FILE]
+	folder := c.PostForm(KEY_PATH)
 	rename, err := strconv.ParseBool(c.PostForm(KEY_RENAME))
 	//默认是自动重命名
 	if err != nil {
 		rename = true
 	}
+	var urls []string
+	for _, f := range files {
+		url, err := my.doUpload(f, folder, rename)
+		if err != nil {
+			panic(err)
+		}
+		urls = append(urls, url)
+	}
+	c.JSON(http.StatusOK, gin.H{"msg": "操作成功", "urls": urls})
+}
+
+func (my *oss) doUpload(header *multipart.FileHeader, folder string, rename bool) (string, error) {
+	file, err := header.Open()
+	if err != nil {
+		return "", err
+	}
+	defer func(file multipart.File) {
+		_ = file.Close()
+	}(file)
+
+	size := header.Size
+	name := header.Filename
+	var src io.Reader = file
 	//计算文件MD5和类型进行重命名
 	if rename {
 		var buf bytes.Buffer
@@ -88,13 +112,13 @@ func (my *oss) uploadHandler(c *gin.Context) {
 		src = &buf
 	}
 	//拼接路径
-	name = path.Join(c.PostForm(KEY_PATH), name)
+	name = path.Join(folder, name)
 	//移除多余的斜杠
 	name = strings.TrimPrefix(name, "/")
 	//执行文件上传
-	url, err := my.uploader.Upload(src, header.Size, name)
+	url, err := my.uploader.Upload(src, size, name)
 	if err != nil {
-		panic(err)
+		return "", err
 	}
-	c.JSON(http.StatusOK, gin.H{"msg": "操作成功", "url": url})
+	return url, nil
 }
