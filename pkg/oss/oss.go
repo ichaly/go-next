@@ -1,13 +1,25 @@
 package oss
 
 import (
+	"bytes"
+	"errors"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/graphql-go/graphql/gqlerrors"
+	"github.com/h2non/filetype"
 	"github.com/ichaly/go-next/pkg/base"
+	"github.com/ichaly/go-next/pkg/util"
 	"go.uber.org/fx"
 	"io"
 	"net/http"
+	"strconv"
 	"strings"
+)
+
+const (
+	KEY_FILE   = "file"
+	KEY_NAME   = "name"
+	KEY_RENAME = "rename"
 )
 
 type Uploader interface {
@@ -50,19 +62,33 @@ func (my *oss) uploadHandler(c *gin.Context) {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"errors": gqlerrors.FormatErrors(err.(error))})
 		}
 	}()
-	name := c.Request.FormValue("name")
-	file, header, err := c.Request.FormFile("file")
+	file, header, err := c.Request.FormFile(KEY_FILE)
 	if err != nil {
 		panic(err)
 	}
+	var src io.Reader = file
+	name := c.PostForm(KEY_NAME)
 	if name == "" {
 		name = header.Filename
+	}
+	rename, _ := strconv.ParseBool(c.PostForm(KEY_RENAME))
+	if rename {
+		var buf bytes.Buffer
+		tee := io.TeeReader(file, &buf)
+		key := util.Md5File(tee)
+		kind, _ := filetype.Match(buf.Bytes())
+		if kind == filetype.Unknown {
+			panic(errors.New("unknown file type"))
+		}
+		ext := kind.Extension
+		name = fmt.Sprintf("%s.%s", key, ext)
+		src = &buf
 	}
 	if strings.HasPrefix(name, "/") {
 		name = name[1:]
 	}
 
-	url, err := my.uploader.Upload(file, header.Size, name)
+	url, err := my.uploader.Upload(src, header.Size, name)
 	if err != nil {
 		panic(err)
 	}
