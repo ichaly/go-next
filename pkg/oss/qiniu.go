@@ -6,7 +6,7 @@ import (
 	"github.com/ichaly/go-next/pkg/base"
 	"github.com/qiniu/go-sdk/v7/auth"
 	"github.com/qiniu/go-sdk/v7/storage"
-	"mime/multipart"
+	"io"
 )
 
 type QiNiu struct {
@@ -26,25 +26,17 @@ func (my *QiNiu) Name() string {
 }
 
 func (my *QiNiu) AccessToken() string {
-	policy := storage.PutPolicy{
-		Scope:      my.bucket,
-		ReturnBody: `{"key":"$(key)","name":"$(x:name)"}`,
-	}
+	policy := storage.PutPolicy{Scope: my.bucket}
 	return policy.UploadToken(my.mac)
 }
 
-func (my *QiNiu) Upload(file multipart.File, size int64, name string) (string, error) {
+func (my *QiNiu) Upload(file io.Reader, size int64, name string) (string, error) {
 	cfg := storage.Config{UseHTTPS: true, Region: &storage.ZoneHuadong}
 	uploader := storage.NewFormUploader(&cfg)
-	var ret struct {
-		Key    string
-		Name   string
-		Bucket string
-	}
-	if err := uploader.PutWithoutKey(
-		context.Background(), &ret,
-		my.AccessToken(), file, size,
-		&storage.PutExtra{},
+	ret := storage.PutRet{}
+	if err := uploader.Put(
+		context.Background(), &ret, my.AccessToken(),
+		name, file, size, &storage.PutExtra{},
 	); err != nil {
 		return "", err
 	}

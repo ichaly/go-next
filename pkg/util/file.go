@@ -1,6 +1,8 @@
 package util
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"io"
 	"os"
 	"path"
@@ -37,4 +39,11 @@ func WriteFile(source io.Reader, target string) error {
 	}(file)
 	_, err = io.Copy(file, source)
 	return err
+}
+
+func Md5File(src io.Reader) string {
+	dst := md5.New()
+	_, _ = io.Copy(dst, src)
+	key := hex.EncodeToString(dst.Sum(nil))
+	return key
 }

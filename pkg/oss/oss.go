@@ -5,14 +5,15 @@ import (
 	"github.com/graphql-go/graphql/gqlerrors"
 	"github.com/ichaly/go-next/pkg/base"
 	"go.uber.org/fx"
-	"mime/multipart"
+	"io"
 	"net/http"
+	"strings"
 )
 
 type Uploader interface {
 	Name() string
 	AccessToken() string
-	Upload(file multipart.File, size int64, name string) (string, error)
+	Upload(file io.Reader, size int64, name string) (string, error)
 }
 
 type UploaderGroup struct {
@@ -49,13 +50,21 @@ func (my *oss) uploadHandler(c *gin.Context) {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"errors": gqlerrors.FormatErrors(err.(error))})
 		}
 	}()
+	name := c.Request.FormValue("name")
 	file, header, err := c.Request.FormFile("file")
 	if err != nil {
 		panic(err)
 	}
-	key, err := my.uploader.Upload(file, header.Size, header.Filename)
+	if name == "" {
+		name = header.Filename
+	}
+	if strings.HasPrefix(name, "/") {
+		name = name[1:]
+	}
+
+	url, err := my.uploader.Upload(file, header.Size, name)
 	if err != nil {
 		panic(err)
 	}
-	c.JSON(http.StatusOK, gin.H{"msg": "操作成功", "key": key})
+	c.JSON(http.StatusOK, gin.H{"msg": "操作成功", "url": url})
 }
