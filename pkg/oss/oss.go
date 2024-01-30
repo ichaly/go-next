@@ -12,13 +12,14 @@ import (
 	"go.uber.org/fx"
 	"io"
 	"net/http"
+	"path"
 	"strconv"
 	"strings"
 )
 
 const (
 	KEY_FILE   = "file"
-	KEY_NAME   = "name"
+	KEY_PATH   = "path"
 	KEY_RENAME = "rename"
 )
 
@@ -66,12 +67,14 @@ func (my *oss) uploadHandler(c *gin.Context) {
 	if err != nil {
 		panic(err)
 	}
+	name := header.Filename
 	var src io.Reader = file
-	name := c.PostForm(KEY_NAME)
-	if name == "" {
-		name = header.Filename
+	rename, err := strconv.ParseBool(c.PostForm(KEY_RENAME))
+	//默认是自动重命名
+	if err != nil {
+		rename = true
 	}
-	rename, _ := strconv.ParseBool(c.PostForm(KEY_RENAME))
+	//计算文件MD5和类型进行重命名
 	if rename {
 		var buf bytes.Buffer
 		tee := io.TeeReader(file, &buf)
@@ -84,10 +87,11 @@ func (my *oss) uploadHandler(c *gin.Context) {
 		name = fmt.Sprintf("%s.%s", key, ext)
 		src = &buf
 	}
-	if strings.HasPrefix(name, "/") {
-		name = name[1:]
-	}
-
+	//拼接路径
+	name = path.Join(c.PostForm(KEY_PATH), name)
+	//移除多余的斜杠
+	name = strings.TrimPrefix(name, "/")
+	//执行文件上传
 	url, err := my.uploader.Upload(src, header.Size, name)
 	if err != nil {
 		panic(err)
