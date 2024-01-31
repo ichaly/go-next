@@ -30,13 +30,13 @@ func (my *QiNiu) AccessToken() string {
 	return policy.UploadToken(my.mac)
 }
 
-func (my *QiNiu) Upload(file io.Reader, size int64, name string) (string, error) {
+func (my *QiNiu) Upload(data io.Reader, size int64, name string) (string, error) {
 	cfg := storage.Config{UseHTTPS: true, Region: &storage.ZoneHuadong}
 	uploader := storage.NewFormUploader(&cfg)
 	ret := storage.PutRet{}
 	if err := uploader.Put(
 		context.Background(), &ret, my.AccessToken(),
-		name, file, size, &storage.PutExtra{},
+		name, data, size, &storage.PutExtra{},
 	); err != nil {
 		return "", err
 	}
