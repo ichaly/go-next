@@ -27,7 +27,7 @@ const (
 
 type Uploader interface {
 	Name() string
-	AccessToken() string
+	Init() error
 	Upload(data io.Reader, size int64, name string) (string, error)
 }
 
@@ -40,15 +40,19 @@ type oss struct {
 	uploader Uploader
 }
 
-func NewOss(c *base.Config, g UploaderGroup) base.Plugin {
+func NewOss(c *base.Config, g UploaderGroup) (base.Plugin, error) {
 	var u Uploader
 	for _, v := range g.All {
 		if v.Name() == c.Oss.Vendor {
+			err := v.Init()
+			if err != nil {
+				return nil, err
+			}
 			u = v
 			break
 		}
 	}
-	return &oss{uploader: u}
+	return &oss{uploader: u}, nil
 }
 
 func (my *oss) Base() string {
