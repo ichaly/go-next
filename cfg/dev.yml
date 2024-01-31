@@ -35,12 +35,15 @@ database:
   password: postgres
 
 oss:
-  vendor: 七牛
-  region: z0
-  bucket: eunut-tmp
-  domain: http://qn.te0.cn
-  access_key: rDpoieuu5Jyl-i915MuVyNVT0dFQJPHBFGEG4TlK
-  secret_key: 6eVPc6EXTjaLVudIUQEU-QQviiA6r5YPbauVmAVY
+  vendor: 本地
+  bucket: /Users/Chaly/Downloads/upload
+  domain: http://127.0.0.1:8080
+#  vendor: 七牛
+#  region: z0
+#  bucket: eunut-tmp
+#  domain: http://qn.te0.cn
+#  access_key: rDpoieuu5Jyl-i915MuVyNVT0dFQJPHBFGEG4TlK
+#  secret_key: 6eVPc6EXTjaLVudIUQEU-QQviiA6r5YPbauVmAVY
 #  vendor: 阿里
 #  region: oss-cn-beijing.aliyuncs.com
 #  bucket: eunut-img

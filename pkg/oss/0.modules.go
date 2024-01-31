@@ -18,5 +18,9 @@ var Modules = fx.Options(
 			NewAliYun,
 			fx.ResultTags(`group:"oss"`),
 		),
+		fx.Annotate(
+			NewLocal,
+			fx.ResultTags(`group:"oss"`),
+		),
 	),
 )
