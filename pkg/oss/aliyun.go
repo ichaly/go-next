@@ -33,10 +33,7 @@ func (my *AliYun) Name() string {
 }
 
 func (my *AliYun) Init() error {
-	client, err := ali.New(
-		my.region, my.accessKey, my.secretKey,
-		//ali.UseCname(true),
-	)
+	client, err := ali.New(my.region, my.accessKey, my.secretKey)
 	if err != nil {
 		return err
 	}
@@ -48,8 +45,12 @@ func (my *AliYun) Init() error {
 	return nil
 }
 
-func (my *AliYun) Upload(data io.Reader, size int64, name string) (string, error) {
-	err := my.uploader.PutObject(name, data)
+func (my *AliYun) Upload(data io.Reader, name string, opts ...UploadOption) (string, error) {
+	opt := &Options{}
+	for _, o := range opts {
+		o(opt)
+	}
+	err := my.uploader.PutObject(name, data, ali.ContentType(opt.contentType))
 	if err != nil {
 		return "", err
 	}

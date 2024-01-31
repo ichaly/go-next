@@ -28,7 +28,7 @@ const (
 type Uploader interface {
 	Name() string
 	Init() error
-	Upload(data io.Reader, size int64, name string) (string, error)
+	Upload(data io.Reader, name string, opts ...UploadOption) (string, error)
 }
 
 type UploaderGroup struct {
@@ -114,26 +114,22 @@ func (my *oss) doUpload(header *multipart.FileHeader, folder string, rename bool
 
 	size := header.Size
 	name := header.Filename
-	var data io.Reader = file
-	//计算文件MD5和类型进行重命名
+	var data bytes.Buffer
+	tee := io.TeeReader(file, &data)
+	key := util.Md5File(tee)
+	kind, _ := filetype.Match(data.Bytes())
+	if kind == filetype.Unknown {
+		panic(errors.New("unknown file type"))
+	}
 	if rename {
-		var buf bytes.Buffer
-		tee := io.TeeReader(data, &buf)
-		key := util.Md5File(tee)
-		kind, _ := filetype.Match(buf.Bytes())
-		if kind == filetype.Unknown {
-			panic(errors.New("unknown file type"))
-		}
-		ext := kind.Extension
-		name = fmt.Sprintf("%s.%s", key, ext)
-		data = &buf
+		name = fmt.Sprintf("%s.%s", key, kind.Extension)
 	}
 	//拼接路径
 	name = path.Join(folder, name)
 	//移除多余的斜杠
 	name = strings.TrimPrefix(name, "/")
 	//执行文件上传
-	url, err := my.uploader.Upload(data, size, name)
+	url, err := my.uploader.Upload(&data, name, WithSize(size), WithContentType(kind.MIME.Value))
 	if err != nil {
 		return "", err
 	}

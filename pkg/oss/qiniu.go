@@ -46,11 +46,15 @@ func (my *QiNiu) Init() error {
 	return nil
 }
 
-func (my *QiNiu) Upload(data io.Reader, size int64, name string) (string, error) {
+func (my *QiNiu) Upload(data io.Reader, name string, opts ...UploadOption) (string, error) {
+	opt := &Options{}
+	for _, o := range opts {
+		o(opt)
+	}
 	ret := storage.PutRet{}
 	if err := my.uploader.Put(
 		context.Background(), &ret, my.accessToken(),
-		name, data, size, &storage.PutExtra{},
+		name, data, opt.size, &storage.PutExtra{},
 	); err != nil {
 		return "", err
 	}
