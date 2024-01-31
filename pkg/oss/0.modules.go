@@ -19,6 +19,10 @@ var Modules = fx.Options(
 			fx.ResultTags(`group:"oss"`),
 		),
 		fx.Annotate(
+			NewMinio,
+			fx.ResultTags(`group:"oss"`),
+		),
+		fx.Annotate(
 			NewLocal,
 			fx.ResultTags(`group:"oss"`),
 		),

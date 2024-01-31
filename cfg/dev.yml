@@ -38,6 +38,12 @@ oss:
   vendor: 本地
   bucket: /Users/Chaly/Downloads/upload
   domain: http://127.0.0.1:8080
+#  vendor: MINIO
+#  region: 127.0.0.1:9000
+#  bucket: eunut-tmp
+#  domain: http://127.0.0.1:9000
+#  access_key: 2BOZsOYjNP1aEvQluioC
+#  secret_key: Snb2HmGFWhagqCxeieMAHyynMdaYIgd2yIQ8RbiY
 #  vendor: 七牛
 #  region: z0
 #  bucket: eunut-tmp
