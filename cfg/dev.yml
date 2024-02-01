@@ -42,23 +42,17 @@ oss:
   #  region: 127.0.0.1:9000
   #  bucket: eunut-tmp
   #  domain: http://127.0.0.1:9000
-  #  access_key: 2BOZsOYjNP1aEvQluioC
-  #  secret_key: Snb2HmGFWhagqCxeieMAHyynMdaYIgd2yIQ8RbiY
+  #  vendor: 阿里
+  #  region: oss-cn-beijing.aliyuncs.com
+  #  bucket: eunut-img
+  #  domain: http://al.te0.cn
+  #  vendor: 腾讯
+  #  region: ap-beijing
+  #  bucket: eunut-1252629751
+  #  domain: https://tx.te0.cn
   vendor: 七牛
   region: z0
   bucket: eunut-tmp
   domain: http://qn.te0.cn
-  access_key: rDpoieuu5Jyl-i915MuVyNVT0dFQJPHBFGEG4TlK
-  secret_key: 6eVPc6EXTjaLVudIUQEU-QQviiA6r5YPbauVmAVY
-#  vendor: 阿里
-#  region: oss-cn-beijing.aliyuncs.com
-#  bucket: eunut-img
-#  domain: http://al.te0.cn
-#  access_key: LTAI5tFnu8tZg1kt358Y5diM
-#  secret_key: zw1QRLSGq6qGIIM1wuNju5kvN0uBxb
-#  vendor: 腾讯
-#  region: ap-beijing
-#  bucket: eunut-1252629751
-#  domain: https://tx.te0.cn
-#  access_key: AKID6725BJPTRK8oPdt6AA5vkU3Xt9JMG6tZ
-#  secret_key: jJl8MTSK6jK2iIl6RiyEXuNqLveJvSp4
+  access_key:
+  secret_key:
