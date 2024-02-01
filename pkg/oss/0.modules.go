@@ -26,5 +26,9 @@ var Modules = fx.Options(
 			NewLocal,
 			fx.ResultTags(`group:"oss"`),
 		),
+		fx.Annotate(
+			NewTencent,
+			fx.ResultTags(`group:"oss"`),
+		),
 	),
 )

@@ -52,6 +52,9 @@ func NewOss(c *base.Config, g UploaderGroup) (base.Plugin, error) {
 			break
 		}
 	}
+	if u == nil {
+		return nil, errors.New("存储服务初始化失败")
+	}
 	return &oss{uploader: u}, nil
 }
 
