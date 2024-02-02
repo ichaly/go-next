@@ -1,10 +1,12 @@
 package base
 
 import (
+	"context"
 	"github.com/ichaly/go-next/pkg/gql"
 	"github.com/ichaly/go-next/pkg/util"
 	"gorm.io/datatypes"
 	"gorm.io/gorm"
+	"strconv"
 	"time"
 )
 
@@ -54,4 +56,16 @@ type AuditorEntity struct {
 	CreatedBy *Id `gorm:"comment:创建人;" json:",omitempty"`
 	UpdatedBy *Id `gorm:"comment:更新人;" json:",omitempty"`
 	DeletedBy *Id `gorm:"comment:删除人;" json:",omitempty"`
+}
+
+func GetUserFromContext(ctx context.Context) (interface{}, bool) {
+	val, ok := ctx.Value(UserContextKey).(string)
+	if !ok || val == "" {
+		return nil, false
+	}
+	num, err := strconv.ParseUint(val, 10, 64)
+	if err != nil {
+		return nil, false
+	}
+	return &num, ok
 }
