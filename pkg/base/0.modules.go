@@ -25,10 +25,8 @@ var Modules = fx.Options(
 			Target: NewCache,
 		},
 		fx.Annotated{
-			Group: "gorm",
-			Target: func() interface{} {
-				return NewAuditor(WithProvider(GetUserFromContext))
-			},
+			Group:  "gorm",
+			Target: NewAuditor,
 		},
 		fx.Annotate(
 			NewGraphql,

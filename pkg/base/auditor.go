@@ -37,15 +37,8 @@ func WithUpdatedByName(name string) AuditOption {
 	}
 }
 
-func NewAuditor(ops ...AuditOption) gorm.Plugin {
-	my := &Auditor{
-		createdByName: "created_by",
-		updatedByName: "updated_by",
-	}
-	for _, o := range ops {
-		o(my)
-	}
-	return my
+func NewAuditor() gorm.Plugin {
+	return buildAuditor(WithProvider(GetUserFromContext))
 }
 
 func (my Auditor) Name() string { return "gorm-auditor" }
@@ -98,4 +91,15 @@ func (my Auditor) beforeUpdate(db *gorm.DB) {
 			db.Statement.SetColumn(my.updatedByName, id)
 		}
 	}
+}
+
+func buildAuditor(ops ...AuditOption) gorm.Plugin {
+	my := &Auditor{
+		createdByName: "created_by",
+		updatedByName: "updated_by",
+	}
+	for _, o := range ops {
+		o(my)
+	}
+	return my
 }
