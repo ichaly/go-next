@@ -27,7 +27,7 @@ var Modules = fx.Options(
 		fx.Annotated{
 			Group: "entity",
 			Target: func() interface{} {
-				return &Oauth{}
+				return &Bind{}
 			},
 		},
 		NewUserService,

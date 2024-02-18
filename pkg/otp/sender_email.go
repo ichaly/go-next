@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const EMAIL sys.OauthKind = "email"
+const EMAIL sys.BindKind = "email"
 
 type Email struct {
 	pool   *email.Pool

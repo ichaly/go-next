@@ -11,7 +11,7 @@ import (
 	"github.com/ichaly/go-next/pkg/zlog"
 )
 
-const MOBILE sys.OauthKind = "mobile"
+const MOBILE sys.BindKind = "mobile"
 
 type Mobile struct {
 	config *base.Config
