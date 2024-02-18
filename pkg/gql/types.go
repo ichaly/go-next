@@ -92,8 +92,9 @@ var SortDirection = graphql.NewEnum(graphql.EnumConfig{
 })
 
 var (
-	Encryption, _ = sqids.New()
-	ID            = graphql.NewScalar(graphql.ScalarConfig{
+	ShortId, _ = sqids.New()
+
+	ID = graphql.NewScalar(graphql.ScalarConfig{
 		Name:        graphql.ID.Name(),
 		Description: graphql.ID.Description(),
 		Serialize: func(value interface{}) interface{} {
@@ -102,8 +103,8 @@ var (
 		ParseValue: func(value interface{}) interface{} {
 			//使用sqids尝试解析
 			if v, ok := value.(string); ok {
-				res := Encryption.Decode(v)
-				if str, err := Encryption.Encode(res); err == nil && str == v {
+				res := ShortId.Decode(v)
+				if str, err := ShortId.Encode(res); err == nil && str == v {
 					return res[0]
 				}
 			}

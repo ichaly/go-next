@@ -19,7 +19,7 @@ type Id uint64
 func (my Id) ID() {}
 
 func (my Id) String() string {
-	str, err := gql.Encryption.Encode([]uint64{uint64(my)})
+	str, err := gql.ShortId.Encode([]uint64{uint64(my)})
 	if err != nil {
 		return util.FormatLong(int64(my))
 	}

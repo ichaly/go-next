@@ -19,18 +19,12 @@ type Session struct {
 	MsgId       base.Id `gorm:"comment:消息ID"`
 	FromId      base.Id `gorm:"comment:发送人"`
 	ToId        base.Id `gorm:"comment:接收人"`
-	UniqueSign  base.Id `gorm:"comment:唯一主体标识"`
 	base.Entity `mapstructure:",squash"`
 }
 
 type Receiver struct {
-	MsgId       base.Id `gorm:"comment:消息ID;" json:",omitempty"`
-	UserId      base.Id `gorm:"comment:用户ID;" json:",omitempty"`
-	base.Entity `mapstructure:",squash"`
-}
-
-type MessageStatus struct {
-	UserId      base.Id    `gorm:"comment:用户ID"`
-	LastReadAt  *time.Time `gorm:"comment:最近已读时间;" json:",omitempty"`
+	MsgId       base.Id    `gorm:"comment:消息ID;" json:",omitempty"`
+	UserId      base.Id    `gorm:"comment:用户ID;" json:",omitempty"`
+	ReadAt      *time.Time `gorm:"comment:已读时间;" json:",omitempty"`
 	base.Entity `mapstructure:",squash"`
 }
