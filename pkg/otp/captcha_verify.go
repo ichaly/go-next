@@ -65,7 +65,7 @@ func (my *verify) verifyHandler(c *gin.Context) {
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		user.Username = username
 		user.Password = my.config.Oauth.Passkey
-		my.userService.Bind(&user, kind)
+		my.userService.BindThird(&user, kind)
 	}
 	c.Next()
 }

@@ -21,7 +21,7 @@ func (my *UserService) FindByUsername(username string) (User, error) {
 	return usr, err
 }
 
-func (my *UserService) Bind(u *User, k BindKind) {
+func (my *UserService) BindThird(u *User, k BindKind) {
 	my.db.Save(u)
 	my.db.Save(&Bind{Kind: k, Uid: u.Id, Value: u.Username})
 }
