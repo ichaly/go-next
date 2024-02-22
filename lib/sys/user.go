@@ -1,6 +1,7 @@
 package sys
 
 import (
+	"fmt"
 	"github.com/ichaly/go-next/pkg/base"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
@@ -23,6 +24,14 @@ func (*User) TableName() string {
 
 func (*User) Description() string {
 	return "用户信息"
+}
+
+// BeforeDelete 删除用户前清除用户与角色的关联信息
+func (my *User) BeforeDelete(tx *gorm.DB) (err error) {
+	if e := tx.Where("uid = ?", my.Id).Delete(&RoleUser{}).Error; e != nil {
+		err = fmt.Errorf("删除用户角色关联异常: <%s>", e.Error())
+	}
+	return
 }
 
 func (my *User) BeforeCreate(tx *gorm.DB) error {

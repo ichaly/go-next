@@ -7,13 +7,16 @@ import (
 	"gorm.io/gorm"
 )
 
+var roleService *RoleService
+
 type RoleService struct {
 	db       *gorm.DB
 	enforcer *casbin.SyncedEnforcer
 }
 
 func NewUserRoleService(db *gorm.DB, e *casbin.SyncedEnforcer) *RoleService {
-	return &RoleService{db: db, enforcer: e}
+	roleService = &RoleService{db: db, enforcer: e}
+	return roleService
 }
 
 // 拼接角色ID，为了防止角色与用户名冲突
