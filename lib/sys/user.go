@@ -28,6 +28,10 @@ func (*User) Description() string {
 
 // BeforeDelete 删除用户前清除用户与角色的关联信息
 func (my *User) BeforeDelete(tx *gorm.DB) (err error) {
+	// 清除casbin用户与角色关联
+	if _, e := roleService.DeleteUser(my.Id); e != nil {
+		err = fmt.Errorf("清除casbin角色权限异常: <%s>", e.Error())
+	}
 	if e := tx.Where("uid = ?", my.Id).Delete(&RoleUser{}).Error; e != nil {
 		err = fmt.Errorf("删除用户角色关联异常: <%s>", e.Error())
 	}

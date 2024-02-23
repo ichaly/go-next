@@ -7,10 +7,8 @@ import (
 )
 
 type Role struct {
-	Code   string `gorm:"index:,unique;size:200;comment:编码"`
-	Name   string `gorm:"size:200;comment:名称"`
-	Scope  string `gorm:"size:200;comment:数据权限"`
-	Weight string `gorm:"comment:权重"`
+	Title string `gorm:"size:200;comment:显示名称"`
+	Scope string `gorm:"size:200;comment:数据权限"`
 	base.Entity
 }
 
@@ -26,7 +24,11 @@ func (my *Role) BeforeDelete(tx *gorm.DB) (err error) {
 	}
 	// 清除数据库中用户与角色的关联
 	if e := tx.Where("rid = ?", my.Id).Delete(&RoleUser{}).Error; e != nil {
-		err = fmt.Errorf("删除用户角色关联异常: <%s>", e.Error())
+		err = fmt.Errorf("删除角色用户关联异常: <%s>", e.Error())
+	}
+	// 清除数据库中权限与角色的关联
+	if e := tx.Where("rid = ?", my.Id).Delete(&RoleRule{}).Error; e != nil {
+		err = fmt.Errorf("删除角色权限关联异常: <%s>", e.Error())
 	}
 	return
 }
