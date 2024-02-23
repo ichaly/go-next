@@ -14,10 +14,10 @@ import (
 )
 
 type Graphql struct {
-	enforcer *casbin.SyncedEnforcer
+	enforcer *casbin.SyncedCachedEnforcer
 }
 
-func NewGraphql(e *casbin.SyncedEnforcer) base.Plugin {
+func NewGraphql(e *casbin.SyncedCachedEnforcer) base.Plugin {
 	return &Graphql{enforcer: e}
 }
 

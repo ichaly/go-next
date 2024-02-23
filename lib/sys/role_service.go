@@ -12,10 +12,10 @@ var roleService *RoleService
 
 type RoleService struct {
 	db       *gorm.DB
-	enforcer *casbin.SyncedEnforcer
+	enforcer *casbin.SyncedCachedEnforcer
 }
 
-func NewUserRoleService(db *gorm.DB, e *casbin.SyncedEnforcer) *RoleService {
+func NewRoleService(db *gorm.DB, e *casbin.SyncedCachedEnforcer) *RoleService {
 	roleService = &RoleService{db: db, enforcer: e}
 	return roleService
 }

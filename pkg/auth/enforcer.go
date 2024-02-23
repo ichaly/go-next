@@ -6,12 +6,12 @@ import (
 	"gorm.io/gorm"
 )
 
-func NewEnforcer(d *gorm.DB) (*casbin.SyncedEnforcer, error) {
+func NewEnforcer(d *gorm.DB) (*casbin.SyncedCachedEnforcer, error) {
 	a, err := adapter.NewAdapterByDBUseTableName(d, "sys", "casbin")
 	if err != nil {
 		return nil, err
 	}
-	e, err := casbin.NewSyncedEnforcer("./cfg/casbin.conf", a)
+	e, err := casbin.NewSyncedCachedEnforcer("./cfg/casbin.conf", a)
 	if err != nil {
 		return nil, err
 	}
@@ -23,7 +23,7 @@ func NewEnforcer(d *gorm.DB) (*casbin.SyncedEnforcer, error) {
 	return e, nil
 }
 
-func registerFunction(e *casbin.SyncedEnforcer) {
+func registerFunction(e *casbin.SyncedCachedEnforcer) {
 	e.AddFunction("permit", func(args ...interface{}) (interface{}, error) {
 		sub, obj, act := args[0].(string), args[1].(string), args[2].(string)
 		//判断是否有相应的策略，如果没有则放行
