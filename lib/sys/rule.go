@@ -37,7 +37,7 @@ func (*Rule) TableName() string {
 // BeforeDelete 删除用户前清除用户与角色的关联信息
 func (my *Rule) BeforeDelete(tx *gorm.DB) (err error) {
 	// 清除casbin权限与角色关联
-	if _, e := roleService.DeleteRule(my.Id); e != nil {
+	if _, e := roleService.DeleteRule(my.Code); e != nil {
 		err = fmt.Errorf("清除casbin角色权限异常: <%s>", e.Error())
 	}
 	if e := tx.Where("mid = ?", my.Id).Delete(&RoleRule{}).Error; e != nil {

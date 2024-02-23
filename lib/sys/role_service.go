@@ -26,7 +26,7 @@ func (my *RoleService) makeRoleName(roleId base.Id) string {
 }
 
 // AddRolePolicy 添加角色权限策略
-func (my *RoleService) AddRolePolicy(roleId base.Id, params ...interface{}) (bool, error) {
+func (my *RoleService) AddRolePolicy(roleId base.Id, params ...string) (bool, error) {
 	return my.enforcer.AddPolicy(my.makeRoleName(roleId), params)
 }
 
@@ -48,7 +48,6 @@ func (my *RoleService) DeleteUser(userId base.Id) (bool, error) {
 }
 
 // DeleteRule 删除角色下的权限
-func (my *RoleService) DeleteRule(ruleId base.Id) (bool, error) {
-	rule := util.FormatLong(int64(ruleId))
-	return my.enforcer.RemoveFilteredNamedPolicy("p", 1, rule)
+func (my *RoleService) DeleteRule(params ...string) (bool, error) {
+	return my.enforcer.RemoveFilteredNamedPolicy("p", 1, params...)
 }
