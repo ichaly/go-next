@@ -60,7 +60,7 @@ func buildDialect(ds *DataSource) gorm.Dialector {
 		))
 	} else {
 		return postgres.Open(fmt.Sprintf(
-			"user=%s password=%s host=%s port=%d dbname=%s sslmode=disable TimeZone=Asia/Shanghai", args...,
+			"user=%s password=%s host=%s port=%d dbname=%s TimeZone=Asia/Shanghai", args...,
 		))
 	}
 }
