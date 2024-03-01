@@ -7,27 +7,28 @@ import (
 )
 
 const (
-	// Route 路由菜单
-	Route RuleKind = iota
-	// Action 操作按钮
-	Action
-	// Field 数据权限
-	Field
+	RoleRoot  = "root"
+	RoleGuest = "guest"
 )
 
-type RuleKind int8
+const (
+	ActionAll   = "*"
+	ActionRead  = "read"
+	ActionWrite = "write"
+)
 
 type Rule struct {
-	Pid      *base.Id `gorm:"comment:父级ID"`
-	Code     string   `gorm:"index:,unique;size:200;comment:唯一标识"`
-	Kind     RuleKind `gorm:"comment:权限类型"`
-	Icon     string   `gorm:"size:100;comment:图标"`
-	Title    string   `gorm:"size:200;comment:标题"`
-	Weight   int8     `gorm:"comment:权重"`
-	Hidden   bool     `gorm:"comment:是否隐藏菜单"`
-	Default  bool     `gorm:"comment:是否默认菜单"`
-	External bool     `gorm:"comment:是否外链打开"`
-	base.Entity
+	Pid         *base.Id `gorm:"comment:父级ID" json:",omitempty"`
+	Kind        RuleKind `gorm:"comment:权限类型"`
+	Code        string   `gorm:"index;size:200;comment:唯一标识"`
+	Icon        string   `gorm:"size:100;comment:图标"`
+	Title       string   `gorm:"size:200;comment:标题"`
+	Action      string   `gorm:"size:100;comment:动作"`
+	Weight      int8     `gorm:"comment:权重"`
+	Hidden      bool     `gorm:"comment:是否隐藏"`
+	Default     bool     `gorm:"comment:是否默认"`
+	External    bool     `gorm:"comment:是否外链"`
+	base.Entity `mapstructure:",squash"`
 }
 
 func (*Rule) TableName() string {

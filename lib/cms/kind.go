@@ -8,8 +8,8 @@ type Kind string
 
 const (
 	Moment   Kind = "MOMENT"
-	Question Kind = "QUESTION"
 	Answer   Kind = "ANSWER"
+	Question Kind = "QUESTION"
 )
 
 func (my *Kind) Scan(value interface{}) error {

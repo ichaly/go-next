@@ -53,12 +53,15 @@ func MutationResolver[T any](in graphql.ResolveParams, db *gorm.DB, v *Validate)
 	if err != nil {
 		return nil, err
 	}
+	data, _ := in.Args["data"].(map[string]interface{})
 	err = tx.Clauses(clause.OnConflict{
-		UpdateAll: true,
 		Columns:   []clause.Column{{Name: "id"}},
+		DoUpdates: clause.Assignments(data),
 	}).Create(&p.Data).Error
 	if err != nil {
 		return nil, err
 	}
+	//在查询一次数据防止更新时字段不全
+	tx.First(&p.Data)
 	return p.Data, nil
 }

@@ -22,7 +22,7 @@ func (my *RoleRule) AfterCreate(tx *gorm.DB) (err error) {
 	if e := tx.Where("mid = ?", my.RuleId).First(rule).Error; e != nil {
 		err = fmt.Errorf("关联权限和角色获取异常: <%s>", e.Error())
 	}
-	if _, e := roleService.AddRolePolicy(my.RoleId, rule.Code); e != nil {
+	if _, e := roleService.AddRolePolicy(my.RoleId, rule.Code, rule.Action); e != nil {
 		err = fmt.Errorf("关联权限和角色到casbin异常: <%s>", e.Error())
 	}
 	return
