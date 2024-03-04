@@ -7,8 +7,9 @@ import (
 )
 
 type Role struct {
-	Title string `gorm:"size:200;comment:显示名称"`
-	Scope string `gorm:"size:200;comment:数据权限"`
+	Title   string    `gorm:"size:200;comment:显示名称"`
+	Scope   string    `gorm:"size:200;comment:数据权限"`
+	RuleIds []base.Id `gorm:"-"`
 	base.Entity
 }
 

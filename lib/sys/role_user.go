@@ -7,9 +7,9 @@ import (
 )
 
 type RoleUser struct {
-	base.Primary `mapstructure:",squash"`
-	RoleId       base.Id `gorm:"comment:角色ID"`
-	UserId       base.Id `gorm:"comment:用户ID"`
+	RoleId       base.Id `gorm:"primaryKey;comment:角色ID"`
+	UserId       base.Id `gorm:"primaryKey;comment:用户ID"`
+	base.General `mapstructure:",squash"`
 }
 
 func (*RoleUser) TableName() string {

@@ -36,7 +36,20 @@ var Modules = fx.Options(
 				return &Rule{}
 			},
 		},
+		fx.Annotated{
+			Group: "entity",
+			Target: func() interface{} {
+				return &RoleRule{}
+			},
+		},
+		fx.Annotated{
+			Group: "entity",
+			Target: func() interface{} {
+				return &RoleUser{}
+			},
+		},
 		NewUserService,
 		NewRoleService,
 	),
+	fx.Populate(&roleService),
 )

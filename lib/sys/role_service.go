@@ -27,7 +27,8 @@ func (my *RoleService) makeRoleName(roleId base.Id) string {
 
 // AddRolePolicy 添加角色权限策略
 func (my *RoleService) AddRolePolicy(roleId base.Id, params ...string) (bool, error) {
-	return my.enforcer.AddPolicy(my.makeRoleName(roleId), params)
+	params = append([]string{my.makeRoleName(roleId)}, params...)
+	return my.enforcer.AddPolicy(params)
 }
 
 // AddUserPolicy 添加用户角色策略
