@@ -2,8 +2,8 @@ package user
 
 import (
 	"github.com/graphql-go/graphql"
-	"github.com/ichaly/go-next/lib/sys"
-	"github.com/ichaly/go-next/pkg/gql"
+	"github.com/ichaly/go-next/lib/gql"
+	"github.com/ichaly/go-next/pkg/sys"
 	"time"
 )
 

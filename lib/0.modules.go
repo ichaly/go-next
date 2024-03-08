@@ -1,12 +1,16 @@
 package lib
 
 import (
-	"github.com/ichaly/go-next/lib/cms"
-	"github.com/ichaly/go-next/lib/sys"
+	"github.com/ichaly/go-next/lib/auth"
+	"github.com/ichaly/go-next/lib/base"
+	"github.com/ichaly/go-next/lib/oss"
+	"github.com/ichaly/go-next/lib/otp"
 	"go.uber.org/fx"
 )
 
 var Modules = fx.Options(
-	cms.Modules,
-	sys.Modules,
+	auth.Modules,
+	base.Modules,
+	otp.Modules,
+	oss.Modules,
 )

@@ -2,10 +2,10 @@ package role
 
 import (
 	"github.com/graphql-go/graphql"
-	"github.com/ichaly/go-next/lib/sys"
-	"github.com/ichaly/go-next/pkg/base"
-	"github.com/ichaly/go-next/pkg/gql"
-	"github.com/ichaly/go-next/pkg/util"
+	"github.com/ichaly/go-next/lib/base"
+	"github.com/ichaly/go-next/lib/gql"
+	"github.com/ichaly/go-next/lib/util"
+	"github.com/ichaly/go-next/pkg/sys"
 	"gorm.io/gorm"
 )
 

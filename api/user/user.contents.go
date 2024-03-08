@@ -3,11 +3,11 @@ package user
 import (
 	"context"
 	"github.com/graphql-go/graphql"
-	"github.com/ichaly/go-next/lib/cms"
-	"github.com/ichaly/go-next/lib/sys"
-	"github.com/ichaly/go-next/pkg/base"
-	"github.com/ichaly/go-next/pkg/gql"
-	dl "github.com/ichaly/go-next/pkg/gql/dataloader"
+	"github.com/ichaly/go-next/lib/base"
+	"github.com/ichaly/go-next/lib/gql"
+	dl "github.com/ichaly/go-next/lib/gql/dataloader"
+	"github.com/ichaly/go-next/pkg/cms"
+	"github.com/ichaly/go-next/pkg/sys"
 	"gorm.io/gorm"
 )
 

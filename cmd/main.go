@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
+	"github.com/ichaly/go-next/lib/zlog"
 	"github.com/ichaly/go-next/main/cli"
-	"github.com/ichaly/go-next/pkg/zlog"
 	"github.com/joho/godotenv"
 	"github.com/rs/zerolog"
 	"log"

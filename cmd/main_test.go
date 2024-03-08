@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/ichaly/go-next/lib/sys"
 	"github.com/ichaly/go-next/pkg/auth"
 	"github.com/ichaly/go-next/pkg/base"
+	"github.com/ichaly/go-next/pkg/sys"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 	"sync"
