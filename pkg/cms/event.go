@@ -4,7 +4,7 @@ import (
 	"github.com/ichaly/go-next/lib/base"
 )
 
-type Action struct {
+type Event struct {
 	base.Primary `mapstructure:",squash"`
 	ObjectId     int64 `gorm:"comment:内容ID"`
 	View         int   `gorm:"comment:阅读量"`
@@ -16,6 +16,6 @@ type Action struct {
 	Favorite     int   `gorm:"comment:收藏量"`
 }
 
-func (Action) TableName() string {
-	return "cms_action"
+func (Event) TableName() string {
+	return "cms_event"
 }
