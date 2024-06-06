@@ -9,7 +9,7 @@ type Event struct {
 	ObjectId     int64 `gorm:"comment:内容ID"`
 	View         int   `gorm:"comment:阅读量"`
 	Like         int   `gorm:"comment:点赞量"`
-	Diss         int   `gorm:"comment:差评量"`
+	Hate         int   `gorm:"comment:讨厌量"`
 	Share        int   `gorm:"comment:分享量"`
 	Follow       int   `gorm:"comment:关注量"`
 	Comment      int   `gorm:"comment:评论量"`
