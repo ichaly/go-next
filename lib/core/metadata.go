@@ -32,14 +32,14 @@ type Metadata struct {
 
 func NewMetadata(db *gorm.DB) (*Metadata, error) {
 	var list []*struct {
-		Name        string `gorm:"column:column_name;"`
-		Type        string `gorm:"column:data_type;"`
-		Table       string `gorm:"column:table_name;"`
-		Comment     string `gorm:"column:table_description;"`
-		IsPrimary   bool   `gorm:"column:is_primary;"`
-		IsForeign   bool   `gorm:"column:is_foreign;"`
-		IsNullable  bool   `gorm:"column:is_nullable;"`
-		Description string `gorm:"column:column_description;"`
+		Name             string `gorm:"column:column_name;"`
+		Type             string `gorm:"column:data_type;"`
+		Table            string `gorm:"column:table_name;"`
+		IsPrimary        bool   `gorm:"column:is_primary;"`
+		IsForeign        bool   `gorm:"column:is_foreign;"`
+		IsNullable       bool   `gorm:"column:is_nullable;"`
+		Description      string `gorm:"column:column_description;"`
+		TableDescription string `gorm:"column:table_description;"`
 	}
 	if err := db.Raw(pgsql).Scan(&list).Error; err != nil {
 		return nil, err
@@ -58,8 +58,8 @@ func NewMetadata(db *gorm.DB) (*Metadata, error) {
 			name := strcase.ToCamel(v.Table)
 			node = &Table{
 				Name:        name,
-				Description: v.Comment,
 				Columns:     make([]*Column, 0),
+				Description: v.TableDescription,
 			}
 			metadata.Nodes[name] = node
 		}
