@@ -2,6 +2,7 @@ package core
 
 import (
 	"fmt"
+	"github.com/ichaly/go-next/lib/util"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -16,5 +17,13 @@ func TestDataSource(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	_, _ = NewSchema(db)
+	metadata, err := NewMetadata(db)
+	if err != nil {
+		t.Fatal(err)
+	}
+	json, err := util.MarshalJson(metadata)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log(json)
 }
