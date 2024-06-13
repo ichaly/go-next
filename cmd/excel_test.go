@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/go-resty/resty/v2"
-	"github.com/ichaly/go-next/pkg/util"
+	"github.com/ichaly/go-next/lib/util"
 	"github.com/tidwall/gjson"
 	"github.com/xuri/excelize/v2"
 	"os"
