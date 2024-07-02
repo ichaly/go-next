@@ -37,3 +37,10 @@ func RandomCode(width int) string {
 	}
 	return sb.String()
 }
+
+func Ternary[T any](condition bool, trueVal, falseVal T) T {
+	if condition {
+		return trueVal
+	}
+	return falseVal
+}
