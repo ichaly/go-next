@@ -1,7 +1,6 @@
 package util
 
 import (
-	"errors"
 	"strings"
 )
 
@@ -13,11 +12,11 @@ func JoinString(elem ...string) string {
 	return b.String()
 }
 
-func StartWithAny(s string, prefixes ...string) (error, string) {
+func StartWithAny(s string, prefixes ...string) (string, bool) {
 	for _, p := range prefixes {
 		if strings.HasPrefix(s, p) {
-			return nil, p
+			return p, true
 		}
 	}
-	return errors.New("not found"), ""
+	return "", false
 }

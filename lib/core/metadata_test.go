@@ -27,3 +27,31 @@ func TestDataSource(t *testing.T) {
 	}
 	t.Log(json)
 }
+
+type Parent interface {
+	GetName() string
+}
+
+type Child interface {
+	GetAge() int
+}
+
+type Son struct {
+}
+
+func (s *Son) GetName() string {
+	return "son"
+}
+
+//func (s *Son) GetAge() int {
+//	return 18
+//}
+
+func NewParent(p Parent) *Child {
+	return nil
+}
+
+func TestEmbedded(t *testing.T) {
+	var son *Son
+	NewParent(son)
+}
