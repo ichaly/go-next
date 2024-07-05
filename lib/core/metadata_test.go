@@ -3,6 +3,7 @@ package core
 import (
 	"fmt"
 	"github.com/ichaly/go-next/lib/util"
+	"github.com/spf13/viper"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -17,7 +18,8 @@ func TestDataSource(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	metadata, err := NewMetadata(db)
+	var v *viper.Viper
+	metadata, err := NewMetadata(db, v)
 	if err != nil {
 		t.Fatal(err)
 	}
