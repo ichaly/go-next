@@ -85,7 +85,7 @@ func (my *Metadata) load() error {
 			return err
 		}
 		if my.cfg.UseCamel {
-			c.Name = strcase.ToCamel(c.Name)
+			c.Name = strcase.ToLowerCamel(c.Name)
 		}
 
 		//解析表
@@ -96,7 +96,7 @@ func (my *Metadata) load() error {
 			prefix = val
 		}
 		if my.cfg.UseCamel {
-			name = strcase.ToLowerCamel(name)
+			name = strcase.ToCamel(name)
 		}
 
 		node, ok := my.Nodes[name]
