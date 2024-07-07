@@ -7,6 +7,17 @@ app:
 captcha:
   expired: 10m
 
+schema:
+  use-camel: true
+  prefixes:
+    - sys_
+    - cms_
+  block-list:
+    - secret
+    - password
+    - encrypted
+    - token
+    - casbin
 email:
   port: 587
   host: smtp.qq.com

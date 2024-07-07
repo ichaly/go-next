@@ -2,8 +2,8 @@ package core
 
 import (
 	"fmt"
+	"github.com/ichaly/go-next/lib/base"
 	"github.com/ichaly/go-next/lib/util"
-	"github.com/spf13/viper"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -18,7 +18,10 @@ func TestDataSource(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	var v *viper.Viper
+	v, err := base.NewViper("../../cfg/dev.yml")
+	if err != nil {
+		t.Fatal(err)
+	}
 	metadata, err := NewMetadata(db, v)
 	if err != nil {
 		t.Fatal(err)
@@ -28,32 +31,4 @@ func TestDataSource(t *testing.T) {
 		t.Fatal(err)
 	}
 	t.Log(json)
-}
-
-type Parent interface {
-	GetName() string
-}
-
-type Child interface {
-	GetAge() int
-}
-
-type Son struct {
-}
-
-func (s *Son) GetName() string {
-	return "son"
-}
-
-//func (s *Son) GetAge() int {
-//	return 18
-//}
-
-func NewParent(p Parent) *Child {
-	return nil
-}
-
-func TestEmbedded(t *testing.T) {
-	var son *Son
-	NewParent(son)
 }

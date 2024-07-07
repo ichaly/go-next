@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func NewViper(file string) (error, *viper.Viper) {
+func NewViper(file string) (*viper.Viper, error) {
 	//解析文件路径和名称
 	path := filepath.Dir(file)
 	name := strings.TrimSuffix(filepath.Base(file), filepath.Ext(file))
@@ -26,7 +26,7 @@ func NewViper(file string) (error, *viper.Viper) {
 
 	//读取跟配置文件
 	if err := v.ReadInConfig(); err != nil {
-		return err, nil
+		return nil, err
 	}
 
 	//合并其他配置文件
@@ -45,5 +45,5 @@ func NewViper(file string) (error, *viper.Viper) {
 	//开启配置文件变更监听
 	v.WatchConfig()
 
-	return nil, v
+	return v, nil
 }
