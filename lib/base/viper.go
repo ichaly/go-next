@@ -19,7 +19,10 @@ func NewViper(file string) (error, *viper.Viper) {
 
 	//支持环境变量自动替换
 	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
+	v.SetEnvPrefix("app")
 	v.AutomaticEnv()
+
+	v.SetDefault("mode", "dev")
 
 	//读取跟配置文件
 	if err := v.ReadInConfig(); err != nil {
@@ -28,6 +31,8 @@ func NewViper(file string) (error, *viper.Viper) {
 
 	//合并其他配置文件
 	profiles := strings.Split(v.GetString("profiles.active"), ",")
+	profiles = append(profiles, v.GetString("mode"))
+
 	for _, p := range profiles {
 		if len(p) == 0 {
 			continue
@@ -36,6 +41,9 @@ func NewViper(file string) (error, *viper.Viper) {
 		v.SetConfigName(file)
 		_ = v.MergeInConfig()
 	}
+
+	//开启配置文件变更监听
+	v.WatchConfig()
 
 	return nil, v
 }

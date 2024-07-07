@@ -1,9 +1,14 @@
 package base
 
 import (
+	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
+
+func init() {
+	_ = godotenv.Load("../../.env")
+}
 
 func TestNewViper(t *testing.T) {
 
