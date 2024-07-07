@@ -2,7 +2,9 @@
 server:
   # 默认的健康服务监听地址
   port: 0
-spring:
-  profiles:
-    # 引用的其它配置，文件命名规则：application-${profile}.yml
-    active: database,thrift,redis,pulsar,apollo,custom,replace,test,local
+profiles:
+  # 引用的其它配置，文件命名规则：application-${profile}.yml
+  active: database,thrift,redis,pulsar,apollo,custom,replace,test,local
+tables:
+  - sys_user
+  - sys_role

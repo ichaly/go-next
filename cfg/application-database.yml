@@ -1,0 +1,13 @@
+database:
+  # 数据库类型
+  type: mysql
+  # 数据库地址
+  host: IP_ADDRESS
+  # 数据库端口
+  port: 3306
+  # 数据库名称
+  database: test
+  # 数据库用户名
+  username: root
+  # 数据库密码
+  password: 123456

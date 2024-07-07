@@ -27,13 +27,14 @@ func NewViper(file string) (error, *viper.Viper) {
 	}
 
 	//合并其他配置文件
-	profiles := v.GetStringSlice("profiles.active")
+	profiles := strings.Split(v.GetString("profiles.active"), ",")
 	for _, p := range profiles {
+		if len(p) == 0 {
+			continue
+		}
 		file = util.JoinString(name, "-", p)
 		v.SetConfigName(file)
-		if err := viper.MergeInConfig(); err != nil {
-			return err, nil
-		}
+		_ = v.MergeInConfig()
 	}
 
 	return nil, v
