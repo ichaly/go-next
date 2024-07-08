@@ -96,11 +96,11 @@ func (my *Metadata) load() error {
 			prefix = val
 		}
 		if my.cfg.UseCamel {
-			name = strcase.ToCamel(name)
+			name = strcase.ToLowerCamel(name)
 		}
 
-		node, ok := my.Nodes[name]
-		if !ok {
+		//存储节点
+		if node, ok := my.Nodes[name]; !ok {
 			node = &Table{
 				Name:        name,
 				Prefix:      prefix,
@@ -108,8 +108,9 @@ func (my *Metadata) load() error {
 				Description: v.TableDescription,
 			}
 			my.Nodes[node.Name] = node
+		} else {
+			node.Columns = append(node.Columns, &c)
 		}
-		node.Columns = append(node.Columns, &c)
 	}
 	return nil
 }
