@@ -43,12 +43,17 @@ type Metadata struct {
 }
 
 func NewMetadata(d *gorm.DB, v *viper.Viper) (*Metadata, error) {
-	cfg := &internal.TableConfig{}
+	cfg := &internal.TableConfig{TypeMapping: internal.DbTypes}
 	if err := v.Sub("schema").Unmarshal(cfg); err != nil {
 		return nil, err
 	}
 	metadata := &Metadata{
 		db: d, cfg: cfg, Nodes: make(map[string]*Table),
+	}
+	for k, v := range internal.DbTypes {
+		if _, exists := metadata.cfg.TypeMapping[k]; !exists {
+			metadata.cfg.TypeMapping[k] = v
+		}
 	}
 	if err := metadata.load(); err != nil {
 		return nil, err
