@@ -1,8 +1,8 @@
 package internal
 
-// DbTypes 内置的数据库到GraphQL的类型映射
-var DbTypes map[string]string = map[string]string{
-	"timestamp without time zone": "String",
+// DataTypes 内置的数据库到GraphQL的类型映射
+var DataTypes = map[string]string{
+	"timestamp without time zone": "DateTime",
 	"character varying":           "String",
 	"text":                        "String",
 	"smallint":                    "Int",

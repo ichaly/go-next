@@ -8,7 +8,6 @@ import (
 	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/viper"
 	"gorm.io/gorm"
-	"regexp"
 	"strings"
 )
 
@@ -17,8 +16,6 @@ var pgsql string
 
 //go:embed assets/schema.tpl
 var schema string
-
-var dbTypeRe = regexp.MustCompile(`([a-zA-Z ]+)(\((.+)\))?`)
 
 type Table struct {
 	Name        string
@@ -43,14 +40,14 @@ type Metadata struct {
 }
 
 func NewMetadata(d *gorm.DB, v *viper.Viper) (*Metadata, error) {
-	cfg := &internal.TableConfig{TypeMapping: internal.DbTypes}
+	cfg := &internal.TableConfig{TypeMapping: internal.DataTypes}
 	if err := v.Sub("schema").Unmarshal(cfg); err != nil {
 		return nil, err
 	}
 	metadata := &Metadata{
 		db: d, cfg: cfg, Nodes: make(map[string]*Table),
 	}
-	for k, v := range internal.DbTypes {
+	for k, v := range internal.DataTypes {
 		if _, exists := metadata.cfg.TypeMapping[k]; !exists {
 			metadata.cfg.TypeMapping[k] = v
 		}
@@ -104,7 +101,7 @@ func (my *Metadata) load() error {
 			name = strcase.ToLowerCamel(name)
 		}
 
-		//存储节点
+		//索引节点
 		if node, ok := my.Nodes[name]; !ok {
 			node = &Table{
 				Name:        name,
