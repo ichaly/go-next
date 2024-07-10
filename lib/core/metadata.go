@@ -19,7 +19,7 @@ var schema string
 
 type Table struct {
 	Name        string
-	Prefix      string
+	Original    string
 	Description string
 	Columns     []*Column
 }
@@ -81,30 +81,26 @@ func (my *Metadata) load() error {
 		if err := mapstructure.Decode(v, &c); err != nil {
 			return err
 		}
-		if my.cfg.UseCamel {
-			c.Name = strcase.ToLowerCamel(c.Name)
-		}
 
 		//解析表
-		var prefix string
 		name := v.Table
 		if val, yes := util.StartWithAny(name, my.cfg.Prefixes...); yes {
 			name = strings.Replace(name, val, "", 1)
-			prefix = val
 		}
 		if my.cfg.UseCamel {
 			name = strcase.ToLowerCamel(name)
+			c.Name = strcase.ToLowerCamel(c.Name)
 		}
 
 		//索引节点
 		if node, ok := my.Nodes[name]; !ok {
 			node = &Table{
 				Name:        name,
-				Prefix:      prefix,
-				Columns:     make([]*Column, 0),
+				Original:    v.Table,
 				Description: v.TableDescription,
+				Columns:     make([]*Column, 0),
 			}
-			my.Nodes[node.Name] = node
+			my.Nodes[name] = node
 		} else {
 			node.Columns = append(node.Columns, &c)
 		}
