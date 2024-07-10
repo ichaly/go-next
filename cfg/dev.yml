@@ -18,6 +18,8 @@ schema:
     - encrypted
     - token
     - casbin
+  mapping:
+    - json: String
 email:
   port: 587
   host: smtp.qq.com

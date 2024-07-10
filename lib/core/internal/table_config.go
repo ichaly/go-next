@@ -1,11 +1,11 @@
 package internal
 
 type TableConfig struct {
-	Tables      []TableDefinition `mapstructure:"tables"`
-	UseCamel    bool              `mapstructure:"use-camel"`
-	Prefixes    []string          `mapstructure:"prefixes"`
-	BlockList   []string          `mapstructure:"block-list"`
-	TypeMapping map[string]string `mapstructure:"type-mapping"`
+	Tables    []TableDefinition `mapstructure:"tables"`
+	Mapping   map[string]string `mapstructure:"mapping"`
+	UseCamel  bool              `mapstructure:"use-camel"`
+	Prefixes  []string          `mapstructure:"prefixes"`
+	BlockList []string          `mapstructure:"block-list"`
 }
 
 type TableDefinition struct {
