@@ -1,21 +1,63 @@
 package core
 
 import (
+	"errors"
 	"github.com/graphql-go/graphql"
 	"github.com/ichaly/go-next/lib/core/internal"
-	"github.com/spf13/viper"
 )
+
+const (
+	QUERY        = "Query"
+	MUTATION     = "Mutation"
+	SUBSCRIPTION = "Subscription"
+)
+
+type QueryField interface {
+	Field() *graphql.Field
+}
+
+type NamedField interface {
+	QueryField
+	Name() string
+}
 
 type Engine struct {
 	meta  *Metadata
 	types map[string]graphql.Type
 }
 
-func NewEngine(m *Metadata, v *viper.Viper) (*Engine, error) {
+func NewEngine(m *Metadata) (*Engine, error) {
 	my := &Engine{meta: m, types: map[string]graphql.Type{}}
 	//启动引擎
 	my.start()
 	return my, nil
+}
+
+func (my *Engine) Register(s QueryField) error {
+	var name string
+	if value, ok := s.(NamedField); !ok {
+		name = value.Name()
+	} else {
+		name = QUERY
+	}
+	if s.Field() == nil {
+		return errors.New("field is nil")
+	}
+	host, ok := my.types[name]
+	if !ok {
+		if name == QUERY {
+			host = graphql.NewObject(graphql.ObjectConfig{Name: QUERY})
+			my.types[name] = host
+		} else {
+			return errors.New("host not found")
+		}
+	}
+	node, ok := host.(*graphql.Object)
+	if !ok {
+		return errors.New("host is not object")
+	}
+	node.AddFieldConfig(s.Field().Name, s.Field())
+	return nil
 }
 
 func (my *Engine) start() {
@@ -31,6 +73,8 @@ func (my *Engine) start() {
 			Name: v.Name, Description: v.Description, Fields: fields,
 		})
 		my.types[v.Name] = object
+
+		_ = my.Register(&internal.RootField{Object: object})
 	}
 }
 
