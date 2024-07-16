@@ -3,6 +3,7 @@ package core
 import (
 	"errors"
 	"github.com/graphql-go/graphql"
+	"github.com/iancoleman/strcase"
 	"github.com/ichaly/go-next/lib/core/internal"
 )
 
@@ -12,70 +13,99 @@ const (
 	SUBSCRIPTION = "Subscription"
 )
 
-type QueryField interface {
-	Field() *graphql.Field
+type Option func(*graphql.ObjectConfig)
+
+func WithHost(host string) Option {
+	return func(c *graphql.ObjectConfig) {
+		c.Name = host
+	}
 }
 
-type NamedField interface {
-	QueryField
-	Name() string
+func WithDescription(description string) Option {
+	return func(c *graphql.ObjectConfig) {
+		c.Description = description
+	}
 }
 
 type Engine struct {
 	meta  *Metadata
-	types map[string]graphql.Type
+	types map[string]*graphql.Object
 }
 
 func NewEngine(m *Metadata) (*Engine, error) {
-	my := &Engine{meta: m, types: map[string]graphql.Type{}}
+	my := &Engine{meta: m, types: make(map[string]*graphql.Object)}
+
 	//启动引擎
-	my.start()
+	for _, t := range my.meta.Nodes {
+		//注册列
+		for _, c := range t.Columns {
+			_ = my.Register(
+				&graphql.Field{
+					Name:        c.Name,
+					Type:        my.parseType(c),
+					Description: c.Description,
+				},
+				WithHost(t.Name),
+				WithDescription(t.Description),
+			)
+		}
+
+		//注册表
+		_ = my.Register(
+			&graphql.Field{
+				Name:        strcase.ToLowerCamel(t.Name),
+				Type:        my.types[t.Name],
+				Description: t.Description,
+			},
+		)
+	}
+
 	return my, nil
 }
 
-func (my *Engine) Register(s QueryField) error {
-	var name string
-	if value, ok := s.(NamedField); !ok {
-		name = value.Name()
-	} else {
-		name = QUERY
-	}
-	if s.Field() == nil {
+func (my *Engine) Register(f *graphql.Field, options ...Option) error {
+	if f == nil {
 		return errors.New("field is nil")
 	}
-	host, ok := my.types[name]
-	if !ok {
-		if name == QUERY {
-			host = graphql.NewObject(graphql.ObjectConfig{Name: QUERY})
-			my.types[name] = host
-		} else {
-			return errors.New("host not found")
-		}
+
+	cfg := &graphql.ObjectConfig{Name: QUERY, Fields: graphql.Fields{}}
+	for _, option := range options {
+		option(cfg)
 	}
-	node, ok := host.(*graphql.Object)
+
+	host, ok := my.types[cfg.Name]
 	if !ok {
-		return errors.New("host is not object")
+		host = graphql.NewObject(*cfg)
+		my.types[cfg.Name] = host
 	}
-	node.AddFieldConfig(s.Field().Name, s.Field())
+
+	host.AddFieldConfig(f.Name, f)
 	return nil
 }
 
-func (my *Engine) start() {
-	for _, v := range my.meta.Nodes {
-		fields := graphql.Fields{}
-		for _, c := range v.Columns {
-			fields[c.Name] = &graphql.Field{
-				Type:        my.parseType(c),
-				Description: c.Description,
-			}
-		}
-		object := graphql.NewObject(graphql.ObjectConfig{
-			Name: v.Name, Description: v.Description, Fields: fields,
-		})
-		my.types[v.Name] = object
-
-		_ = my.Register(&internal.RootField{Object: object})
+func (my *Engine) Schema() (graphql.Schema, error) {
+	config := graphql.SchemaConfig{}
+	if q := my.checkSchema(QUERY); q != nil {
+		config.Query = q
 	}
+	if m := my.checkSchema(MUTATION); m != nil {
+		config.Mutation = m
+	}
+	if s := my.checkSchema(SUBSCRIPTION); s != nil {
+		config.Subscription = s
+	}
+	return graphql.NewSchema(config)
+}
+
+func (my *Engine) checkSchema(name string) *graphql.Object {
+	obj, ok := my.types[name]
+	if !ok {
+		return nil
+	}
+	if len(obj.Fields()) <= 0 {
+		return nil
+	}
+	return obj
 }
 
 func (my *Engine) parseType(c *Column) graphql.Type {

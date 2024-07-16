@@ -88,7 +88,7 @@ func (my *Metadata) load() error {
 			name = strings.Replace(name, val, "", 1)
 		}
 		if my.cfg.UseCamel {
-			name = strcase.ToLowerCamel(name)
+			name = strcase.ToCamel(name)
 			c.Name = strcase.ToLowerCamel(c.Name)
 		}
 
