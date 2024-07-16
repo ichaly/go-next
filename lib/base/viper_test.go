@@ -13,7 +13,7 @@ func init() {
 func TestNewViper(t *testing.T) {
 
 	// 调用 NewViper 函数
-	err, v := NewViper("../../cfg/application.yml")
+	v, err := NewViper("../../cfg/application.yml")
 
 	// 断言错误为空
 	assert.NoError(t, err)

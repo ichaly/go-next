@@ -2,7 +2,9 @@ package base
 
 import (
 	"fmt"
+	"github.com/ichaly/go-next/lib/base/internal"
 	"github.com/ichaly/go-next/lib/gql"
+	"github.com/spf13/viper"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -11,9 +13,14 @@ import (
 	"time"
 )
 
-func NewConnect(c *Config, p []gorm.Plugin, e []interface{}) (*gorm.DB, error) {
+func NewConnect(v *viper.Viper, c *Config, p []gorm.Plugin, e []interface{}) (*gorm.DB, error) {
+	cfg := &internal.DatabaseConfig{}
+	if err := v.Sub("database").Unmarshal(c); err != nil {
+		return nil, err
+	}
+
 	db, err := gorm.Open(
-		buildDialect(c.Database),
+		buildDialect(&cfg.DataSource),
 		&gorm.Config{Logger: logger.Default.LogMode(logger.Info)},
 	)
 	if err != nil {
@@ -25,7 +32,7 @@ func NewConnect(c *Config, p []gorm.Plugin, e []interface{}) (*gorm.DB, error) {
 			return nil, err
 		}
 	}
-	if c.App.Debug {
+	if c.Debug {
 		for _, v := range e {
 			name, desc := "", ""
 			if n, ok := v.(schema.Tabler); ok {
@@ -52,7 +59,7 @@ func NewConnect(c *Config, p []gorm.Plugin, e []interface{}) (*gorm.DB, error) {
 	return db, nil
 }
 
-func buildDialect(ds *DataSource) gorm.Dialector {
+func buildDialect(ds *internal.DataSource) gorm.Dialector {
 	args := []interface{}{ds.Username, ds.Password, ds.Host, ds.Port, ds.Name}
 	if ds.Dialect == "mysql" {
 		return mysql.Open(fmt.Sprintf(

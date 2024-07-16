@@ -9,14 +9,14 @@ import (
 	"github.com/go-oauth2/oauth2/v4/manage"
 	"github.com/go-oauth2/oauth2/v4/server"
 	"github.com/golang-jwt/jwt"
-	"github.com/ichaly/go-next/lib/base"
+	"github.com/ichaly/go-next/lib/base/internal"
 	"github.com/ichaly/go-next/pkg/sys"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
 	"strconv"
 )
 
-func NewOauthServer(c *base.Config, se *Session, ts oauth2.TokenStore, cs oauth2.ClientStore, us *sys.UserService) *server.Server {
+func NewOauthServer(c *internal.Config, se *Session, ts oauth2.TokenStore, cs oauth2.ClientStore, us *sys.UserService) *server.Server {
 	manager := manage.NewDefaultManager()
 	manager.MapTokenStorage(ts)
 	manager.MapClientStorage(cs)
@@ -35,7 +35,7 @@ func NewOauthServer(c *base.Config, se *Session, ts oauth2.TokenStore, cs oauth2
 	return s
 }
 
-func userAuthorizationHandler(c *base.Config, s *Session) func(http.ResponseWriter, *http.Request) (userID string, err error) {
+func userAuthorizationHandler(c *internal.Config, s *Session) func(http.ResponseWriter, *http.Request) (userID string, err error) {
 	return func(w http.ResponseWriter, r *http.Request) (uid string, err error) {
 		if uid = s.GetUserSession(r); uid == "" {
 			uri := "/oauth/login"
@@ -49,7 +49,7 @@ func userAuthorizationHandler(c *base.Config, s *Session) func(http.ResponseWrit
 	}
 }
 
-func passwordAuthorizationHandler(c *base.Config, us *sys.UserService) func(context.Context, string, string, string) (string, error) {
+func passwordAuthorizationHandler(c *internal.Config, us *sys.UserService) func(context.Context, string, string, string) (string, error) {
 	return func(ctx context.Context, clientID, username, password string) (string, error) {
 		usr, err := us.FindByUsername(username)
 		if err != nil {

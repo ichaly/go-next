@@ -16,7 +16,7 @@ import (
 var trans ut.Translator
 
 func NewServer(c *Config) *gin.Engine {
-	if !c.App.Debug {
+	if !c.Debug {
 		gin.SetMode(gin.ReleaseMode)
 	}
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {

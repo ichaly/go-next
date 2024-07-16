@@ -59,7 +59,7 @@ func TestConnect(t *testing.T) {
 }
 
 func TestUser(t *testing.T) {
-	cfg, err := base.NewConfig("../cfg/dev.yml")
+	cfg, err := internal.NewConfig("../cfg/dev.yml")
 	if err != nil {
 		t.Error(err)
 	}
@@ -74,7 +74,7 @@ func TestUser(t *testing.T) {
 }
 
 func TestClient(t *testing.T) {
-	cfg, err := base.NewConfig("../cfg/dev.yml")
+	cfg, err := internal.NewConfig("../cfg/dev.yml")
 	if err != nil {
 		t.Error(err)
 	}
