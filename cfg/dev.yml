@@ -1,8 +1,8 @@
 app:
+  debug: true
   name: "Go Next App"
   port: 8080
-  debug: true
-  workspace: /Users/Chaly/Downloads/YuGone/
+  root: /Users/Chaly/Downloads/YuGone/
 
 captcha:
   expired: 10m

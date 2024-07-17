@@ -36,7 +36,7 @@ func Bootstrap(l fx.Lifecycle, c *Config, e *gin.Engine, g PluginGroup) {
 		}
 		p.Init(r)
 	}
-	srv := &http.Server{Addr: fmt.Sprintf(":%v", c.Port), Handler: e}
+	srv := &http.Server{Addr: fmt.Sprintf(":%v", c.App.Port), Handler: e}
 	l.Append(fx.StartStopHook(func(ctx context.Context) {
 		go startServer(srv, c)
 	}, func(ctx context.Context) error {
@@ -47,11 +47,11 @@ func Bootstrap(l fx.Lifecycle, c *Config, e *gin.Engine, g PluginGroup) {
 
 func startServer(srv *http.Server, c *Config) {
 	if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-		fmt.Printf("%v failed to start: %v\n", c.Name, err)
+		fmt.Printf("%v failed to start: %v\n", c.App.Name, err)
 	}
 }
 
 func stopServer(srv *http.Server, c *Config) error {
-	fmt.Printf("%v shutdown complete\n", c.Name)
+	fmt.Printf("%v shutdown complete\n", c.App.Name)
 	return srv.Shutdown(context.Background())
 }

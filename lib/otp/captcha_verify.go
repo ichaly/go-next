@@ -40,7 +40,7 @@ func (my *verify) verifyHandler(c *gin.Context) {
 		return
 	}
 	kind := sys.BindKind(c.Request.FormValue("grant_type"))
-	if kind != EMAIL && kind != MOBILE {
+	if kind != EMAIL && kind != PHONE {
 		c.Next()
 		return
 	}

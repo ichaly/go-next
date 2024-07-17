@@ -32,7 +32,7 @@ func NewConnect(v *viper.Viper, c *Config, p []gorm.Plugin, e []interface{}) (*g
 			return nil, err
 		}
 	}
-	if c.Debug {
+	if c.App.Debug {
 		for _, v := range e {
 			name, desc := "", ""
 			if n, ok := v.(schema.Tabler); ok {

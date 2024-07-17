@@ -7,18 +7,24 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/graphql-go/graphql/gqlerrors"
 	"github.com/ichaly/go-next/lib/base"
+	"github.com/ichaly/go-next/lib/otp/internal"
 	"github.com/ichaly/go-next/lib/util"
+	"github.com/spf13/viper"
 	"net/http"
 )
 
 type captcha struct {
 	senders []Sender
-	config  *base.Config
+	config  *internal.CaptchaConfig
 	cache   *cache.Cache[string]
 }
 
-func NewCaptcha(config *base.Config, cache *cache.Cache[string], g DeliverGroup) base.Plugin {
-	return &captcha{config: config, cache: cache, senders: g.All}
+func NewCaptcha(v *viper.Viper, c *cache.Cache[string], g DeliverGroup) (base.Plugin, error) {
+	config := &internal.CaptchaConfig{}
+	if err := v.Sub("captcha").Unmarshal(config); err != nil {
+		return nil, err
+	}
+	return &captcha{config: config, cache: c, senders: g.All}, nil
 }
 
 func (my *captcha) Base() string {
@@ -50,9 +56,9 @@ func (my *captcha) captchaHandler(c *gin.Context) {
 	key := keyGenerate(req.Username)
 	val, err := my.cache.Get(c.Request.Context(), key)
 	if err != nil || val == "" {
-		val = util.RandomCode(my.config.Captcha.Length)
+		val = util.RandomCode(my.config.Length)
 	}
-	err = my.cache.Set(c.Request.Context(), key, val, store.WithExpiration(my.config.Captcha.Expired))
+	err = my.cache.Set(c.Request.Context(), key, val, store.WithExpiration(my.config.Expired))
 	if err != nil {
 		panic(err)
 	}

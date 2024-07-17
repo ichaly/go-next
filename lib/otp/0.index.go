@@ -21,7 +21,7 @@ var Modules = fx.Options(
 			fx.ResultTags(`group:"sender"`),
 		),
 		fx.Annotate(
-			NewMobile,
+			NewPhone,
 			fx.ResultTags(`group:"sender"`),
 		),
 	),
