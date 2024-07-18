@@ -20,8 +20,7 @@ func init() {
 
 func TestSenderConfig(t *testing.T) {
 	cfg := &internal.CaptchaConfig{}
-	err := v.Unmarshal(cfg)
-	if err != nil {
+	if err := v.Unmarshal(cfg); err != nil {
 		t.Fatal(err)
 	}
 	str, err := util.MarshalJson(cfg)
@@ -33,8 +32,7 @@ func TestSenderConfig(t *testing.T) {
 
 func TestEmailConfig(t *testing.T) {
 	cfg := &internal.EmailConfig{}
-	err := v.Unmarshal(cfg)
-	if err != nil {
+	if err := v.Unmarshal(cfg); err != nil {
 		t.Fatal(err)
 	}
 	str, err := util.MarshalJson(cfg)
@@ -46,8 +44,7 @@ func TestEmailConfig(t *testing.T) {
 
 func TestPhoneConfig(t *testing.T) {
 	cfg := &internal.PhoneConfig{}
-	err := v.Unmarshal(cfg)
-	if err != nil {
+	if err := v.Unmarshal(cfg); err != nil {
 		t.Fatal(err)
 	}
 	str, err := util.MarshalJson(cfg)

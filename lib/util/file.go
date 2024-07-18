@@ -7,6 +7,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"runtime"
 )
 
 func CopyFile(src, dst string) error {
@@ -46,4 +47,9 @@ func Md5File(src io.Reader) string {
 	_, _ = io.Copy(dst, src)
 	key := hex.EncodeToString(dst.Sum(nil))
 	return key
+}
+
+func Root() string {
+	_, filename, _, _ := runtime.Caller(0)
+	return filepath.Dir(filepath.Dir(filepath.Dir(filename)))
 }

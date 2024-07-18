@@ -4,9 +4,7 @@ import (
 	"fmt"
 	"github.com/ichaly/go-next/lib/zlog"
 	"github.com/ichaly/go-next/main/cli"
-	"github.com/joho/godotenv"
 	"github.com/rs/zerolog"
-	"log"
 	"os"
 	"strings"
 	"time"
@@ -31,11 +29,6 @@ func main() {
 	o := zerolog.MultiLevelWriter(c, e, t)
 	l := zlog.New(zlog.WithOut(o), zlog.WithLevel(zlog.DebugLevel))
 	zlog.SetDefault(l)
-
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatalf("Some error occured. Err: %s", err)
-	}
 
 	cli.Execute()
 }

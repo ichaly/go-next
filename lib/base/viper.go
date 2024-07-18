@@ -2,6 +2,7 @@ package base
 
 import (
 	"github.com/ichaly/go-next/lib/util"
+	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
 	"path/filepath"
 	"strings"
@@ -11,6 +12,11 @@ func NewViper(file string) (*viper.Viper, error) {
 	//解析文件路径和名称
 	path := filepath.Dir(file)
 	name := strings.TrimSuffix(filepath.Base(file), filepath.Ext(file))
+
+	//加载环境变量
+	if err := godotenv.Load(filepath.Join(util.Root(), ".env")); err != nil {
+		return nil, err
+	}
 
 	//初始化配置
 	v := viper.New()

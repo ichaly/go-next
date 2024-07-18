@@ -5,6 +5,7 @@ app:
   root: /Users/Chaly/Downloads/YuGone/
 
 captcha:
+  length: 6
   expired: 10m
 
 schema:
@@ -27,7 +28,7 @@ email:
   username:
   password:
 
-mobile:
+phone:
   sign_name:
   template_code:
   access_key_id:
