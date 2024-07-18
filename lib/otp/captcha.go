@@ -43,8 +43,8 @@ func (my *captcha) captchaHandler(c *gin.Context) {
 		}
 	}()
 	req := struct {
-		Username  string `form:"username" json:"username,omitempty"`
-		OauthKind string `form:"oauth_kind" json:"oauth_kind,omitempty"`
+		Username string `form:"username" json:"username,omitempty"`
+		Category string `form:"category" json:"category,omitempty"`
 	}{}
 	err := c.ShouldBind(&req)
 	if req.Username == "" {
@@ -64,7 +64,7 @@ func (my *captcha) captchaHandler(c *gin.Context) {
 	}
 	//发送验证码
 	for _, d := range my.senders {
-		if d.Support(req.OauthKind) {
+		if d.Support(req.Category) {
 			if err = d.Execute(req.Username, val); err != nil {
 				panic(err)
 			}
