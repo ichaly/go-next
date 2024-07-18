@@ -9,38 +9,44 @@ import (
 	"github.com/go-oauth2/oauth2/v4/manage"
 	"github.com/go-oauth2/oauth2/v4/server"
 	"github.com/golang-jwt/jwt"
-	"github.com/ichaly/go-next/lib/base/internal"
+	"github.com/ichaly/go-next/lib/auth/internal"
 	"github.com/ichaly/go-next/pkg/sys"
+	"github.com/spf13/viper"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
 	"strconv"
 )
 
-func NewOauthServer(c *internal.Config, se *Session, ts oauth2.TokenStore, cs oauth2.ClientStore, us *sys.UserService) *server.Server {
+func NewOauthServer(v *viper.Viper, se *Session, ts oauth2.TokenStore, cs oauth2.ClientStore, us *sys.UserService) (*server.Server, error) {
+	c := &internal.OauthConfig{}
+	if err := v.Sub("oauth").Unmarshal(c); err != nil {
+		return nil, err
+	}
+
 	manager := manage.NewDefaultManager()
 	manager.MapTokenStorage(ts)
 	manager.MapClientStorage(cs)
-	manager.MapAccessGenerate(generates.NewJWTAccessGenerate("", []byte(c.Oauth.Jwt.Secret), jwt.SigningMethodHS512))
+	manager.MapAccessGenerate(generates.NewJWTAccessGenerate("", []byte(c.Jwt.Secret), jwt.SigningMethodHS512))
 
 	s := server.NewDefaultServer(manager)
 	s.SetAllowGetAccessRequest(true)
 	s.SetClientInfoHandler(clientInfoHandler())
 	s.SetUserAuthorizationHandler(userAuthorizationHandler(c, se))
-	s.SetPasswordAuthorizationHandler(passwordAuthorizationHandler(c, us))
+	s.SetPasswordAuthorizationHandler(passwordAuthorizationHandler(us))
 
 	s.SetInternalErrorHandler(func(err error) (re *errors.Response) {
 		return errors.NewResponse(err, http.StatusInternalServerError)
 	})
 
-	return s
+	return s, nil
 }
 
-func userAuthorizationHandler(c *internal.Config, s *Session) func(http.ResponseWriter, *http.Request) (userID string, err error) {
+func userAuthorizationHandler(c *internal.OauthConfig, s *Session) func(http.ResponseWriter, *http.Request) (userID string, err error) {
 	return func(w http.ResponseWriter, r *http.Request) (uid string, err error) {
 		if uid = s.GetUserSession(r); uid == "" {
 			uri := "/oauth/login"
-			if len(c.Oauth.LoginUri) > 0 {
-				uri = c.Oauth.LoginUri
+			if len(c.LoginUri) > 0 {
+				uri = c.LoginUri
 			}
 			w.Header().Set("Location", fmt.Sprintf("%s?%s", uri, r.URL.RawQuery))
 			w.WriteHeader(http.StatusFound)
@@ -49,14 +55,14 @@ func userAuthorizationHandler(c *internal.Config, s *Session) func(http.Response
 	}
 }
 
-func passwordAuthorizationHandler(c *internal.Config, us *sys.UserService) func(context.Context, string, string, string) (string, error) {
+func passwordAuthorizationHandler(us *sys.UserService) func(context.Context, string, string, string) (string, error) {
 	return func(ctx context.Context, clientID, username, password string) (string, error) {
 		usr, err := us.FindByUsername(username)
 		if err != nil {
 			return "", err
 		}
-		// 添加万能密码支持
-		if password != c.Oauth.Passkey {
+		// 空密码不校验
+		if password != "" {
 			err = bcrypt.CompareHashAndPassword([]byte(usr.Password), []byte(password))
 			if err != nil {
 				return "", err

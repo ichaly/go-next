@@ -14,16 +14,15 @@ import (
 	"net/http"
 )
 
-const CaptchaPrefix = "captcha"
+const CaptchaPrefix = "token"
 
 type verify struct {
-	config      *base.Config
 	cache       *cache.Cache[string]
 	userService *sys.UserService
 }
 
-func NewCaptchaVerify(config *base.Config, cache *cache.Cache[string], us *sys.UserService) base.Plugin {
-	return &verify{config: config, cache: cache, userService: us}
+func NewTokenVerify(c *cache.Cache[string], us *sys.UserService) base.Plugin {
+	return &verify{cache: c, userService: us}
 }
 
 func (my *verify) Base() string {
@@ -57,14 +56,14 @@ func (my *verify) verifyHandler(c *gin.Context) {
 	}
 	_ = my.cache.Delete(c.Request.Context(), key)
 	//验证码通过则使用万能密码替换参数
-	c.Request.Form.Set("password", my.config.Oauth.Passkey)
+	c.Request.Form.Set("password", "")
 	c.Request.Form.Set("grant_type", oauth2.PasswordCredentials.String())
 	//查询一下数据是否存在
 	user, err := my.userService.FindByUsername(username)
 	//如果不存在则自动注册
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		user.Username = username
-		user.Password = my.config.Oauth.Passkey
+		user.Password = password
 		my.userService.BindThird(&user, kind)
 	}
 	c.Next()

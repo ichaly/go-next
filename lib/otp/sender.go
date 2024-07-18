@@ -4,7 +4,7 @@ import (
 	"go.uber.org/fx"
 )
 
-type DeliverGroup struct {
+type SenderGroup struct {
 	fx.In
 	All []Sender `group:"sender"`
 }

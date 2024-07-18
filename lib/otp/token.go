@@ -13,30 +13,30 @@ import (
 	"net/http"
 )
 
-type captcha struct {
+type token struct {
 	senders []Sender
 	config  *internal.CaptchaConfig
 	cache   *cache.Cache[string]
 }
 
-func NewCaptcha(v *viper.Viper, c *cache.Cache[string], g DeliverGroup) (base.Plugin, error) {
+func NewToken(v *viper.Viper, c *cache.Cache[string], g SenderGroup) (base.Plugin, error) {
 	config := &internal.CaptchaConfig{}
-	if err := v.Sub("captcha").Unmarshal(config); err != nil {
+	if err := v.Sub("token").Unmarshal(config); err != nil {
 		return nil, err
 	}
-	return &captcha{config: config, cache: c, senders: g.All}, nil
+	return &token{config: config, cache: c, senders: g.All}, nil
 }
 
-func (my *captcha) Base() string {
+func (my *token) Base() string {
 	return "/oauth"
 }
 
-func (my *captcha) Init(r gin.IRouter) {
+func (my *token) Init(r gin.IRouter) {
 	//快捷登录验证码
-	r.Match([]string{http.MethodGet, http.MethodPost}, "/captcha", my.captchaHandler)
+	r.Match([]string{http.MethodGet, http.MethodPost}, "/token", my.captchaHandler)
 }
 
-func (my *captcha) captchaHandler(c *gin.Context) {
+func (my *token) captchaHandler(c *gin.Context) {
 	defer func() {
 		if err := recover(); err != nil {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"errors": gqlerrors.FormatErrors(err.(error))})
