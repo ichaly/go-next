@@ -1,18 +1,25 @@
 package base
 
 import (
+	"github.com/ichaly/go-next/lib/util"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
+type TestConfig struct {
+	Config `mapstructure:",squash"`
+	Test   string
+}
+
 func TestNewViper(t *testing.T) {
+	v, err := NewViper("../../cfg/dev.yml")
 
-	// 调用 NewViper 函数
-	v, err := NewViper("../../cfg/application.yml")
-
-	// 断言错误为空
 	assert.NoError(t, err)
 
-	// 断言返回的 Viper 实例不为空
-	assert.NotNil(t, v)
+	c := &TestConfig{}
+	err = v.Unmarshal(c)
+	assert.NoError(t, err)
+
+	val, err := util.MarshalJson(c)
+	t.Log(c.Name, val)
 }
