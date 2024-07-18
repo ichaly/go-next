@@ -2,9 +2,13 @@ package internal
 
 type EmailConfig struct {
 	CaptchaConfig `mapstructure:"captcha"`
-	Port          int    `mapstructure:"email.port"`
-	Host          string `mapstructure:"email.host"`
-	From          string `mapstructure:"email.from"`
-	Username      string `mapstructure:"email.username"`
-	Password      string `mapstructure:"email.password"`
+	Email         `mapstructure:"email"`
+}
+
+type Email struct {
+	Port     int    `mapstructure:"port"`
+	Host     string `mapstructure:"host"`
+	From     string `mapstructure:"from"`
+	Username string `mapstructure:"username"`
+	Password string `mapstructure:"password"`
 }
