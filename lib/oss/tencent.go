@@ -3,7 +3,7 @@ package oss
 import (
 	"context"
 	"fmt"
-	"github.com/ichaly/go-next/lib/base"
+	"github.com/ichaly/go-next/lib/oss/internal"
 	"github.com/tencentyun/cos-go-sdk-v5"
 	"io"
 	"net/http"
@@ -11,46 +11,37 @@ import (
 	"time"
 )
 
-type Tencent struct {
-	bucket    string
-	domain    string
-	region    string
-	accessKey string
-	secretKey string
-
+type tencent struct {
+	domain string
 	client *cos.Client
 }
 
-func NewTencent(c *base.Config) Uploader {
-	return &Tencent{
-		bucket:    c.Oss.Bucket,
-		domain:    c.Oss.Domain,
-		region:    c.Oss.Region,
-		accessKey: c.Oss.AccessKey,
-		secretKey: c.Oss.SecretKey,
-	}
+func NewTencent() Uploader {
+	return &tencent{}
 }
 
-func (my *Tencent) Name() string {
+func (my *tencent) Name() string {
 	return "腾讯"
 }
 
-func (my *Tencent) Init() error {
-	u, _ := url.Parse(fmt.Sprintf("https://%s.cos.%s.myqcloud.com", my.bucket, my.region))
+func (my *tencent) Init(c *internal.OssConfig) error {
+	my.domain = c.Domain
+
+	u, _ := url.Parse(fmt.Sprintf("https://%s.cos.%s.myqcloud.com", c.Bucket, c.Region))
 	b := &cos.BaseURL{BucketURL: u}
 	my.client = cos.NewClient(b, &http.Client{
 		//设置超时时间
 		Timeout: 100 * time.Second,
 		Transport: &cos.AuthorizationTransport{
 			//如实填写账号和密钥，也可以设置为环境变量
-			SecretID:  my.accessKey,
-			SecretKey: my.secretKey,
+			SecretID:  c.AccessKey,
+			SecretKey: c.SecretKey,
 		},
 	})
 	return nil
 }
 
-func (my *Tencent) Upload(data io.Reader, name string, opts ...UploadOption) (string, error) {
+func (my *tencent) Upload(data io.Reader, name string, opts ...UploadOption) (string, error) {
 	opt := &Options{}
 	for _, o := range opts {
 		o(opt)

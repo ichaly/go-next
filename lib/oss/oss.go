@@ -8,7 +8,9 @@ import (
 	"github.com/graphql-go/graphql/gqlerrors"
 	"github.com/h2non/filetype"
 	"github.com/ichaly/go-next/lib/base"
+	"github.com/ichaly/go-next/lib/oss/internal"
 	"github.com/ichaly/go-next/lib/util"
+	"github.com/spf13/viper"
 	"go.uber.org/fx"
 	"golang.org/x/sync/errgroup"
 	"io"
@@ -27,7 +29,7 @@ const (
 
 type Uploader interface {
 	Name() string
-	Init() error
+	Init(*internal.OssConfig) error
 	Upload(data io.Reader, name string, opts ...UploadOption) (string, error)
 }
 
@@ -40,11 +42,16 @@ type oss struct {
 	uploader Uploader
 }
 
-func NewOss(c *base.Config, g UploaderGroup) (base.Plugin, error) {
+func NewOss(v *viper.Viper, g UploaderGroup) (base.Plugin, error) {
+	c := &internal.OssConfig{}
+	if err := v.Unmarshal(c); err != nil {
+		return nil, err
+	}
+
 	var u Uploader
 	for _, v := range g.All {
-		if v.Name() == c.Oss.Vendor {
-			err := v.Init()
+		if v.Name() == c.Vendor {
+			err := v.Init(c)
 			if err != nil {
 				return nil, err
 			}

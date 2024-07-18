@@ -6,7 +6,6 @@ import (
 
 type Config struct {
 	App   *App   `mapstructure:"app" jsonschema:"title=App"`
-	Oss   *Oss   `mapstructure:"oss" jsonschema:"title=oss"`
 	Oauth *Oauth `mapstructure:"oauth" jsonschema:"title=oauth"`
 }
 
@@ -16,15 +15,6 @@ type App struct {
 	Host  string `mapstructure:"host" jsonschema:"title=Application Host"`
 	Root  string `mapstructure:"root" jsonschema:"title=root"`
 	Debug bool   `mapstructure:"debug" jsonschema:"title=Debug"`
-}
-
-type Oss struct {
-	Vendor    string `mapstructure:"vendor"`
-	Domain    string `mapstructure:"domain"`
-	Bucket    string `mapstructure:"bucket"`
-	Region    string `mapstructure:"region"`
-	AccessKey string `mapstructure:"access_key"`
-	SecretKey string `mapstructure:"secret_key"`
 }
 
 func NewConfig(v *viper.Viper) (*Config, error) {

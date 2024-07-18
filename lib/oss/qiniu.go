@@ -4,40 +4,33 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/ichaly/go-next/lib/base"
+	"github.com/ichaly/go-next/lib/oss/internal"
 	"github.com/qiniu/go-sdk/v7/auth"
 	"github.com/qiniu/go-sdk/v7/storage"
 	"io"
 )
 
-type QiNiu struct {
-	bucket    string
-	domain    string
-	region    string
-	accessKey string
-	secretKey string
-
+type qiniu struct {
+	bucket   string
+	domain   string
 	mac      *auth.Credentials
 	uploader *storage.FormUploader
 }
 
-func NewQiNiu(c *base.Config) Uploader {
-	return &QiNiu{
-		bucket:    c.Oss.Bucket,
-		domain:    c.Oss.Domain,
-		region:    c.Oss.Region,
-		accessKey: c.Oss.AccessKey,
-		secretKey: c.Oss.SecretKey,
-	}
+func NewQiNiu() Uploader {
+	return &qiniu{}
 }
 
-func (my *QiNiu) Name() string {
+func (my *qiniu) Name() string {
 	return "七牛"
 }
 
-func (my *QiNiu) Init() error {
-	my.mac = auth.New(my.accessKey, my.secretKey)
-	region, ok := storage.GetRegionByID(storage.RegionID(my.region))
+func (my *qiniu) Init(c *internal.OssConfig) error {
+	my.bucket = c.Bucket
+	my.domain = c.Domain
+
+	my.mac = auth.New(c.AccessKey, c.SecretKey)
+	region, ok := storage.GetRegionByID(storage.RegionID(c.Region))
 	if !ok {
 		return errors.New("地区解析失败")
 	}
@@ -46,7 +39,7 @@ func (my *QiNiu) Init() error {
 	return nil
 }
 
-func (my *QiNiu) Upload(data io.Reader, name string, opts ...UploadOption) (string, error) {
+func (my *qiniu) Upload(data io.Reader, name string, opts ...UploadOption) (string, error) {
 	opt := &Options{}
 	for _, o := range opts {
 		o(opt)
@@ -61,7 +54,7 @@ func (my *QiNiu) Upload(data io.Reader, name string, opts ...UploadOption) (stri
 	return fmt.Sprintf("%s/%s", my.domain, ret.Key), nil
 }
 
-func (my *QiNiu) accessToken() string {
+func (my *qiniu) accessToken() string {
 	policy := storage.PutPolicy{Scope: my.bucket}
 	return policy.UploadToken(my.mac)
 }

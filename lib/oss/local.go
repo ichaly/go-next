@@ -2,33 +2,33 @@ package oss
 
 import (
 	"fmt"
-	"github.com/ichaly/go-next/lib/base"
+	"github.com/ichaly/go-next/lib/oss/internal"
 	"io"
 	"os"
 	"path"
 	"strings"
 )
 
-type Local struct {
+type local struct {
 	bucket string
 	domain string
 }
 
-func NewLocal(c *base.Config) Uploader {
-	return &Local{
-		bucket: c.Oss.Bucket,
-		domain: c.Oss.Domain,
-	}
+func NewLocal() Uploader {
+	return &local{}
 }
-func (my *Local) Name() string {
+func (my *local) Name() string {
 	return "本地"
 }
 
-func (my *Local) Init() error {
+func (my *local) Init(c *internal.OssConfig) error {
+	my.bucket = c.Bucket
+	my.domain = c.Domain
+
 	return os.MkdirAll(my.bucket, os.ModePerm)
 }
 
-func (my *Local) Upload(data io.Reader, name string, opts ...UploadOption) (string, error) {
+func (my *local) Upload(data io.Reader, name string, opts ...UploadOption) (string, error) {
 	full := path.Join(my.bucket, name)
 	//保存前的路径检查创建
 	tmp := strings.SplitAfter(full, "/")

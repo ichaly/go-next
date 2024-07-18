@@ -3,39 +3,32 @@ package oss
 import (
 	"context"
 	"fmt"
-	"github.com/ichaly/go-next/lib/base"
-	"github.com/minio/minio-go/v7"
+	"github.com/ichaly/go-next/lib/oss/internal"
+	mio "github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"io"
 )
 
-type Minio struct {
-	bucket    string
-	region    string
-	domain    string
-	accessKey string
-	secretKey string
-
-	client *minio.Client
+type minio struct {
+	bucket string
+	domain string
+	client *mio.Client
 }
 
-func NewMinio(c *base.Config) Uploader {
-	return &Minio{
-		bucket:    c.Oss.Bucket,
-		domain:    c.Oss.Domain,
-		region:    c.Oss.Region,
-		accessKey: c.Oss.AccessKey,
-		secretKey: c.Oss.SecretKey,
-	}
+func NewMinio() Uploader {
+	return &minio{}
 }
 
-func (my *Minio) Name() string {
+func (my *minio) Name() string {
 	return "MINIO"
 }
 
-func (my *Minio) Init() error {
-	client, err := minio.New(my.region, &minio.Options{
-		Creds:  credentials.NewStaticV4(my.accessKey, my.secretKey, ""),
+func (my *minio) Init(c *internal.OssConfig) error {
+	my.bucket = c.Bucket
+	my.domain = c.Domain
+
+	client, err := mio.New(c.Region, &mio.Options{
+		Creds:  credentials.NewStaticV4(c.AccessKey, c.SecretKey, ""),
 		Secure: false,
 	})
 	if err != nil {
@@ -45,14 +38,14 @@ func (my *Minio) Init() error {
 	return nil
 }
 
-func (my *Minio) Upload(data io.Reader, name string, opts ...UploadOption) (string, error) {
+func (my *minio) Upload(data io.Reader, name string, opts ...UploadOption) (string, error) {
 	opt := &Options{}
 	for _, o := range opts {
 		o(opt)
 	}
 	res, err := my.client.PutObject(
 		context.Background(), my.bucket, name, data, opt.size,
-		minio.PutObjectOptions{ContentType: opt.contentType},
+		mio.PutObjectOptions{ContentType: opt.contentType},
 	)
 	if err != nil {
 		return "", err
