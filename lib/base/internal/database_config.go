@@ -1,5 +1,6 @@
 package internal
 
 type DatabaseConfig struct {
-	DataSource
+	AppConfig  `mapstructure:"app"`
+	DataSource `mapstructure:"database"`
 }

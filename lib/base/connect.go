@@ -13,14 +13,14 @@ import (
 	"time"
 )
 
-func NewConnect(v *viper.Viper, c *Config, p []gorm.Plugin, e []interface{}) (*gorm.DB, error) {
-	cfg := &internal.DatabaseConfig{}
-	if err := v.Sub("database").Unmarshal(c); err != nil {
+func NewConnect(v *viper.Viper, p []gorm.Plugin, e []interface{}) (*gorm.DB, error) {
+	c := &internal.DatabaseConfig{}
+	if err := v.Unmarshal(c); err != nil {
 		return nil, err
 	}
 
 	db, err := gorm.Open(
-		buildDialect(&cfg.DataSource),
+		buildDialect(&c.DataSource),
 		&gorm.Config{Logger: logger.Default.LogMode(logger.Info)},
 	)
 	if err != nil {

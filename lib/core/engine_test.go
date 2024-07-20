@@ -1,47 +1,42 @@
 package core
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/graphql/gqlerrors"
 	"github.com/ichaly/go-next/lib/base"
-	"gorm.io/driver/postgres"
+	"github.com/spf13/viper"
+	"github.com/stretchr/testify/suite"
 	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
 	"net/http"
 	"testing"
 )
 
-func TestEngine(t *testing.T) {
+type EngineSuite struct {
+	suite.Suite
+	d *gorm.DB
+	v *viper.Viper
+}
+
+func (my *EngineSuite) SetupSuite() {
 	v, err := base.NewViper("../../cfg/dev.yml")
-	if err != nil {
-		t.Fatal(err)
-	}
+	my.Require().NoError(err)
+	d, err := base.NewConnect(v, []gorm.Plugin{base.NewSonyFlake()}, []interface{}{})
+	my.Require().NoError(err)
+	my.v = v
+	my.d = d
+}
 
-	args := []interface{}{"postgres", "postgres", "127.0.0.1", 5678, "gcms"}
-	d, err := gorm.Open(postgres.Open(fmt.Sprintf(
-		"user=%s password=%s host=%s port=%d dbname=%s TimeZone=Asia/Shanghai", args...,
-	)), &gorm.Config{Logger: logger.Default.LogMode(logger.Info)})
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	m, err := NewMetadata(d, v)
-	if err != nil {
-		t.Fatal(err)
-	}
+func (my *EngineSuite) TestEngine() {
+	m, err := NewMetadata(my.d, my.v)
+	my.Require().NoError(err)
 
 	e, err := NewEngine(m)
-	if err != nil {
-		t.Fatal(err)
-	}
+	my.Require().NoError(err)
 
 	s, err := e.Schema()
-	if err != nil {
-		t.Fatal(err)
-	}
+	my.Require().NoError(err)
 
 	r := gin.Default()
 	r.Match([]string{http.MethodGet, http.MethodPost}, "/graphql", func(c *gin.Context) {
@@ -65,4 +60,8 @@ func TestEngine(t *testing.T) {
 		c.JSON(http.StatusOK, res)
 	})
 	_ = r.Run(":8080")
+}
+
+func TestEngine(t *testing.T) {
+	suite.Run(t, new(EngineSuite))
 }
