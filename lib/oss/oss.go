@@ -11,7 +11,6 @@ import (
 	"github.com/ichaly/go-next/lib/oss/internal"
 	"github.com/ichaly/go-next/lib/util"
 	"github.com/spf13/viper"
-	"go.uber.org/fx"
 	"golang.org/x/sync/errgroup"
 	"io"
 	"mime/multipart"
@@ -33,23 +32,18 @@ type Uploader interface {
 	Upload(data io.Reader, name string, opts ...UploadOption) (string, error)
 }
 
-type UploaderGroup struct {
-	fx.In
-	All []Uploader `group:"oss"`
-}
-
 type oss struct {
 	uploader Uploader
 }
 
-func NewOss(v *viper.Viper, g UploaderGroup) (base.Plugin, error) {
+func NewOss(v *viper.Viper, g []Uploader) (base.Plugin, error) {
 	c := &internal.OssConfig{}
 	if err := v.Unmarshal(c); err != nil {
 		return nil, err
 	}
 
 	var u Uploader
-	for _, v := range g.All {
+	for _, v := range g {
 		if v.Name() == c.Vendor {
 			err := v.Init(c)
 			if err != nil {

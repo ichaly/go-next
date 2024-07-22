@@ -8,6 +8,7 @@ var Modules = fx.Options(
 	fx.Provide(
 		fx.Annotate(
 			NewOss,
+			fx.ParamTags(``, `group:"oss"`),
 			fx.ResultTags(`group:"plugin"`),
 		),
 		fx.Annotate(

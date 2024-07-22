@@ -10,6 +10,7 @@ var Modules = fx.Options(
 		fx.Annotate(
 			NewToken,
 			fx.ResultTags(`group:"plugin"`),
+			fx.ParamTags(``, ``, `group:"sender"`),
 		),
 		//验证码验证
 		fx.Annotate(

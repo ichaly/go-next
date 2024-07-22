@@ -19,12 +19,12 @@ type token struct {
 	cache   *cache.Cache[string]
 }
 
-func NewToken(v *viper.Viper, c *cache.Cache[string], g SenderGroup) (base.Plugin, error) {
+func NewToken(v *viper.Viper, c *cache.Cache[string], g []Sender) (base.Plugin, error) {
 	config := &internal.CaptchaConfig{}
 	if err := v.Sub("token").Unmarshal(config); err != nil {
 		return nil, err
 	}
-	return &token{config: config, cache: c, senders: g.All}, nil
+	return &token{config: config, cache: c, senders: g}, nil
 }
 
 func (my *token) Base() string {
