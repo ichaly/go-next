@@ -45,7 +45,7 @@ func (my *_engineSuite) TestEngine() {
 	s, err := e.Schema()
 	my.Require().NoError(err)
 
-	params := graphql.Params{Schema: s, RequestString: `{ user { id } }`}
+	params := graphql.Params{Schema: s, RequestString: `{user{id}team{id}}`}
 	r := graphql.Do(params)
 
 	str, err := util.MarshalJson(r)
