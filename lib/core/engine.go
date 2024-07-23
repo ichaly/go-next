@@ -29,12 +29,12 @@ func WithDescription(description string) Option {
 
 type Engine struct {
 	meta  *Metadata
-	reso  *Resolver
+	comp  *Compiler
 	types map[string]*graphql.Object
 }
 
-func NewEngine(m *Metadata, r *Resolver) (*Engine, error) {
-	my := &Engine{meta: m, reso: r, types: make(map[string]*graphql.Object)}
+func NewEngine(m *Metadata, c *Compiler) (*Engine, error) {
+	my := &Engine{meta: m, comp: c, types: make(map[string]*graphql.Object)}
 
 	//启动引擎
 	for _, t := range my.meta.Nodes {
@@ -44,7 +44,6 @@ func NewEngine(m *Metadata, r *Resolver) (*Engine, error) {
 				&graphql.Field{
 					Name:        c.Name,
 					Type:        my.parseType(c),
-					Resolve:     my.reso.Resolve,
 					Description: c.Description,
 				},
 				WithHost(t.Name),
@@ -57,6 +56,7 @@ func NewEngine(m *Metadata, r *Resolver) (*Engine, error) {
 			&graphql.Field{
 				Name:        strcase.ToLowerCamel(t.Name),
 				Type:        my.types[t.Name],
+				Resolve:     my.comp.Compile,
 				Description: t.Description,
 			},
 		)
