@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-type _engineSuite struct {
+type _EngineSuite struct {
 	suite.Suite
 	d *gorm.DB
 	v *viper.Viper
@@ -19,15 +19,15 @@ type _engineSuite struct {
 }
 
 func TestEngine(t *testing.T) {
-	suite.Run(t, new(_engineSuite))
+	suite.Run(t, new(_EngineSuite))
 }
 
-func (my *_engineSuite) SetupSuite() {
+func (my *_EngineSuite) SetupSuite() {
 	v, err := base.NewViper("../../cfg/dev.yml")
 	my.Require().NoError(err)
 	d, err := base.NewConnect(v, []gorm.Plugin{base.NewSonyFlake()}, []interface{}{})
 	my.Require().NoError(err)
-	m, err := NewMetadata(d, v)
+	m, err := NewMetadata(v, d)
 	my.Require().NoError(err)
 	c, err := NewCompiler(m, d)
 	my.Require().NoError(err)
@@ -38,7 +38,7 @@ func (my *_engineSuite) SetupSuite() {
 	my.c = c
 }
 
-func (my *_engineSuite) TestEngine() {
+func (my *_EngineSuite) TestEngine() {
 	e, err := NewEngine(my.m, my.c)
 	my.Require().NoError(err)
 

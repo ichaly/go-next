@@ -39,7 +39,7 @@ type Metadata struct {
 	Nodes map[string]*Table
 }
 
-func NewMetadata(d *gorm.DB, v *viper.Viper) (*Metadata, error) {
+func NewMetadata(v *viper.Viper, d *gorm.DB) (*Metadata, error) {
 	cfg := &internal.TableConfig{Mapping: internal.DataTypes}
 	if err := v.Sub("schema").Unmarshal(cfg); err != nil {
 		return nil, err
