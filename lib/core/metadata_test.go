@@ -2,7 +2,6 @@ package core
 
 import (
 	"github.com/ichaly/go-next/lib/base"
-	"github.com/ichaly/go-next/lib/util"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/suite"
 	"gorm.io/gorm"
@@ -30,7 +29,7 @@ func (my *_MetadataSuite) SetupSuite() {
 func (my *_MetadataSuite) TestMetadata() {
 	metadata, err := NewMetadata(my.v, my.d)
 	my.Require().NoError(err)
-	json, err := util.MarshalJson(metadata)
+	schema, err := metadata.Schema()
 	my.Require().NoError(err)
-	my.T().Log(json)
+	my.T().Log(schema)
 }

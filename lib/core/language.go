@@ -1,6 +1,11 @@
 package core
 
-import "fmt"
+import (
+	"fmt"
+	"golang.org/x/exp/maps"
+	"sort"
+	"strings"
+)
 
 type Language struct {
 	m *Metadata
@@ -11,8 +16,13 @@ func NewLanguage(m *Metadata) (*Language, error) {
 }
 
 func (my *Language) build() string {
-	for s := range my.m.Nodes {
-		fmt.Printf("%s\n", s)
+	keys := maps.Keys(my.m.Nodes)
+	sort.Strings(keys)
+
+	var w strings.Builder
+	for _, k := range keys {
+		_, _ = fmt.Fprintf(&w, "%s\n", k)
 	}
-	return ""
+
+	return w.String()
 }

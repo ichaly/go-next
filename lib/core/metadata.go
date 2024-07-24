@@ -9,6 +9,7 @@ import (
 	"github.com/spf13/viper"
 	"gorm.io/gorm"
 	"strings"
+	"text/template"
 )
 
 //go:embed assets/pgsql.sql
@@ -36,6 +37,7 @@ type Column struct {
 type Metadata struct {
 	db    *gorm.DB
 	cfg   *internal.TableConfig
+	tpl   *template.Template
 	Nodes map[string]*Table
 }
 
@@ -45,7 +47,10 @@ func NewMetadata(v *viper.Viper, d *gorm.DB) (*Metadata, error) {
 		return nil, err
 	}
 	metadata := &Metadata{
-		db: d, cfg: cfg, Nodes: make(map[string]*Table),
+		Nodes: make(map[string]*Table), db: d, cfg: cfg,
+		tpl: template.Must(template.New("assets/schema.tpl").Funcs(template.FuncMap{
+			"toLowerCamel": strcase.ToLowerCamel,
+		}).Parse(schema)),
 	}
 	if err := metadata.load(); err != nil {
 		return nil, err
@@ -89,6 +94,7 @@ func (my *Metadata) load() error {
 		}
 		if my.cfg.UseCamel {
 			name = strcase.ToCamel(name)
+			c.Type = my.parseType(&c)
 			c.Name = strcase.ToLowerCamel(c.Name)
 		}
 
@@ -106,4 +112,22 @@ func (my *Metadata) load() error {
 		}
 	}
 	return nil
+}
+
+func (my *Metadata) parseType(c *Column) string {
+	if c.IsPrimary {
+		return "ID"
+	}
+	if val, ok := internal.DataTypes[c.Type]; ok {
+		return val
+	}
+	return "String"
+}
+
+func (my *Metadata) Schema() (string, error) {
+	var w strings.Builder
+	if err := my.tpl.Execute(&w, my.Nodes); err != nil {
+		return "", err
+	}
+	return w.String(), nil
 }
