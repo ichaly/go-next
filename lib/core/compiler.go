@@ -1,8 +1,8 @@
 package core
 
 import (
-	"github.com/vektah/gqlparser"
-	"github.com/vektah/gqlparser/ast"
+	"github.com/vektah/gqlparser/v2"
+	"github.com/vektah/gqlparser/v2/ast"
 	"gorm.io/gorm"
 )
 
@@ -17,7 +17,11 @@ func NewCompiler(m *Metadata, d *gorm.DB) (*Compiler, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Compiler{db: d, meta: m, schema: gqlparser.MustLoadSchema(&ast.Source{Name: "schema", Input: input})}, nil
+	s, err := gqlparser.LoadSchema(&ast.Source{Name: "schema", Input: input})
+	if err != nil {
+		return nil, err
+	}
+	return &Compiler{db: d, meta: m, schema: s}, nil
 }
 
 func (my *Compiler) Compile(query string) (interface{}, error) {
