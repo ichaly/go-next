@@ -29,7 +29,7 @@ func (my *_MetadataSuite) SetupSuite() {
 func (my *_MetadataSuite) TestMetadata() {
 	metadata, err := NewMetadata(my.v, my.d)
 	my.Require().NoError(err)
-	schema, err := metadata.Schema()
+	str, err := metadata.MarshalSchema()
 	my.Require().NoError(err)
-	my.T().Log(schema)
+	my.T().Log(str)
 }

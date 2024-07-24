@@ -124,7 +124,7 @@ func (my *Metadata) parseType(c *Column) string {
 	return "String"
 }
 
-func (my *Metadata) Schema() (string, error) {
+func (my *Metadata) MarshalSchema() (string, error) {
 	var w strings.Builder
 	if err := my.tpl.Execute(&w, my.Nodes); err != nil {
 		return "", err

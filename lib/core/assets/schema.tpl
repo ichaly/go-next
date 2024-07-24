@@ -1,4 +1,6 @@
-{{range $key,$table := . }}
+scalar DateTime
+
+{{- range $key,$table := . }}
 {{- if $table.Description }}
 """
 {{ $table.Description }}
