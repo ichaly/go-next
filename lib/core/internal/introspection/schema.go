@@ -1,6 +1,7 @@
 package introspection
 
 import (
+	"encoding/json"
 	"sort"
 
 	"github.com/vektah/gqlparser/v2/ast"
@@ -73,7 +74,7 @@ func (my *__Schema) directiveFromDef(d *ast.DirectiveDefinition) __Directive {
 	for i, a := range d.Arguments {
 		args[i] = __InputValue{
 			Name:         a.Name,
-			description:  a.Description,
+			Description:  a.Description,
 			DefaultValue: defaultValue(a.DefaultValue),
 			Type:         wrapTypeFromType(my.schema, a.Type),
 		}
@@ -83,7 +84,32 @@ func (my *__Schema) directiveFromDef(d *ast.DirectiveDefinition) __Directive {
 		Name:         d.Name,
 		Args:         args,
 		Locations:    locs,
-		description:  d.Description,
+		Description:  d.Description,
 		IsRepeatable: d.IsRepeatable,
 	}
+}
+
+func (my *__Schema) MarshalJSON() ([]byte, error) {
+	res := make(map[string]interface{})
+
+	if my.Description() != nil {
+		res["description"] = my.Description()
+	}
+	if len(my.Directives()) > 0 {
+		res["directives"] = my.Directives()
+	}
+	if len(my.Types()) > 0 {
+		res["types"] = my.Types()
+	}
+	if my.QueryType() != nil {
+		res["queryType"] = my.QueryType()
+	}
+	if my.MutationType() != nil {
+		res["mutationType"] = my.MutationType()
+	}
+	if my.SubscriptionType() != nil {
+		res["subscriptionType"] = my.SubscriptionType()
+	}
+
+	return json.Marshal(res)
 }

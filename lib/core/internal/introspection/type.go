@@ -1,6 +1,7 @@
 package introspection
 
 import (
+	"encoding/json"
 	"strings"
 
 	"github.com/vektah/gqlparser/v2/ast"
@@ -87,17 +88,17 @@ func (my *__Type) Fields(includeDeprecated bool) []__Field {
 			args = append(args, __InputValue{
 				Type:         wrapTypeFromType(my.schema, arg.Type),
 				Name:         arg.Name,
-				description:  arg.Description,
+				Description:  arg.Description,
 				DefaultValue: defaultValue(arg.DefaultValue),
 			})
 		}
 
 		fields = append(fields, __Field{
 			Name:        f.Name,
-			description: f.Description,
+			Description: f.Description,
 			Args:        args,
 			Type:        wrapTypeFromType(my.schema, f.Type),
-			deprecation: f.Directives.ForName("deprecated"),
+			Deprecation: f.Directives.ForName("deprecated"),
 		})
 	}
 	return fields
@@ -112,9 +113,10 @@ func (my *__Type) InputFields() []__InputValue {
 	for _, f := range my.def.Fields {
 		res = append(res, __InputValue{
 			Name:         f.Name,
-			description:  f.Description,
+			Description:  f.Description,
 			Type:         wrapTypeFromType(my.schema, f.Type),
 			DefaultValue: defaultValue(f.DefaultValue),
+			Deprecation:  f.Directives.ForName("deprecated"),
 		})
 	}
 	return res
@@ -158,8 +160,8 @@ func (my *__Type) EnumValues(includeDeprecated bool) []__EnumValue {
 
 		res = append(res, __EnumValue{
 			Name:        val.Name,
-			description: val.Description,
-			deprecation: val.Directives.ForName("deprecated"),
+			Description: val.Description,
+			Deprecation: val.Directives.ForName("deprecated"),
 		})
 	}
 	return res
@@ -188,4 +190,39 @@ func (my *__Type) SpecifiedByURL() *string {
 	// the argument "url" is required.
 	url := directive.Arguments.ForName("url")
 	return &url.Value.Raw
+}
+
+func (my *__Type) MarshalJSON() ([]byte, error) {
+	res := make(map[string]interface{})
+
+	if my.Kind() != "" {
+		res["kind"] = my.Kind()
+	}
+	if my.Name() != nil {
+		res["name"] = my.Name()
+	}
+	if my.Description() != nil {
+		res["description"] = my.Description()
+	}
+	if my.Kind() == string(ast.Object) || my.Kind() == string(ast.Interface) {
+		res["fields"] = my.Fields(false)
+		res["interfaces"] = my.Interfaces()
+	}
+	if my.Kind() == string(ast.Interface) || my.Kind() == string(ast.Union) {
+		res["possibleTypes"] = my.PossibleTypes()
+	}
+	if my.Kind() == string(ast.Enum) {
+		res["enumValues"] = my.EnumValues(false)
+	}
+	if my.Kind() == string(ast.InputObject) {
+		res["inputFields"] = my.InputFields()
+	}
+	if my.OfType() != nil {
+		res["ofType"] = my.OfType()
+	}
+	if my.SpecifiedByURL() != nil {
+		res["specifiedByUrl"] = my.SpecifiedByURL()
+	}
+
+	return json.Marshal(res)
 }

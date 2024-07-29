@@ -1,12 +1,15 @@
 // introspection implements the spec defined in https://github.com/facebook/graphql/blob/master/spec/Section%204%20--%20Introspection.md#schema-introspection
 package introspection
 
-import "github.com/vektah/gqlparser/v2/ast"
+import (
+	"encoding/json"
+	"github.com/vektah/gqlparser/v2/ast"
+)
 
 type (
 	__Directive struct {
 		Name         string
-		description  string
+		Description  string
 		Locations    []string
 		Args         []__InputValue
 		IsRepeatable bool
@@ -14,86 +17,115 @@ type (
 
 	__EnumValue struct {
 		Name        string
-		description string
-		deprecation *ast.Directive
+		Description string
+		Deprecation *ast.Directive
 	}
 
 	__Field struct {
 		Name        string
-		description string
+		Description string
 		Type        *__Type
 		Args        []__InputValue
-		deprecation *ast.Directive
+		Deprecation *ast.Directive
 	}
 
 	__InputValue struct {
 		Name         string
-		description  string
+		Description  string
 		DefaultValue *string
 		Type         *__Type
+		Deprecation  *ast.Directive
 	}
 )
 
-func (my *__EnumValue) Description() *string {
-	if my.description == "" {
-		return nil
+func (my *__Directive) MarshalJSON() ([]byte, error) {
+	res := make(map[string]interface{})
+
+	if my.Name != "" {
+		res["name"] = my.Name
 	}
-	return &my.description
+	if my.Description != "" {
+		res["description"] = my.Description
+	}
+	res["isRepeatable"] = my.IsRepeatable
+	if len(my.Locations) > 0 {
+		res["locations"] = my.Locations
+	}
+	if len(my.Args) > 0 {
+		res["args"] = my.Args
+	}
+
+	return json.Marshal(res)
 }
 
-func (my *__EnumValue) IsDeprecated() bool {
-	return my.deprecation != nil
+func (my *__InputValue) MarshalJSON() ([]byte, error) {
+	res := make(map[string]interface{})
+
+	if my.Name != "" {
+		res["name"] = my.Name
+	}
+	if my.Description != "" {
+		res["description"] = my.Description
+	}
+	if my.Type != nil {
+		res["type"] = my.Type
+	}
+	res["isDeprecated"] = my.Deprecation != nil
+	if my.Deprecation != nil {
+		reason := my.Deprecation.Arguments.ForName("reason")
+		if reason == nil {
+			res["deprecationReason"] = reason.Value.Raw
+		}
+	}
+	if my.DefaultValue != nil {
+		res["defaultValue"] = my.DefaultValue
+	}
+
+	return json.Marshal(res)
 }
 
-func (my *__EnumValue) DeprecationReason() *string {
-	if my.deprecation == nil {
-		return nil
+func (my *__EnumValue) MarshalJSON() ([]byte, error) {
+	res := make(map[string]interface{})
+
+	if my.Name != "" {
+		res["name"] = my.Name
+	}
+	if my.Description != "" {
+		res["description"] = my.Description
+	}
+	res["isDeprecated"] = my.Deprecation != nil
+	if my.Deprecation != nil {
+		reason := my.Deprecation.Arguments.ForName("reason")
+		if reason == nil {
+			res["deprecationReason"] = reason.Value.Raw
+		}
 	}
 
-	reason := my.deprecation.Arguments.ForName("reason")
-	if reason == nil {
-		return nil
-	}
-
-	return &reason.Value.Raw
+	return json.Marshal(res)
 }
 
-func (my *__Field) Description() *string {
-	if my.description == "" {
-		return nil
+func (my *__Field) MarshalJSON() ([]byte, error) {
+	res := make(map[string]interface{})
+
+	if my.Name != "" {
+		res["name"] = my.Name
 	}
-	return &my.description
-}
-
-func (my *__Field) IsDeprecated() bool {
-	return my.deprecation != nil
-}
-
-func (my *__Field) DeprecationReason() *string {
-	if my.deprecation == nil || !my.IsDeprecated() {
-		return nil
+	if my.Description != "" {
+		res["description"] = my.Description
+	}
+	if my.Type != nil {
+		res["type"] = my.Type
+	}
+	if len(my.Args) > 0 {
+		res["args"] = my.Args
+	}
+	res["isDeprecated"] = my.Deprecation != nil
+	if my.Deprecation != nil {
+		reason := my.Deprecation.Arguments.ForName("reason")
+		if reason == nil {
+			res["deprecationReason"] = reason.Value.Raw
+		}
 	}
 
-	reason := my.deprecation.Arguments.ForName("reason")
-
-	if reason == nil {
-		defaultReason := "No longer supported"
-		return &defaultReason
-	}
-
-	return &reason.Value.Raw
-}
-
-func (my *__InputValue) Description() *string {
-	if my.description == "" {
-		return nil
-	}
-	return &my.description
-}
-
-func (my *__Directive) Description() *string {
-	if my.description == "" {
-		return nil
-	}
-	return &my.description
+	return json.Marshal(res)
 }
