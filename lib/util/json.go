@@ -13,3 +13,11 @@ func MarshalJson(val interface{}) (string, error) {
 func UnmarshalJson(buf string, val interface{}) error {
 	return json.Unmarshal([]byte(buf), val)
 }
+
+func MustMarshalJson(val interface{}) string {
+	str, err := MarshalJson(val)
+	if err != nil {
+		panic(err)
+	}
+	return str
+}
