@@ -29,6 +29,8 @@ func (my *Compiler) Compile(query string) (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
+	//doc.Operations.ForName()
+	//IntrospectionQuery
 	println(len(doc.Operations))
 	return nil, nil
 }
