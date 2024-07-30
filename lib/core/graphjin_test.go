@@ -1,9 +1,10 @@
-package introspection
+package core
 
 import (
 	"context"
 	"database/sql"
 	"github.com/dosco/graphjin/core/v3"
+	"github.com/ichaly/go-next/lib/core/internal/introspection"
 	"github.com/ichaly/go-next/lib/util"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/stretchr/testify/suite"
@@ -30,7 +31,7 @@ func (my *_graphJinSuite) TestGraphJin() {
 	my.Require().NoError(err)
 
 	ctx := context.WithValue(context.Background(), core.UserIDKey, 1)
-	res, err := gj.GraphQL(ctx, Query, nil, nil)
+	res, err := gj.GraphQL(ctx, introspection.Query, nil, nil)
 	my.Require().NoError(err)
 	my.T().Log(util.MustMarshalJson(res))
 }
