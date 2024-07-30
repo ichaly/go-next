@@ -7,26 +7,20 @@ import (
 )
 
 type (
-	__Directive struct {
-		Name         string
-		Description  string
-		Locations    []string
-		Args         []__InputValue
-		IsRepeatable bool
-	}
-
-	__EnumValue struct {
-		Name        string
-		Description string
-		Deprecation *ast.Directive
-	}
-
 	__Field struct {
 		Name        string
 		Description string
 		Type        *__Type
 		Args        []__InputValue
 		Deprecation *ast.Directive
+	}
+
+	__Directive struct {
+		Name         string
+		Description  string
+		Locations    []string
+		Args         []__InputValue
+		IsRepeatable bool
 	}
 
 	__InputValue struct {
@@ -36,9 +30,41 @@ type (
 		Type         *__Type
 		Deprecation  *ast.Directive
 	}
+
+	__EnumValue struct {
+		Name        string
+		Description string
+		Deprecation *ast.Directive
+	}
 )
 
-func (my *__Directive) MarshalJSON() ([]byte, error) {
+func (my __Field) MarshalJSON() ([]byte, error) {
+	res := make(map[string]interface{})
+
+	if my.Name != "" {
+		res["name"] = my.Name
+	}
+	if my.Description != "" {
+		res["description"] = my.Description
+	}
+	if my.Type != nil {
+		res["type"] = my.Type
+	}
+	if len(my.Args) > 0 {
+		res["args"] = my.Args
+	}
+	res["isDeprecated"] = my.Deprecation != nil
+	if my.Deprecation != nil {
+		reason := my.Deprecation.Arguments.ForName("reason")
+		if reason == nil {
+			res["deprecationReason"] = reason.Value.Raw
+		}
+	}
+
+	return json.Marshal(res)
+}
+
+func (my __Directive) MarshalJSON() ([]byte, error) {
 	res := make(map[string]interface{})
 
 	if my.Name != "" {
@@ -58,7 +84,7 @@ func (my *__Directive) MarshalJSON() ([]byte, error) {
 	return json.Marshal(res)
 }
 
-func (my *__InputValue) MarshalJSON() ([]byte, error) {
+func (my __InputValue) MarshalJSON() ([]byte, error) {
 	res := make(map[string]interface{})
 
 	if my.Name != "" {
@@ -84,7 +110,7 @@ func (my *__InputValue) MarshalJSON() ([]byte, error) {
 	return json.Marshal(res)
 }
 
-func (my *__EnumValue) MarshalJSON() ([]byte, error) {
+func (my __EnumValue) MarshalJSON() ([]byte, error) {
 	res := make(map[string]interface{})
 
 	if my.Name != "" {
@@ -92,32 +118,6 @@ func (my *__EnumValue) MarshalJSON() ([]byte, error) {
 	}
 	if my.Description != "" {
 		res["description"] = my.Description
-	}
-	res["isDeprecated"] = my.Deprecation != nil
-	if my.Deprecation != nil {
-		reason := my.Deprecation.Arguments.ForName("reason")
-		if reason == nil {
-			res["deprecationReason"] = reason.Value.Raw
-		}
-	}
-
-	return json.Marshal(res)
-}
-
-func (my *__Field) MarshalJSON() ([]byte, error) {
-	res := make(map[string]interface{})
-
-	if my.Name != "" {
-		res["name"] = my.Name
-	}
-	if my.Description != "" {
-		res["description"] = my.Description
-	}
-	if my.Type != nil {
-		res["type"] = my.Type
-	}
-	if len(my.Args) > 0 {
-		res["args"] = my.Args
 	}
 	res["isDeprecated"] = my.Deprecation != nil
 	if my.Deprecation != nil {

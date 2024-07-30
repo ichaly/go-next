@@ -28,3 +28,9 @@ func (my *_CompilerSuite) TestCompiler() {
 	query := "{user{id}team{id}}"
 	_, _ = c.Compile(query)
 }
+
+func (my *_CompilerSuite) TestIntrospection() {
+	c, err := NewCompiler(my.m, my.d)
+	my.Require().NoError(err)
+	c.Introspection()
+}

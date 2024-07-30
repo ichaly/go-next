@@ -11,7 +11,11 @@ type __Schema struct {
 	schema *ast.Schema
 }
 
-func (my *__Schema) Types() []__Type {
+func NewIntrospection(s *ast.Schema) __Schema {
+	return __Schema{schema: s}
+}
+
+func (my __Schema) Types() []__Type {
 	typeIndex := map[string]__Type{}
 	typeNames := make([]string, 0, len(my.schema.Types))
 	for _, t := range my.schema.Types {
@@ -27,19 +31,19 @@ func (my *__Schema) Types() []__Type {
 	return types
 }
 
-func (my *__Schema) QueryType() *__Type {
+func (my __Schema) QueryType() *__Type {
 	return wrapTypeFromDef(my.schema, my.schema.Query)
 }
 
-func (my *__Schema) MutationType() *__Type {
+func (my __Schema) MutationType() *__Type {
 	return wrapTypeFromDef(my.schema, my.schema.Mutation)
 }
 
-func (my *__Schema) SubscriptionType() *__Type {
+func (my __Schema) SubscriptionType() *__Type {
 	return wrapTypeFromDef(my.schema, my.schema.Subscription)
 }
 
-func (my *__Schema) Directives() []__Directive {
+func (my __Schema) Directives() []__Directive {
 	dIndex := map[string]__Directive{}
 	dNames := make([]string, 0, len(my.schema.Directives))
 
@@ -57,39 +61,14 @@ func (my *__Schema) Directives() []__Directive {
 	return res
 }
 
-func (my *__Schema) Description() *string {
+func (my __Schema) Description() *string {
 	if my.schema.Description == "" {
 		return nil
 	}
 	return &my.schema.Description
 }
 
-func (my *__Schema) directiveFromDef(d *ast.DirectiveDefinition) __Directive {
-	locs := make([]string, len(d.Locations))
-	for i, l := range d.Locations {
-		locs[i] = string(l)
-	}
-
-	args := make([]__InputValue, len(d.Arguments))
-	for i, a := range d.Arguments {
-		args[i] = __InputValue{
-			Name:         a.Name,
-			Description:  a.Description,
-			DefaultValue: defaultValue(a.DefaultValue),
-			Type:         wrapTypeFromType(my.schema, a.Type),
-		}
-	}
-
-	return __Directive{
-		Name:         d.Name,
-		Args:         args,
-		Locations:    locs,
-		Description:  d.Description,
-		IsRepeatable: d.IsRepeatable,
-	}
-}
-
-func (my *__Schema) MarshalJSON() ([]byte, error) {
+func (my __Schema) MarshalJSON() ([]byte, error) {
 	res := make(map[string]interface{})
 
 	if my.Description() != nil {
@@ -112,4 +91,29 @@ func (my *__Schema) MarshalJSON() ([]byte, error) {
 	}
 
 	return json.Marshal(res)
+}
+
+func (my __Schema) directiveFromDef(d *ast.DirectiveDefinition) __Directive {
+	locs := make([]string, len(d.Locations))
+	for i, l := range d.Locations {
+		locs[i] = string(l)
+	}
+
+	args := make([]__InputValue, len(d.Arguments))
+	for i, a := range d.Arguments {
+		args[i] = __InputValue{
+			Name:         a.Name,
+			Description:  a.Description,
+			DefaultValue: defaultValue(a.DefaultValue),
+			Type:         wrapTypeFromType(my.schema, a.Type),
+		}
+	}
+
+	return __Directive{
+		Name:         d.Name,
+		Args:         args,
+		Locations:    locs,
+		Description:  d.Description,
+		IsRepeatable: d.IsRepeatable,
+	}
 }

@@ -182,6 +182,9 @@ func (my *__Type) OfType() *__Type {
 }
 
 func (my *__Type) SpecifiedByURL() *string {
+	if my.def == nil || my.def.Directives == nil {
+		return nil
+	}
 	directive := my.def.Directives.ForName("specifiedBy")
 	if my.def.Kind != ast.Scalar || directive == nil {
 		return nil
@@ -192,7 +195,7 @@ func (my *__Type) SpecifiedByURL() *string {
 	return &url.Value.Raw
 }
 
-func (my *__Type) MarshalJSON() ([]byte, error) {
+func (my __Type) MarshalJSON() ([]byte, error) {
 	res := make(map[string]interface{})
 
 	if my.Kind() != "" {

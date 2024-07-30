@@ -1,6 +1,8 @@
 package core
 
 import (
+	"github.com/ichaly/go-next/lib/core/internal/introspection"
+	"github.com/ichaly/go-next/lib/util"
 	"github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
 	"gorm.io/gorm"
@@ -33,4 +35,9 @@ func (my *Compiler) Compile(query string) (interface{}, error) {
 	//IntrospectionQuery
 	println(len(doc.Operations))
 	return nil, nil
+}
+
+func (my *Compiler) Introspection() {
+	i := introspection.NewIntrospection(my.schema)
+	println(util.MustMarshalJson(i))
 }

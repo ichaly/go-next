@@ -6,6 +6,9 @@ type Executor struct {
 	s *ast.Schema
 }
 
-func NewExecutor(c *Compiler) *Executor { return &Executor{c} }
+func NewExecutor(c *Compiler) *Executor {
+	return &Executor{}
+}
+
 func (e *Executor) Execute() {
 }
