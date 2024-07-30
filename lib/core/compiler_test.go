@@ -1,6 +1,8 @@
 package core
 
 import (
+	"github.com/ichaly/go-next/lib/core/internal/intro"
+	"github.com/ichaly/go-next/lib/util"
 	"github.com/stretchr/testify/suite"
 	"testing"
 )
@@ -32,5 +34,7 @@ func (my *_CompilerSuite) TestCompiler() {
 func (my *_CompilerSuite) TestIntrospection() {
 	c, err := NewCompiler(my.m, my.d)
 	my.Require().NoError(err)
-	c.Introspection()
+
+	s := intro.New(c.schema)
+	my.T().Log(util.MustMarshalJson(s))
 }
