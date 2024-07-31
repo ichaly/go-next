@@ -18,7 +18,7 @@ func NewCompiler(m *Metadata, d *gorm.DB) (*Compiler, error) {
 	if err != nil {
 		return nil, err
 	}
-	s, err := gqlparser.LoadSchema(&ast.Source{Name: "schema", Input: input})
+	s, err := gqlparser.LoadSchema(&ast.Source{Name: "build", Input: input})
 	if err != nil {
 		return nil, err
 	}

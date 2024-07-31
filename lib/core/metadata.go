@@ -15,8 +15,8 @@ import (
 //go:embed assets/pgsql.sql
 var pgsql string
 
-//go:embed assets/schema.tpl
-var schema string
+//go:embed assets/build.tpl
+var build string
 
 type Table struct {
 	Name        string
@@ -48,9 +48,9 @@ func NewMetadata(v *viper.Viper, d *gorm.DB) (*Metadata, error) {
 	}
 	metadata := &Metadata{
 		Nodes: make(map[string]*Table), db: d, cfg: cfg,
-		tpl: template.Must(template.New("assets/schema.tpl").Funcs(template.FuncMap{
+		tpl: template.Must(template.New("assets/build.tpl").Funcs(template.FuncMap{
 			"toLowerCamel": strcase.ToLowerCamel,
-		}).Parse(schema)),
+		}).Parse(build)),
 	}
 	if err := metadata.load(); err != nil {
 		return nil, err
