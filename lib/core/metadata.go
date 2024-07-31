@@ -99,7 +99,8 @@ func (my *Metadata) load() error {
 		}
 
 		//索引节点
-		if node, ok := my.Nodes[name]; !ok {
+		node, ok := my.Nodes[name]
+		if !ok {
 			node = &Table{
 				Name:        name,
 				Original:    v.Table,
@@ -107,9 +108,8 @@ func (my *Metadata) load() error {
 				Columns:     make([]*Column, 0),
 			}
 			my.Nodes[name] = node
-		} else {
-			node.Columns = append(node.Columns, &c)
 		}
+		node.Columns = append(node.Columns, &c)
 	}
 	return nil
 }
