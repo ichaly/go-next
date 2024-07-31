@@ -1,3 +1,6 @@
+"""
+The `DateTime` scalar type represents a DateTime. The DateTime is serialized as an RFC 3339 quoted string
+"""
 scalar DateTime
 
 {{- range $key,$table := . }}
