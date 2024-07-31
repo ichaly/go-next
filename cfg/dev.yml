@@ -45,7 +45,7 @@ database:
   dialect: postgres
   host: 127.0.0.1
   port: 5678
-  name: gcms
+  name: demo
   username: postgres
   password: postgres
 

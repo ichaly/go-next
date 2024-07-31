@@ -1,0 +1,45 @@
+{
+  "data": {
+    "__schema": {
+      "types": [
+        {
+          "kind": "SCALAR",
+          "name": "ID",
+          "description": "The `ID` scalar type represents a unique identifier, often used to refetch an object or as key for a cache.\nThe ID type appears in a JSON response as a String; however, it is not intended to be human-readable.\nWhen expected as an input type, any string (such as `\"4\"`) or integer (such as `4`) input value will be accepted\nas an ID.\n"
+        },
+        {
+          "kind": "OBJECT",
+          "name": "Query",
+          "fields": [
+            {
+              "name": "Users",
+              "args": [],
+              "type": {
+                "name": "Users"
+              }
+            }
+          ],
+          "interfaces": []
+        },
+        {
+          "kind": "OBJECT",
+          "name": "Users",
+          "fields": [
+            {
+              "name": "Id",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "ID"
+              }
+            }
+          ],
+          "interfaces": []
+        }
+      ],
+      "queryType": {
+        "name": "Query"
+      }
+    }
+  }
+}

@@ -11,22 +11,22 @@ import (
 	"testing"
 )
 
-type _graphJinSuite struct {
+type _GraphJinSuite struct {
 	suite.Suite
 	db *sql.DB
 }
 
 func TestGraphJin(t *testing.T) {
-	suite.Run(t, new(_graphJinSuite))
+	suite.Run(t, new(_GraphJinSuite))
 }
 
-func (my *_graphJinSuite) SetupSuite() {
+func (my *_GraphJinSuite) SetupSuite() {
 	db, err := sql.Open("pgx", "postgres://postgres:postgres@localhost:5678/gcms?sslmode=disable")
 	my.Require().NoError(err)
 	my.db = db
 }
 
-func (my *_graphJinSuite) TestGraphJin() {
+func (my *_GraphJinSuite) TestGraphJin() {
 	gj, err := core.NewGraphJin(&core.Config{}, my.db)
 	my.Require().NoError(err)
 

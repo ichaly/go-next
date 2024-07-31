@@ -3,6 +3,7 @@ package intro
 import (
 	"encoding/json"
 	"github.com/vektah/gqlparser/v2/ast"
+	"strings"
 )
 
 type __Type struct {
@@ -23,10 +24,14 @@ func (my __Type) MarshalJSON() ([]byte, error) {
 	if len(my.d.Fields) > 0 {
 		fields := make([]__Field, 0, len(my.d.Fields))
 		for _, f := range my.d.Fields {
-			fields = append(fields, __Field{s: my.s, d: f})
+			if !strings.HasPrefix(f.Name, "__") {
+				fields = append(fields, __Field{s: my.s, d: f})
+			}
 		}
 		res["fields"] = fields
 	}
+	//必须存在不能为nil
+	res["interfaces"] = []interface{}{}
 
 	return json.Marshal(res)
 }
