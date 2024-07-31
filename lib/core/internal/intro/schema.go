@@ -9,8 +9,10 @@ type __Schema struct {
 	s *ast.Schema
 }
 
-func New(s *ast.Schema) __Schema {
-	return __Schema{s: s}
+func New(s *ast.Schema) interface{} {
+	res := make(map[string]interface{})
+	res["__schema"] = __Schema{s: s}
+	return res
 }
 
 func (my __Schema) MarshalJSON() ([]byte, error) {
@@ -24,7 +26,8 @@ func (my __Schema) MarshalJSON() ([]byte, error) {
 		res["types"] = types
 	}
 	if my.s.Query != nil {
-		res["queryType"] = __Type{s: my.s, d: my.s.Query}
+		d := &ast.Definition{Name: my.s.Query.Name}
+		res["queryType"] = __Type{s: my.s, d: d}
 	}
 
 	return json.Marshal(res)
