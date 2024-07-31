@@ -30,6 +30,16 @@ func (my __Schema) MarshalJSON() ([]byte, error) {
 		d := &ast.Definition{Name: my.s.Query.Name}
 		res["queryType"] = __Type{s: my.s, d: d}
 	}
+	if len(my.s.Description) > 0 {
+		res["description"] = my.s.Description
+	}
+	if len(my.s.Directives) > 0 {
+		directives := make([]__Directive, 0, len(my.s.Directives))
+		for _, v := range my.s.Directives {
+			directives = append(directives, __Directive{s: my.s, d: v})
+		}
+		res["directives"] = directives
+	}
 
 	return json.Marshal(res)
 }
