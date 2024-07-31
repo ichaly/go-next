@@ -11,9 +11,7 @@ type __Schema struct {
 }
 
 func New(s *ast.Schema) interface{} {
-	res := make(map[string]interface{})
-	res["__schema"] = __Schema{s: s}
-	return res
+	return map[string]any{"__schema": __Schema{s: s}}
 }
 
 func (my __Schema) MarshalJSON() ([]byte, error) {

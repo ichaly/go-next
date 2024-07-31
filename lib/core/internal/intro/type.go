@@ -30,8 +30,13 @@ func (my __Type) MarshalJSON() ([]byte, error) {
 		}
 		res["fields"] = fields
 	}
-	//必须存在不能为nil
-	res["interfaces"] = []interface{}{}
+	if my.d.Kind == ast.Object || my.d.Kind == ast.Interface {
+		//如果是Object,必须存在不能为nil
+		res["interfaces"] = []interface{}{}
+		for _, v := range my.d.Interfaces {
+			res["interfaces"] = &__Type{s: my.s, d: my.s.Types[v]}
+		}
+	}
 
 	return json.Marshal(res)
 }
