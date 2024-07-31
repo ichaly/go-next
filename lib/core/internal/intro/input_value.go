@@ -22,6 +22,16 @@ func (my __InputValue) MarshalJSON() ([]byte, error) {
 	if my.d.Type != nil {
 		res["type"] = __Type{s: my.s, d: my.s.Types[my.d.Type.Name()]}
 	}
+	if my.d.DefaultValue != nil {
+		res["defaultValue"] = my.d.DefaultValue.String()
+	}
+	directive := my.d.Directives.ForName("deprecated")
+	res["isDeprecated"] = directive != nil
+	if directive != nil {
+		if reason := directive.Arguments.ForName("reason"); reason != nil {
+			res["deprecationReason"] = reason.Value.Raw
+		}
+	}
 
 	return json.Marshal(res)
 }
