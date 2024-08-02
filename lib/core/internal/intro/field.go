@@ -14,18 +14,16 @@ type __Field struct {
 func (my __Field) MarshalJSON() ([]byte, error) {
 	res := make(map[string]interface{})
 
-	if my.d != nil {
-		res["name"] = my.d.Name
-		if len(my.d.Description) > 0 {
-			res["description"] = my.d.Description
-		}
-		if !strings.HasPrefix(my.d.Type.Name(), "__") {
-			res["type"] = &__Type{s: my.s, d: my.s.Types[my.d.Type.Name()]}
-		}
-
-		//必须存在不能为nil
-		res["args"] = []interface{}{}
+	res["name"] = my.d.Name
+	if len(my.d.Description) > 0 {
+		res["description"] = my.d.Description
 	}
+	if !strings.HasPrefix(my.d.Type.Name(), "__") {
+		res["type"] = &__Type{s: my.s, d: my.s.Types[my.d.Type.Name()]}
+	}
+
+	//必须存在不能为nil
+	res["args"] = []interface{}{}
 
 	return json.Marshal(res)
 }

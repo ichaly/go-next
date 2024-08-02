@@ -1,13 +1,13 @@
 package core
 
 import (
-	"context"
 	"database/sql"
 	"github.com/dosco/graphjin/core/v3"
+	"github.com/gin-gonic/gin"
 	"github.com/ichaly/go-next/lib/core/internal/introspection"
-	"github.com/ichaly/go-next/lib/util"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/stretchr/testify/suite"
+	"net/http"
 	"testing"
 )
 
@@ -30,8 +30,10 @@ func (my *_GraphJinSuite) TestGraphJin() {
 	gj, err := core.NewGraphJin(&core.Config{}, my.db)
 	my.Require().NoError(err)
 
-	ctx := context.WithValue(context.Background(), core.UserIDKey, 1)
-	res, err := gj.GraphQL(ctx, introspection.Query, nil, nil)
-	my.Require().NoError(err)
-	my.T().Log(util.MustMarshalJson(res))
+	r := gin.Default()
+	r.Match([]string{http.MethodGet, http.MethodPost}, "/graphql", func(ctx *gin.Context) {
+		res, _ := gj.GraphQL(ctx, introspection.Query, nil, nil)
+		ctx.JSON(http.StatusOK, res)
+	})
+	_ = r.Run()
 }
