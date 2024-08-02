@@ -18,17 +18,16 @@ func (my __Schema) MarshalJSON() ([]byte, error) {
 	res := make(map[string]interface{})
 
 	if len(my.s.Types) > 0 {
-		types := make([]__Type, 0, len(my.s.Types))
+		types := make([]__FullType, 0, len(my.s.Types))
 		for k, v := range my.s.Types {
 			if !strings.HasPrefix(k, "__") {
-				types = append(types, __Type{s: my.s, d: v})
+				types = append(types, __FullType{s: my.s, d: v})
 			}
 		}
 		res["types"] = types
 	}
 	if my.s.Query != nil {
-		d := &ast.Definition{Name: my.s.Query.Name}
-		res["queryType"] = __Type{s: my.s, d: d}
+		res["queryType"] = __RootType{d: my.s.Query}
 	}
 	if len(my.s.Directives) > 0 {
 		directives := make([]__Directive, 0, len(my.s.Directives))

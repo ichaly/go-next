@@ -4,10 +4,15 @@ import (
 	"database/sql"
 	"github.com/dosco/graphjin/core/v3"
 	"github.com/gin-gonic/gin"
+	"github.com/graphql-go/graphql"
+	"github.com/ichaly/go-next/lib/core/internal/intro"
 	"github.com/ichaly/go-next/lib/core/internal/introspection"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/stretchr/testify/suite"
+	"github.com/vektah/gqlparser/v2"
+	"github.com/vektah/gqlparser/v2/ast"
 	"net/http"
+	"os"
 	"testing"
 )
 
@@ -32,8 +37,38 @@ func (my *_GraphJinSuite) TestGraphJin() {
 
 	r := gin.Default()
 	r.Match([]string{http.MethodGet, http.MethodPost}, "/graphql", func(ctx *gin.Context) {
+		file, _ := os.ReadFile("./assets/schema.gql")
+		s, _ := gqlparser.LoadSchema(&ast.Source{Name: "schema", Input: string(file)})
+		ctx.JSON(http.StatusOK, gin.H{"data": intro.New(s)})
+	})
+	r.Match([]string{http.MethodGet, http.MethodPost}, "/graphql0", func(ctx *gin.Context) {
 		res, _ := gj.GraphQL(ctx, introspection.Query, nil, nil)
 		ctx.JSON(http.StatusOK, res)
 	})
-	_ = r.Run()
+	r.Match([]string{http.MethodGet, http.MethodPost}, "/graphql1", func(ctx *gin.Context) {
+		object := graphql.NewObject(graphql.ObjectConfig{Name: "User", Fields: graphql.Fields{
+			"username": &graphql.Field{
+				Type: &graphql.NonNull{OfType: graphql.String},
+			},
+		}})
+		config := graphql.SchemaConfig{Query: graphql.NewObject(graphql.ObjectConfig{Name: "Query", Fields: graphql.Fields{
+			"users": &graphql.Field{
+				Type: &graphql.NonNull{OfType: object},
+				Args: graphql.FieldConfigArgument{
+					"id": &graphql.ArgumentConfig{
+						Type: &graphql.NonNull{OfType: graphql.String},
+					},
+				},
+			},
+		}})}
+		schema, _ := graphql.NewSchema(config)
+		params := graphql.Params{Schema: schema, RequestString: introspection.Query}
+		result := graphql.Do(params)
+		ctx.JSON(http.StatusOK, result)
+	})
+	r.Match([]string{http.MethodGet, http.MethodPost}, "/graphql2", func(ctx *gin.Context) {
+		file, _ := os.ReadFile("./assets/intro.json")
+		_, _ = ctx.Writer.Write(file)
+	})
+	_ = r.Run(":8081")
 }

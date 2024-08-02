@@ -20,7 +20,7 @@ func (my __InputValue) MarshalJSON() ([]byte, error) {
 		res["description"] = my.d.Description
 	}
 	if my.d.Type != nil {
-		res["type"] = __Type{s: my.s, d: my.s.Types[my.d.Type.Name()]}
+		res["type"] = __Type{t: my.d.Type}
 	}
 	if my.d.DefaultValue != nil {
 		res["defaultValue"] = my.d.DefaultValue.String()

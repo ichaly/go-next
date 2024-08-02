@@ -19,11 +19,15 @@ func (my __Field) MarshalJSON() ([]byte, error) {
 		res["description"] = my.d.Description
 	}
 	if !strings.HasPrefix(my.d.Type.Name(), "__") {
-		res["type"] = &__Type{s: my.s, d: my.s.Types[my.d.Type.Name()]}
+		res["type"] = &__Type{t: my.d.Type}
 	}
 
 	//必须存在不能为nil
-	res["args"] = []interface{}{}
+	args := make([]__InputValue, 0, len(my.d.Arguments))
+	for _, a := range my.d.Arguments {
+		args = append(args, __InputValue{s: my.s, d: a})
+	}
+	res["args"] = args
 
 	return json.Marshal(res)
 }

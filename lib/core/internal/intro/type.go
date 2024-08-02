@@ -6,18 +6,16 @@ import (
 	"strings"
 )
 
-type __Type struct {
+type __FullType struct {
 	s *ast.Schema
 	d *ast.Definition
 }
 
-func (my __Type) MarshalJSON() ([]byte, error) {
+func (my __FullType) MarshalJSON() ([]byte, error) {
 	res := make(map[string]interface{})
 
 	res["name"] = my.d.Name
-	if len(my.d.Kind) > 0 {
-		res["kind"] = my.d.Kind
-	}
+	res["kind"] = my.d.Kind
 	if len(my.d.Description) > 0 {
 		res["description"] = my.d.Description
 	}
@@ -34,9 +32,39 @@ func (my __Type) MarshalJSON() ([]byte, error) {
 		//如果是Object,必须存在不能为nil
 		res["interfaces"] = []interface{}{}
 		for _, v := range my.d.Interfaces {
-			res["interfaces"] = &__Type{s: my.s, d: my.s.Types[v]}
+			res["interfaces"] = &__FullType{s: my.s, d: my.s.Types[v]}
 		}
 	}
+
+	return json.Marshal(res)
+}
+
+type __RootType struct {
+	d *ast.Definition
+}
+
+func (my __RootType) MarshalJSON() ([]byte, error) {
+	res := make(map[string]interface{})
+	res["name"] = my.d.Name
+	return json.Marshal(res)
+}
+
+type __Type struct {
+	t *ast.Type
+}
+
+func (my __Type) MarshalJSON() ([]byte, error) {
+	res := make(map[string]interface{})
+
+	res["name"] = my.t.Name()
+	if my.t.NonNull {
+		res["kind"] = "NON_NULL"
+	}
+
+	//if my.t.Elem != nil {
+	//	res["kind"] = "List"
+	//}
+	//res["ofType"] = &__Type{t: my.t.Elem}
 
 	return json.Marshal(res)
 }
