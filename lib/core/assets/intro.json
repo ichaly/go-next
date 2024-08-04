@@ -21,13 +21,18 @@
                   }
                 }
               ],
-              "isDeprecated": false,
               "name": "users",
               "type": {
                 "kind": "NON_NULL",
                 "ofType": {
-                  "kind": "OBJECT",
-                  "name": "User"
+                  "kind": "LIST",
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "User"
+                    }
+                  }
                 }
               }
             }

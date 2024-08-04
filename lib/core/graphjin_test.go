@@ -53,7 +53,7 @@ func (my *_GraphJinSuite) TestGraphJin() {
 		}})
 		config := graphql.SchemaConfig{Query: graphql.NewObject(graphql.ObjectConfig{Name: "Query", Fields: graphql.Fields{
 			"users": &graphql.Field{
-				Type: &graphql.NonNull{OfType: object},
+				Type: &graphql.NonNull{OfType: &graphql.List{OfType: &graphql.NonNull{OfType: object}}},
 				Args: graphql.FieldConfigArgument{
 					"id": &graphql.ArgumentConfig{
 						Type: &graphql.NonNull{OfType: graphql.String},
