@@ -6,11 +6,35 @@
       },
       "types": [
         {
-          "description": "",
+          "fields": [
+            {
+              "args": [],
+              "isDeprecated": false,
+              "name": "username",
+              "type": {
+                "kind": "NON_NULL",
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String"
+                }
+              }
+            }
+          ],
+          "interfaces": [
+            {
+              "kind": "INTERFACE",
+              "name": "Character"
+            }
+          ],
+          "kind": "OBJECT",
+          "name": "User"
+        },
+        {
           "fields": [
             {
               "args": [
                 {
+                  "description": "",
                   "name": "id",
                   "type": {
                     "kind": "NON_NULL",
@@ -21,6 +45,7 @@
                   }
                 }
               ],
+              "isDeprecated": false,
               "name": "users",
               "type": {
                 "kind": "NON_NULL",
@@ -42,7 +67,11 @@
           "name": "Query"
         },
         {
-          "description": "",
+          "description": "The `String` scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text.",
+          "kind": "SCALAR",
+          "name": "String"
+        },
+        {
           "fields": [
             {
               "args": [],
@@ -58,19 +87,14 @@
               }
             }
           ],
-          "interfaces": [],
-          "kind": "OBJECT",
-          "name": "User"
-        },
-        {
-          "description": "The `String` scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text.",
-          "kind": "SCALAR",
-          "name": "String"
-        },
-        {
-          "description": "The `Boolean` scalar type represents `true` or `false`.",
-          "kind": "SCALAR",
-          "name": "Boolean"
+          "kind": "INTERFACE",
+          "name": "Character",
+          "possibleTypes": [
+            {
+              "kind": "OBJECT",
+              "name": "User"
+            }
+          ]
         }
       ]
     }
