@@ -56,15 +56,20 @@ type __Type struct {
 func (my __Type) MarshalJSON() ([]byte, error) {
 	res := make(map[string]interface{})
 
-	res["name"] = my.t.Name()
+	if !my.t.NonNull && len(my.t.NamedType) > 0 {
+		res["name"] = my.t.NamedType
+	}
 	if my.t.NonNull {
 		res["kind"] = "NON_NULL"
+		if my.t.Elem == nil {
+			res["ofType"] = &__Type{t: &ast.Type{NamedType: my.t.NamedType}}
+		} else {
+			res["ofType"] = &__Type{t: &ast.Type{Elem: my.t.Elem}}
+		}
+	} else if my.t.Elem != nil {
+		res["kind"] = "LIST"
+		res["ofType"] = &__Type{t: my.t.Elem}
 	}
-
-	//if my.t.Elem != nil {
-	//	res["kind"] = "List"
-	//}
-	//res["ofType"] = &__Type{t: my.t.Elem}
 
 	return json.Marshal(res)
 }

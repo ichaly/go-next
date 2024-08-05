@@ -4,5 +4,5 @@ type User{
 }
 
 type Query{
-    users(username:String):[User!]!
+    users(username:[String!]):[User]!
 }
