@@ -46,10 +46,17 @@ func (my *_GraphJinSuite) TestGraphJin() {
 		ctx.JSON(http.StatusOK, res)
 	})
 	r.Match([]string{http.MethodGet, http.MethodPost}, "/graphql1", func(ctx *gin.Context) {
+		iface := graphql.NewInterface(graphql.InterfaceConfig{Name: "Character", Fields: graphql.Fields{
+			"username": &graphql.Field{
+				Type: &graphql.NonNull{OfType: graphql.String},
+			},
+		}})
 		object := graphql.NewObject(graphql.ObjectConfig{Name: "User", Fields: graphql.Fields{
 			"username": &graphql.Field{
 				Type: &graphql.NonNull{OfType: graphql.String},
 			},
+		}, Interfaces: []*graphql.Interface{
+			iface,
 		}})
 		config := graphql.SchemaConfig{Query: graphql.NewObject(graphql.ObjectConfig{Name: "Query", Fields: graphql.Fields{
 			"users": &graphql.Field{

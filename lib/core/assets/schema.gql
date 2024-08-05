@@ -1,6 +1,11 @@
-type User{
-    id:ID
-    username:String
+interface Character {
+    id: ID!
+    name: String!
+}
+
+type User implements Character {
+    id:ID!
+    name:String!
 }
 
 type Query{

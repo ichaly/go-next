@@ -75,23 +75,21 @@
           "fields": [
             {
               "args": [],
-              "description": "",
               "isDeprecated": false,
               "name": "username",
               "type": {
                 "kind": "NON_NULL",
                 "ofType": {
-                  "kind": "SCALAR",
                   "name": "String"
                 }
               }
             }
           ],
+          "interfaces": [],
           "kind": "INTERFACE",
           "name": "Character",
           "possibleTypes": [
             {
-              "kind": "OBJECT",
               "name": "User"
             }
           ]
