@@ -1,3 +1,5 @@
+scalar DateTime @specifiedBy(url: "https://www.baidu.com")
+
 """
 方向枚举类
 """
@@ -17,6 +19,7 @@ type User implements Character {
     id:ID!
     name:String!
     home:Direction
+    birthday:DateTime
 }
 
 type Query{

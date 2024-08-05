@@ -45,6 +45,16 @@ func (my __FullType) MarshalJSON() ([]byte, error) {
 		res["possibleTypes"] = possibleTypes
 	}
 
+	if my.d.Kind == ast.Scalar {
+		directive := my.d.Directives.ForName("specifiedBy")
+		if directive != nil {
+			url := directive.Arguments.ForName("url")
+			if url != nil && url.Value != nil {
+				res["specifiedByURL"] = url.Value.Raw
+			}
+		}
+	}
+
 	if len(my.d.EnumValues) > 0 {
 		enumValues := make([]__EnumValue, 0, len(my.d.EnumValues))
 		for _, e := range my.d.EnumValues {

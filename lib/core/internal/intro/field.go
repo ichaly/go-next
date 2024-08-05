@@ -29,10 +29,11 @@ func (my __Field) MarshalJSON() ([]byte, error) {
 	}
 	res["args"] = args
 
-	deprecation := my.d.Directives.ForName("deprecated")
-	res["isDeprecated"] = deprecation != nil
-	if deprecation != nil {
-		if reason := deprecation.Arguments.ForName("reason"); reason != nil {
+	directive := my.d.Directives.ForName("deprecated")
+	res["isDeprecated"] = directive != nil
+	if directive != nil {
+		reason := directive.Arguments.ForName("reason")
+		if reason != nil && reason.Value != nil {
 			res["deprecationReason"] = reason.Value.Raw
 		}
 	}
