@@ -45,6 +45,14 @@ func (my __FullType) MarshalJSON() ([]byte, error) {
 		res["possibleTypes"] = possibleTypes
 	}
 
+	if len(my.d.EnumValues) > 0 {
+		enumValues := make([]__EnumValue, 0, len(my.d.EnumValues))
+		for _, e := range my.d.EnumValues {
+			enumValues = append(enumValues, __EnumValue{d: e})
+		}
+		res["enumValues"] = enumValues
+	}
+
 	return json.Marshal(res)
 }
 

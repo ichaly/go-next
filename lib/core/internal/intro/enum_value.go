@@ -5,12 +5,11 @@ import (
 	"github.com/vektah/gqlparser/v2/ast"
 )
 
-type __InputValue struct {
-	s *ast.Schema
-	d *ast.ArgumentDefinition
+type __EnumValue struct {
+	d *ast.EnumValueDefinition
 }
 
-func (my __InputValue) MarshalJSON() ([]byte, error) {
+func (my __EnumValue) MarshalJSON() ([]byte, error) {
 	res := make(map[string]interface{})
 
 	if len(my.d.Name) > 0 {
@@ -18,12 +17,6 @@ func (my __InputValue) MarshalJSON() ([]byte, error) {
 	}
 	if len(my.d.Description) > 0 {
 		res["description"] = my.d.Description
-	}
-	if my.d.Type != nil {
-		res["type"] = __Type{t: my.d.Type}
-	}
-	if my.d.DefaultValue != nil {
-		res["defaultValue"] = my.d.DefaultValue.String()
 	}
 	deprecation := my.d.Directives.ForName("deprecated")
 	res["isDeprecated"] = deprecation != nil
