@@ -30,10 +30,19 @@ func (my __FullType) MarshalJSON() ([]byte, error) {
 	}
 	if my.d.Kind == ast.Object || my.d.Kind == ast.Interface {
 		//如果是Object,必须存在不能为nil
-		res["interfaces"] = []interface{}{}
+		interfaces := make([]__Type, 0, len(my.d.Interfaces))
 		for _, v := range my.d.Interfaces {
-			res["interfaces"] = &__FullType{s: my.s, d: my.s.Types[v]}
+			interfaces = append(interfaces, __Type{t: &ast.Type{NamedType: v}})
 		}
+		res["interfaces"] = interfaces
+	}
+
+	if my.d.Kind == ast.Interface || my.d.Kind == ast.Union {
+		possibleTypes := make([]__Type, 0, len(my.s.GetPossibleTypes(my.d)))
+		for _, p := range my.s.GetPossibleTypes(my.d) {
+			possibleTypes = append(possibleTypes, __Type{t: &ast.Type{NamedType: p.Name}})
+		}
+		res["possibleTypes"] = possibleTypes
 	}
 
 	return json.Marshal(res)
