@@ -27,12 +27,12 @@ func (my __Schema) MarshalJSON() ([]byte, error) {
 		res["types"] = types
 	}
 	if my.s.Query != nil {
-		res["queryType"] = __RootType{d: my.s.Query}
+		res["queryType"] = __RootType{my.s.Query}
 	}
 	if len(my.s.Directives) > 0 {
 		directives := make([]__Directive, 0, len(my.s.Directives))
 		for _, d := range my.s.Directives {
-			directives = append(directives, __Directive{d: d})
+			directives = append(directives, __Directive{d})
 		}
 		res["directives"] = directives
 	}

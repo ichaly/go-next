@@ -6,25 +6,25 @@ import (
 )
 
 type __Directive struct {
-	d *ast.DirectiveDefinition
+	*ast.DirectiveDefinition
 }
 
 func (my __Directive) MarshalJSON() ([]byte, error) {
 	res := make(map[string]interface{})
 
-	if len(my.d.Name) > 0 {
-		res["name"] = my.d.Name
+	if len(my.Name) > 0 {
+		res["name"] = my.Name
 	}
-	if len(my.d.Description) > 0 {
-		res["description"] = my.d.Description
+	if len(my.Description) > 0 {
+		res["description"] = my.Description
 	}
-	if len(my.d.Locations) > 0 {
-		res["locations"] = my.d.Locations
+	if len(my.Locations) > 0 {
+		res["locations"] = my.Locations
 	}
-	res["isRepeatable"] = my.d.IsRepeatable
-	args := make([]__InputValue, 0, len(my.d.Arguments))
-	for _, v := range my.d.Arguments {
-		args = append(args, __InputValue{d: v})
+	res["isRepeatable"] = my.IsRepeatable
+	args := make([]__InputValue, 0, len(my.Arguments))
+	for _, a := range my.Arguments {
+		args = append(args, __InputValue{a})
 	}
 	res["args"] = args
 

@@ -23,7 +23,7 @@ func (my __FullType) MarshalJSON() ([]byte, error) {
 		if my.d.Kind == ast.InputObject {
 			inputFields := make([]__InputValue, 0, len(my.d.Fields))
 			for _, f := range my.d.Fields {
-				inputFields = append(inputFields, __InputValue{d: &ast.ArgumentDefinition{
+				inputFields = append(inputFields, __InputValue{&ast.ArgumentDefinition{
 					Type:         f.Type,
 					Name:         f.Name,
 					Description:  f.Description,
@@ -36,7 +36,7 @@ func (my __FullType) MarshalJSON() ([]byte, error) {
 			fields := make([]__Field, 0, len(my.d.Fields))
 			for _, f := range my.d.Fields {
 				if !strings.HasPrefix(f.Name, "__") {
-					fields = append(fields, __Field{d: f})
+					fields = append(fields, __Field{f})
 				}
 			}
 			res["fields"] = fields
@@ -46,7 +46,7 @@ func (my __FullType) MarshalJSON() ([]byte, error) {
 		//如果是Object,必须存在不能为nil
 		interfaces := make([]__Type, 0, len(my.d.Interfaces))
 		for _, v := range my.d.Interfaces {
-			interfaces = append(interfaces, __Type{t: &ast.Type{NamedType: v}})
+			interfaces = append(interfaces, __Type{&ast.Type{NamedType: v}})
 		}
 		res["interfaces"] = interfaces
 	}
@@ -54,7 +54,7 @@ func (my __FullType) MarshalJSON() ([]byte, error) {
 	if my.d.Kind == ast.Interface || my.d.Kind == ast.Union {
 		possibleTypes := make([]__Type, 0, len(my.s.GetPossibleTypes(my.d)))
 		for _, p := range my.s.GetPossibleTypes(my.d) {
-			possibleTypes = append(possibleTypes, __Type{t: &ast.Type{NamedType: p.Name}})
+			possibleTypes = append(possibleTypes, __Type{&ast.Type{NamedType: p.Name}})
 		}
 		res["possibleTypes"] = possibleTypes
 	}
@@ -72,7 +72,7 @@ func (my __FullType) MarshalJSON() ([]byte, error) {
 	if len(my.d.EnumValues) > 0 {
 		enumValues := make([]__EnumValue, 0, len(my.d.EnumValues))
 		for _, e := range my.d.EnumValues {
-			enumValues = append(enumValues, __EnumValue{d: e})
+			enumValues = append(enumValues, __EnumValue{e})
 		}
 		res["enumValues"] = enumValues
 	}
@@ -81,35 +81,35 @@ func (my __FullType) MarshalJSON() ([]byte, error) {
 }
 
 type __RootType struct {
-	d *ast.Definition
+	*ast.Definition
 }
 
 func (my __RootType) MarshalJSON() ([]byte, error) {
 	res := make(map[string]interface{})
-	res["name"] = my.d.Name
+	res["name"] = my.Name
 	return json.Marshal(res)
 }
 
 type __Type struct {
-	t *ast.Type
+	*ast.Type
 }
 
 func (my __Type) MarshalJSON() ([]byte, error) {
 	res := make(map[string]interface{})
 
-	if !my.t.NonNull && len(my.t.NamedType) > 0 {
-		res["name"] = my.t.NamedType
+	if !my.NonNull && len(my.NamedType) > 0 {
+		res["name"] = my.NamedType
 	}
-	if my.t.NonNull {
+	if my.NonNull {
 		res["kind"] = "NON_NULL"
-		if my.t.Elem == nil {
-			res["ofType"] = &__Type{t: &ast.Type{NamedType: my.t.NamedType}}
+		if my.Elem == nil {
+			res["ofType"] = &__Type{&ast.Type{NamedType: my.NamedType}}
 		} else {
-			res["ofType"] = &__Type{t: &ast.Type{Elem: my.t.Elem}}
+			res["ofType"] = &__Type{&ast.Type{Elem: my.Elem}}
 		}
-	} else if my.t.Elem != nil {
+	} else if my.Elem != nil {
 		res["kind"] = "LIST"
-		res["ofType"] = &__Type{t: my.t.Elem}
+		res["ofType"] = &__Type{my.Elem}
 	}
 
 	return json.Marshal(res)

@@ -51,6 +51,14 @@ func (my *_GraphJinSuite) TestGraphJin() {
 				Type: &graphql.NonNull{OfType: graphql.String},
 			},
 		}})
+		input := graphql.NewInputObject(graphql.InputObjectConfig{Name: "LoginInput", Fields: graphql.InputObjectConfigFieldMap{
+			"username": &graphql.InputObjectFieldConfig{
+				Type: &graphql.NonNull{OfType: graphql.String},
+			},
+			"password": &graphql.InputObjectFieldConfig{
+				Type: &graphql.NonNull{OfType: graphql.String},
+			},
+		}})
 		object := graphql.NewObject(graphql.ObjectConfig{Name: "User", Fields: graphql.Fields{
 			"username": &graphql.Field{
 				Type: &graphql.NonNull{OfType: graphql.String},
@@ -62,8 +70,8 @@ func (my *_GraphJinSuite) TestGraphJin() {
 			"users": &graphql.Field{
 				Type: &graphql.NonNull{OfType: &graphql.List{OfType: &graphql.NonNull{OfType: object}}},
 				Args: graphql.FieldConfigArgument{
-					"id": &graphql.ArgumentConfig{
-						Type: &graphql.NonNull{OfType: graphql.String},
+					"input": &graphql.ArgumentConfig{
+						Type: &graphql.NonNull{OfType: input},
 					},
 				},
 			},

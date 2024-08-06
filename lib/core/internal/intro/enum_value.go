@@ -6,19 +6,19 @@ import (
 )
 
 type __EnumValue struct {
-	d *ast.EnumValueDefinition
+	*ast.EnumValueDefinition
 }
 
 func (my __EnumValue) MarshalJSON() ([]byte, error) {
 	res := make(map[string]interface{})
 
-	if len(my.d.Name) > 0 {
-		res["name"] = my.d.Name
+	if len(my.Name) > 0 {
+		res["name"] = my.Name
 	}
-	if len(my.d.Description) > 0 {
-		res["description"] = my.d.Description
+	if len(my.Description) > 0 {
+		res["description"] = my.Description
 	}
-	directive := my.d.Directives.ForName("deprecated")
+	directive := my.Directives.ForName("deprecated")
 	res["isDeprecated"] = directive != nil
 	if directive != nil {
 		reason := directive.Arguments.ForName("reason")

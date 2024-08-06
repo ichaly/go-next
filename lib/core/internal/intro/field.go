@@ -7,28 +7,28 @@ import (
 )
 
 type __Field struct {
-	d *ast.FieldDefinition
+	*ast.FieldDefinition
 }
 
 func (my __Field) MarshalJSON() ([]byte, error) {
 	res := make(map[string]interface{})
 
-	res["name"] = my.d.Name
-	if len(my.d.Description) > 0 {
-		res["description"] = my.d.Description
+	res["name"] = my.Name
+	if len(my.Description) > 0 {
+		res["description"] = my.Description
 	}
-	if !strings.HasPrefix(my.d.Type.Name(), "__") {
-		res["type"] = &__Type{t: my.d.Type}
+	if !strings.HasPrefix(my.Type.Name(), "__") {
+		res["type"] = &__Type{my.Type}
 	}
 
 	//必须存在不能为nil
-	args := make([]__InputValue, 0, len(my.d.Arguments))
-	for _, a := range my.d.Arguments {
-		args = append(args, __InputValue{d: a})
+	args := make([]__InputValue, 0, len(my.Arguments))
+	for _, a := range my.Arguments {
+		args = append(args, __InputValue{a})
 	}
 	res["args"] = args
 
-	directive := my.d.Directives.ForName("deprecated")
+	directive := my.Directives.ForName("deprecated")
 	res["isDeprecated"] = directive != nil
 	if directive != nil {
 		reason := directive.Arguments.ForName("reason")
