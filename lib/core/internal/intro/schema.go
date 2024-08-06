@@ -31,8 +31,8 @@ func (my __Schema) MarshalJSON() ([]byte, error) {
 	}
 	if len(my.s.Directives) > 0 {
 		directives := make([]__Directive, 0, len(my.s.Directives))
-		for _, v := range my.s.Directives {
-			directives = append(directives, __Directive{s: my.s, d: v})
+		for _, d := range my.s.Directives {
+			directives = append(directives, __Directive{d: d})
 		}
 		res["directives"] = directives
 	}

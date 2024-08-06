@@ -20,13 +20,27 @@ func (my __FullType) MarshalJSON() ([]byte, error) {
 		res["description"] = my.d.Description
 	}
 	if len(my.d.Fields) > 0 {
-		fields := make([]__Field, 0, len(my.d.Fields))
-		for _, f := range my.d.Fields {
-			if !strings.HasPrefix(f.Name, "__") {
-				fields = append(fields, __Field{s: my.s, d: f})
+		if my.d.Kind == ast.InputObject {
+			inputFields := make([]__InputValue, 0, len(my.d.Fields))
+			for _, f := range my.d.Fields {
+				inputFields = append(inputFields, __InputValue{d: &ast.ArgumentDefinition{
+					Type:         f.Type,
+					Name:         f.Name,
+					Description:  f.Description,
+					DefaultValue: f.DefaultValue,
+					Directives:   f.Directives,
+				}})
 			}
+			res["inputFields"] = inputFields
+		} else {
+			fields := make([]__Field, 0, len(my.d.Fields))
+			for _, f := range my.d.Fields {
+				if !strings.HasPrefix(f.Name, "__") {
+					fields = append(fields, __Field{d: f})
+				}
+			}
+			res["fields"] = fields
 		}
-		res["fields"] = fields
 	}
 	if my.d.Kind == ast.Object || my.d.Kind == ast.Interface {
 		//如果是Object,必须存在不能为nil

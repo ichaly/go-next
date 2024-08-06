@@ -6,7 +6,6 @@ import (
 )
 
 type __InputValue struct {
-	s *ast.Schema
 	d *ast.ArgumentDefinition
 }
 

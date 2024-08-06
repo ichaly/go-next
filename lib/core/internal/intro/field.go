@@ -7,7 +7,6 @@ import (
 )
 
 type __Field struct {
-	s *ast.Schema
 	d *ast.FieldDefinition
 }
 
@@ -25,7 +24,7 @@ func (my __Field) MarshalJSON() ([]byte, error) {
 	//必须存在不能为nil
 	args := make([]__InputValue, 0, len(my.d.Arguments))
 	for _, a := range my.d.Arguments {
-		args = append(args, __InputValue{s: my.s, d: a})
+		args = append(args, __InputValue{d: a})
 	}
 	res["args"] = args
 

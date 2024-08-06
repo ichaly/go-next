@@ -6,7 +6,6 @@ import (
 )
 
 type __Directive struct {
-	s *ast.Schema
 	d *ast.DirectiveDefinition
 }
 
@@ -25,7 +24,7 @@ func (my __Directive) MarshalJSON() ([]byte, error) {
 	res["isRepeatable"] = my.d.IsRepeatable
 	args := make([]__InputValue, 0, len(my.d.Arguments))
 	for _, v := range my.d.Arguments {
-		args = append(args, __InputValue{s: my.s, d: v})
+		args = append(args, __InputValue{d: v})
 	}
 	res["args"] = args
 
