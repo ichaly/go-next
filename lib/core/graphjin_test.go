@@ -6,7 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/graphql-go/graphql"
 	"github.com/ichaly/go-next/lib/core/internal/intro"
-	"github.com/ichaly/go-next/lib/core/internal/introspection"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/stretchr/testify/suite"
 	"github.com/vektah/gqlparser/v2"
@@ -42,7 +41,7 @@ func (my *_GraphJinSuite) TestGraphJin() {
 		ctx.JSON(http.StatusOK, gin.H{"data": intro.New(s)})
 	})
 	r.Match([]string{http.MethodGet, http.MethodPost}, "/graphql0", func(ctx *gin.Context) {
-		res, _ := gj.GraphQL(ctx, introspection.Query, nil, nil)
+		res, _ := gj.GraphQL(ctx, intro.Query, nil, nil)
 		ctx.JSON(http.StatusOK, res)
 	})
 	r.Match([]string{http.MethodGet, http.MethodPost}, "/graphql1", func(ctx *gin.Context) {
@@ -77,7 +76,7 @@ func (my *_GraphJinSuite) TestGraphJin() {
 			},
 		}})}
 		schema, _ := graphql.NewSchema(config)
-		params := graphql.Params{Schema: schema, RequestString: introspection.Query}
+		params := graphql.Params{Schema: schema, RequestString: intro.Query}
 		result := graphql.Do(params)
 		ctx.JSON(http.StatusOK, result)
 	})
