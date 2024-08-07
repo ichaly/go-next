@@ -10,6 +10,7 @@ import (
 type Compiler struct {
 	db     *gorm.DB
 	meta   *Metadata
+	intro  interface{}
 	schema *ast.Schema
 }
 
@@ -22,7 +23,7 @@ func NewCompiler(m *Metadata, d *gorm.DB) (*Compiler, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Compiler{db: d, meta: m, schema: s}, nil
+	return &Compiler{db: d, meta: m, schema: s, intro: intro.New(s)}, nil
 }
 
 func (my *Compiler) Compile(query string) (interface{}, error) {
@@ -34,8 +35,4 @@ func (my *Compiler) Compile(query string) (interface{}, error) {
 	//IntrospectionQuery
 	println(len(doc.Operations))
 	return nil, nil
-}
-
-func (my *Compiler) Introspection() interface{} {
-	return intro.New(my.schema)
 }
