@@ -50,7 +50,7 @@ func (my *Executor) Execute(ctx context.Context, query string, vars json.RawMess
 		return
 	}
 	for _, d := range doc.Operations {
-		println(d.Name)
+		println(d.Operation, d.Name, len(d.SelectionSet))
 		//op.GetSelections(ctx, d.SelectionSet, data, nil)
 	}
 	return
