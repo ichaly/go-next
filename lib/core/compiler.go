@@ -1,38 +1,47 @@
 package core
 
 import (
-	"github.com/ichaly/go-next/lib/core/internal/intro"
-	"github.com/vektah/gqlparser/v2"
+	"bytes"
+	"github.com/duke-git/lancet/v2/convertor"
 	"github.com/vektah/gqlparser/v2/ast"
-	"gorm.io/gorm"
 )
 
 type Compiler struct {
-	db     *gorm.DB
 	meta   *Metadata
-	intro  interface{}
 	schema *ast.Schema
 }
 
-func NewCompiler(m *Metadata, d *gorm.DB) (*Compiler, error) {
-	input, err := m.MarshalSchema()
-	if err != nil {
-		return nil, err
-	}
-	s, err := gqlparser.LoadSchema(&ast.Source{Name: "build", Input: input})
-	if err != nil {
-		return nil, err
-	}
-	return &Compiler{db: d, meta: m, schema: s, intro: intro.New(s)}, nil
+func NewCompiler(m *Metadata, s *ast.Schema) *Compiler {
+	return &Compiler{meta: m, schema: s}
 }
 
-func (my *Compiler) Compile(query string) (interface{}, error) {
-	doc, err := gqlparser.LoadQuery(my.schema, query)
-	if err != nil {
-		return nil, err
+func (my *Compiler) Compile(set ast.SelectionSet) (string, error) {
+	var w bytes.Buffer
+	my.getSelection(set, &w)
+	return w.String(), nil
+}
+
+func (my *Compiler) getSelection(set ast.SelectionSet, w *bytes.Buffer) {
+	w.WriteString(`SELECT jsonb_build_object(`)
+
+	for i, s := range set {
+		switch typ := s.(type) {
+		case *ast.Field:
+			table, ok := my.meta.Nodes[typ.Definition.Type.Name()]
+			if ok {
+				if i != 0 {
+					w.WriteString(`,`)
+				}
+				w.WriteString(`'`)
+				w.WriteString(table.Original)
+				w.WriteString(`', __sj_`)
+				w.WriteString(convertor.ToString(i))
+				w.WriteString(`.json`)
+			}
+			//println(typ.Definition.Type.Name(), typ.Name, table)
+			//my.getSelection(typ.SelectionSet, w)
+		}
 	}
-	//doc.Operations.ForName()
-	//IntrospectionQuery
-	println(len(doc.Operations))
-	return nil, nil
+
+	w.WriteString(`) AS __root FROM ((SELECT true)) AS __root_x`)
 }

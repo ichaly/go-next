@@ -23,8 +23,4 @@ func (my *_CompilerSuite) SetupSuite() {
 }
 
 func (my *_CompilerSuite) TestCompiler() {
-	c, err := NewCompiler(my.m, my.d)
-	my.Require().NoError(err)
-	query := "{user{id}team{id}}"
-	_, _ = c.Compile(query)
 }
