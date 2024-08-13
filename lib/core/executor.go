@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/dolmen-go/jsonmap"
-	"github.com/emirpasic/gods/stacks/arraystack"
 	"github.com/ichaly/go-next/lib/core/internal/intro"
 	"github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
@@ -55,12 +54,10 @@ func (my *Executor) Execute(ctx context.Context, query string, vars json.RawMess
 		r.Errors = err
 		return
 	}
-	stack := arraystack.New()
 	//resultChans := make([]<-chan gqlValue, 0, len(set))
 	for _, o := range doc.Operations {
 		sql, _ := my.compiler.Compile(o.SelectionSet)
 		println(sql)
 	}
-	println(stack.Size())
 	return
 }

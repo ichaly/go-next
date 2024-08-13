@@ -26,13 +26,17 @@ func TestGraphJin(t *testing.T) {
 }
 
 func (my *_GraphJinSuite) SetupSuite() {
-	db, err := sql.Open("pgx", "postgres://postgres:postgres@localhost:5678/gcms?sslmode=disable")
+	db, err := sql.Open("pgx", "postgres://postgres:postgres@localhost:5678/demo?sslmode=disable")
 	my.Require().NoError(err)
 	my.db = db
 }
 
 func (my *_GraphJinSuite) TestGraphJin() {
-	gj, err := core.NewGraphJin(&core.Config{}, my.db)
+	gj, err := core.NewGraphJin(&core.Config{
+		EnableCamelcase: true,
+		DisableAgg:      true,
+		DisableFuncs:    true,
+	}, my.db)
 	my.Require().NoError(err)
 
 	r := gin.Default()
