@@ -22,12 +22,13 @@ type Table struct {
 	Name        string
 	Original    string
 	Description string
-	Columns     []*Column
+	Columns     map[string]*Column
 }
 
 type Column struct {
-	Name        string
 	Type        string
+	Name        string
+	Original    string
 	Description string
 	IsPrimary   bool
 	IsForeign   bool
@@ -86,6 +87,7 @@ func (my *Metadata) load() error {
 		if err := mapstructure.Decode(v, &c); err != nil {
 			return err
 		}
+		c.Original = c.Name
 
 		//解析表
 		name := v.Table
@@ -105,11 +107,11 @@ func (my *Metadata) load() error {
 				Name:        name,
 				Original:    v.Table,
 				Description: v.TableDescription,
-				Columns:     make([]*Column, 0),
+				Columns:     make(map[string]*Column),
 			}
 			my.Nodes[name] = node
 		}
-		node.Columns = append(node.Columns, &c)
+		node.Columns[c.Name] = &c
 	}
 	return nil
 }
