@@ -1,32 +1,34 @@
+scalar Cursor @specifiedBy(url: "https://www.baidu.com")
 scalar DateTime @specifiedBy(url: "https://www.baidu.com")
 
-"""
-方向枚举类
-"""
 enum Direction {
-    NORTH@deprecated(reason: "过期了")
-    EAST
-    SOUTH
-    WEST
+    ASC
+    DESC
 }
 
-interface Character {
-    id: ID!
-    name: String!
+type User  {
+    id:ID!
+    username:String!
+    nickname:String!
+    teams:[Team]!
 }
 
-type User implements Character {
+input UserSortInput{
+    id:Direction
+}
+
+input UserWhereInput{
+    not:UserWhereInput
+    and:UserWhereInput
+    or:UserWhereInput
+}
+
+type Team  {
     id:ID!
     name:String!
-    home:Direction
-    birthday:DateTime
-}
-
-input LoginInput {
-    username: String!
-    password: String!
+    users:[User]!
 }
 
 type Query{
-    users(input:LoginInput!):[User]!
+    users(id:ID,limit:Int,offset:Int,distinct:[String],first:Int,last:Int,after:Cursor,before:Cursor,sort:UserSortInput,where:UserWhereInput):[User]!
 }

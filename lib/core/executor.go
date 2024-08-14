@@ -8,7 +8,6 @@ import (
 	"github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
 	"github.com/vektah/gqlparser/v2/gqlerror"
-	"gorm.io/gorm"
 )
 
 type (
@@ -29,23 +28,13 @@ type (
 )
 
 type Executor struct {
-	db       *gorm.DB
-	meta     *Metadata
 	intro    interface{}
 	schema   *ast.Schema
 	compiler *Compiler
 }
 
-func NewExecutor(m *Metadata, d *gorm.DB) (*Executor, error) {
-	input, err := m.MarshalSchema()
-	if err != nil {
-		return nil, err
-	}
-	s, err := gqlparser.LoadSchema(&ast.Source{Name: "build", Input: input})
-	if err != nil {
-		return nil, err
-	}
-	return &Executor{db: d, meta: m, schema: s, intro: intro.New(s), compiler: NewCompiler(m, s)}, nil
+func NewExecutor(c *Compiler, s *ast.Schema) (*Executor, error) {
+	return &Executor{intro: intro.New(s), schema: s, compiler: c}, nil
 }
 
 func (my *Executor) Execute(ctx context.Context, query string, vars json.RawMessage) (r gqlResult) {
