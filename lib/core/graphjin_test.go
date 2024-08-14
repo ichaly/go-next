@@ -41,11 +41,6 @@ func (my *_GraphJinSuite) TestGraphJin() {
 
 	r := gin.Default()
 	r.Match([]string{http.MethodGet, http.MethodPost}, "/graphql", func(ctx *gin.Context) {
-		file, _ := os.ReadFile("./assets/schema.gql")
-		s, _ := gqlparser.LoadSchema(&ast.Source{Name: "schema", Input: string(file)})
-		ctx.JSON(http.StatusOK, gin.H{"data": intro.New(s)})
-	})
-	r.Match([]string{http.MethodGet, http.MethodPost}, "/graphql0", func(ctx *gin.Context) {
 		var req struct {
 			Query     string                 `form:"query"`
 			Operation string                 `form:"operationName" json:"operationName"`
@@ -54,6 +49,11 @@ func (my *_GraphJinSuite) TestGraphJin() {
 		_ = ctx.ShouldBindBodyWith(&req, binding.JSON)
 		res, _ := gj.GraphQL(ctx, req.Query, nil, nil)
 		ctx.JSON(http.StatusOK, res)
+	})
+	r.Match([]string{http.MethodGet, http.MethodPost}, "/graphql0", func(ctx *gin.Context) {
+		file, _ := os.ReadFile("./assets/schema.gql")
+		s, _ := gqlparser.LoadSchema(&ast.Source{Name: "schema", Input: string(file)})
+		ctx.JSON(http.StatusOK, gin.H{"data": intro.New(s)})
 	})
 	r.Match([]string{http.MethodGet, http.MethodPost}, "/graphql1", func(ctx *gin.Context) {
 		iface := graphql.NewInterface(graphql.InterfaceConfig{Name: "Character", Fields: graphql.Fields{
