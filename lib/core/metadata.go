@@ -19,20 +19,22 @@ var pgsql string
 var build string
 
 type Table struct {
-	Name        string
-	Original    string
-	Description string
+	Name        string `mapstructure:"table_name"`
+	Original    string `mapstructure:"table_name"`
+	Description string `mapstructure:"table_description"`
 	Columns     map[string]*Column
 }
 
 type Column struct {
-	Type        string
-	Name        string
-	Original    string
-	Description string
-	IsPrimary   bool
-	IsForeign   bool
-	IsNullable  bool
+	Type           string `mapstructure:"data_type"`
+	Name           string `mapstructure:"column_name"`
+	Original       string `mapstructure:"column_name"`
+	IsPrimary      bool   `mapstructure:"is_primary"`
+	IsForeign      bool   `mapstructure:"is_foreign"`
+	IsNullable     bool   `mapstructure:"is_nullable"`
+	Description    string `mapstructure:"column_description"`
+	TableRelation  string `mapstructure:"table_relation"`
+	ColumnRelation string `mapstructure:"column_relation"`
 }
 
 type Metadata struct {
@@ -61,57 +63,57 @@ func NewMetadata(v *viper.Viper, d *gorm.DB) (*Metadata, error) {
 
 func (my *Metadata) load() error {
 	var list []*struct {
-		Name             string `gorm:"column:column_name;"`
-		Type             string `gorm:"column:data_type;"`
-		Table            string `gorm:"column:table_name;"`
-		IsPrimary        bool   `gorm:"column:is_primary;"`
-		IsForeign        bool   `gorm:"column:is_foreign;"`
-		IsNullable       bool   `gorm:"column:is_nullable;"`
-		Description      string `gorm:"column:column_description;"`
-		TableDescription string `gorm:"column:table_description;"`
+		DataType          string `gorm:"column:data_type;"`
+		IsPrimary         bool   `gorm:"column:is_primary;"`
+		IsForeign         bool   `gorm:"column:is_foreign;"`
+		IsNullable        bool   `gorm:"column:is_nullable;"`
+		TableName         string `gorm:"column:table_name;"`
+		ColumnName        string `gorm:"column:column_name;"`
+		TableRelation     string `gorm:"column:table_relation;"`
+		ColumnRelation    string `gorm:"column:column_relation;"`
+		TableDescription  string `gorm:"column:table_description;"`
+		ColumnDescription string `gorm:"column:column_description;"`
 	}
 	if err := my.db.Raw(pgsql).Scan(&list).Error; err != nil {
 		return err
 	}
 	for _, v := range list {
 		//判断是否包含黑名单关键字,执行忽略跳过
-		if _, ok := util.ContainsAny(v.Name, my.cfg.BlockList...); ok {
+		if _, ok := util.ContainsAny(v.ColumnName, my.cfg.BlockList...); ok {
 			continue
 		}
-		if _, ok := util.ContainsAny(v.Table, my.cfg.BlockList...); ok {
+		if _, ok := util.ContainsAny(v.TableName, my.cfg.BlockList...); ok {
 			continue
 		}
 
 		//解析列
-		var c Column
-		if err := mapstructure.Decode(v, &c); err != nil {
+		var c *Column
+		if err := mapstructure.Decode(v, c); err != nil {
 			return err
 		}
-		c.Original = c.Name
 
 		//解析表
-		name := v.Table
+		name := v.TableName
 		if val, yes := util.StartWithAny(name, my.cfg.Prefixes...); yes {
 			name = strings.Replace(name, val, "", 1)
 		}
 		if my.cfg.UseCamel {
 			name = strcase.ToCamel(name)
-			c.Type = my.parseType(&c)
+			c.Type = my.parseType(c)
 			c.Name = strcase.ToLowerCamel(c.Name)
 		}
 
 		//索引节点
 		node, ok := my.Nodes[name]
 		if !ok {
-			node = &Table{
-				Name:        name,
-				Original:    v.Table,
-				Description: v.TableDescription,
-				Columns:     make(map[string]*Column),
+			if err := mapstructure.Decode(v, node); err != nil {
+				return err
 			}
+			node.Name = name
+			node.Columns = make(map[string]*Column)
 			my.Nodes[name] = node
 		}
-		node.Columns[c.Name] = &c
+		node.Columns[c.Name] = c
 	}
 	return nil
 }

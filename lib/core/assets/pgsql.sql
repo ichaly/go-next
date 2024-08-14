@@ -5,8 +5,8 @@ SELECT t.table_name,
        CAST(c.is_nullable AS BOOLEAN) AS is_nullable,
        COALESCE(pk.is_primary, false) AS is_primary,
        COALESCE(fk.is_foreign, false) AS is_foreign,
-       fk.ref_table,
-       fk.ref_column,
+       fk.table_relation,
+       fk.column_relation,
        pgd.description                AS table_description,
        pd.description                 AS column_description
 FROM information_schema.tables t
@@ -24,8 +24,8 @@ FROM information_schema.tables t
     ) pk ON true
          LEFT JOIN LATERAL (
     SELECT true            AS is_foreign,
-           ccu.table_name  AS ref_table,
-           ccu.column_name AS ref_column
+           ccu.table_name  AS table_relation,
+           ccu.column_name AS column_relation
     FROM information_schema.table_constraints tc
              JOIN
          information_schema.key_column_usage kcu ON tc.constraint_name = kcu.constraint_name
