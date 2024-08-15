@@ -87,18 +87,6 @@ func (my *Metadata) load() error {
 			continue
 		}
 
-		//解析表
-		tableName, columnName := v.TableName, v.ColumnName
-		//移除前缀
-		if val, ok := util.StartWithAny(tableName, my.cfg.Prefixes...); ok {
-			tableName = strings.Replace(tableName, val, "", 1)
-		}
-		//表名转大驼峰列转小驼峰
-		if my.cfg.UseCamel {
-			tableName = strcase.ToCamel(tableName)
-			columnName = strcase.ToLowerCamel(columnName)
-		}
-
 		//解析列
 		var c Column
 		decoder, _ := mapstructure.NewDecoder(&mapstructure.DecoderConfig{
@@ -128,6 +116,26 @@ func (my *Metadata) load() error {
 			return err
 		}
 
+		//解析表
+		tableName, columnName := v.TableName, v.ColumnName
+		parentTable, parentColumn := v.TableRelation, v.ColumnRelation
+
+		//移除前缀
+		if val, ok := util.StartWithAny(tableName, my.cfg.Prefixes...); ok {
+			tableName = strings.Replace(tableName, val, "", 1)
+		}
+		if val, ok := util.StartWithAny(parentTable, my.cfg.Prefixes...); ok {
+			parentTable = strings.Replace(parentTable, val, "", 1)
+		}
+
+		//表名转大驼峰列转小驼峰
+		if my.cfg.UseCamel {
+			tableName = strcase.ToCamel(tableName)
+			parentTable = strcase.ToCamel(parentTable)
+			columnName = strcase.ToLowerCamel(columnName)
+			parentColumn = strcase.ToLowerCamel(parentColumn)
+		}
+
 		//索引节点
 		node, ok := my.Nodes[tableName]
 		if !ok {
@@ -138,7 +146,22 @@ func (my *Metadata) load() error {
 			}
 			my.Nodes[tableName] = node
 		}
+
+		parent, ok := my.Nodes[parentTable]
+		if !ok {
+			parent = Table{
+				Name:        v.TableName,
+				Description: v.TableDescription,
+				Columns:     make(map[string]Column),
+			}
+			my.Nodes[tableName] = parent
+		}
+		if c.IsForeign {
+
+		}
+
 		node.Columns[columnName] = c
+		parent.Columns[parentColumn] = c
 	}
 	return nil
 }
