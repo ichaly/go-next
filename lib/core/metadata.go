@@ -8,6 +8,7 @@ import (
 	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/viper"
 	"gorm.io/gorm"
+	"reflect"
 	"strings"
 	"text/template"
 )
@@ -18,17 +19,28 @@ var pgsql string
 //go:embed assets/build.tpl
 var build string
 
+type Record struct {
+	DataType          string `gorm:"column:data_type;"`
+	IsPrimary         bool   `gorm:"column:is_primary;"`
+	IsForeign         bool   `gorm:"column:is_foreign;"`
+	IsNullable        bool   `gorm:"column:is_nullable;"`
+	TableName         string `gorm:"column:table_name;"`
+	ColumnName        string `gorm:"column:column_name;"`
+	TableRelation     string `gorm:"column:table_relation;"`
+	ColumnRelation    string `gorm:"column:column_relation;"`
+	TableDescription  string `gorm:"column:table_description;"`
+	ColumnDescription string `gorm:"column:column_description;"`
+}
+
 type Table struct {
-	Name        string `mapstructure:"table_name"`
-	Original    string `mapstructure:"table_name"`
-	Description string `mapstructure:"table_description"`
-	Columns     map[string]*Column
+	Name        string
+	Description string
+	Columns     map[string]Column
 }
 
 type Column struct {
 	Type           string `mapstructure:"data_type"`
 	Name           string `mapstructure:"column_name"`
-	Original       string `mapstructure:"column_name"`
 	IsPrimary      bool   `mapstructure:"is_primary"`
 	IsForeign      bool   `mapstructure:"is_foreign"`
 	IsNullable     bool   `mapstructure:"is_nullable"`
@@ -41,7 +53,7 @@ type Metadata struct {
 	db    *gorm.DB
 	cfg   *internal.TableConfig
 	tpl   *template.Template
-	Nodes map[string]*Table
+	Nodes map[string]Table
 }
 
 func NewMetadata(v *viper.Viper, d *gorm.DB) (*Metadata, error) {
@@ -49,31 +61,20 @@ func NewMetadata(v *viper.Viper, d *gorm.DB) (*Metadata, error) {
 	if err := v.Sub("schema").Unmarshal(cfg); err != nil {
 		return nil, err
 	}
-	metadata := &Metadata{
-		Nodes: make(map[string]*Table), db: d, cfg: cfg,
+	my := &Metadata{
+		Nodes: make(map[string]Table), db: d, cfg: cfg,
 		tpl: template.Must(template.New("assets/build.tpl").Funcs(template.FuncMap{
 			"toLowerCamel": strcase.ToLowerCamel,
 		}).Parse(build)),
 	}
-	if err := metadata.load(); err != nil {
+	if err := my.load(); err != nil {
 		return nil, err
 	}
-	return metadata, nil
+	return my, nil
 }
 
 func (my *Metadata) load() error {
-	var list []*struct {
-		DataType          string `gorm:"column:data_type;"`
-		IsPrimary         bool   `gorm:"column:is_primary;"`
-		IsForeign         bool   `gorm:"column:is_foreign;"`
-		IsNullable        bool   `gorm:"column:is_nullable;"`
-		TableName         string `gorm:"column:table_name;"`
-		ColumnName        string `gorm:"column:column_name;"`
-		TableRelation     string `gorm:"column:table_relation;"`
-		ColumnRelation    string `gorm:"column:column_relation;"`
-		TableDescription  string `gorm:"column:table_description;"`
-		ColumnDescription string `gorm:"column:column_description;"`
-	}
+	var list []*Record
 	if err := my.db.Raw(pgsql).Scan(&list).Error; err != nil {
 		return err
 	}
@@ -86,46 +87,60 @@ func (my *Metadata) load() error {
 			continue
 		}
 
+		//解析表
+		tableName, columnName := v.TableName, v.ColumnName
+		//移除前缀
+		if val, ok := util.StartWithAny(tableName, my.cfg.Prefixes...); ok {
+			tableName = strings.Replace(tableName, val, "", 1)
+		}
+		//表名转大驼峰列转小驼峰
+		if my.cfg.UseCamel {
+			tableName = strcase.ToCamel(tableName)
+			columnName = strcase.ToLowerCamel(columnName)
+		}
+
 		//解析列
-		var c *Column
-		if err := mapstructure.Decode(v, c); err != nil {
+		var c Column
+		decoder, _ := mapstructure.NewDecoder(&mapstructure.DecoderConfig{
+			Result:           &c,
+			WeaklyTypedInput: true,
+			MatchName: func(mapKey, fieldName string) bool {
+				mapKey = strcase.ToSnake(mapKey)
+				return strings.EqualFold(mapKey, fieldName)
+			},
+			DecodeHook: func(f reflect.Type, t reflect.Type, data interface{}) (interface{}, error) {
+				if t != reflect.TypeOf(Column{}) {
+					return data, nil
+				}
+				if val, ok := data.(Record); !ok {
+					return data, nil
+				} else {
+					if val.IsPrimary {
+						val.DataType = "ID"
+					} else {
+						val.DataType = internal.DataTypes[val.DataType]
+					}
+					return val, nil
+				}
+			},
+		})
+		if err := decoder.Decode(v); err != nil {
 			return err
 		}
 
-		//解析表
-		name := v.TableName
-		if val, yes := util.StartWithAny(name, my.cfg.Prefixes...); yes {
-			name = strings.Replace(name, val, "", 1)
-		}
-		if my.cfg.UseCamel {
-			name = strcase.ToCamel(name)
-			c.Type = my.parseType(c)
-			c.Name = strcase.ToLowerCamel(c.Name)
-		}
-
 		//索引节点
-		node, ok := my.Nodes[name]
+		node, ok := my.Nodes[tableName]
 		if !ok {
-			if err := mapstructure.Decode(v, node); err != nil {
-				return err
+			node = Table{
+				Name:        v.TableName,
+				Description: v.TableDescription,
+				Columns:     make(map[string]Column),
 			}
-			node.Name = name
-			node.Columns = make(map[string]*Column)
-			my.Nodes[name] = node
+			my.Nodes[tableName] = node
 		}
-		node.Columns[c.Name] = c
+		node.Columns[columnName] = c
 	}
 	return nil
-}
-
-func (my *Metadata) parseType(c *Column) string {
-	if c.IsPrimary {
-		return "ID"
-	}
-	if val, ok := internal.DataTypes[c.Type]; ok {
-		return val
-	}
-	return "String"
 }
 
 func (my *Metadata) MarshalSchema() (string, error) {

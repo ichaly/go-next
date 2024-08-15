@@ -3,6 +3,7 @@ package core
 import (
 	"github.com/iancoleman/strcase"
 	"github.com/ichaly/go-next/lib/base"
+	"github.com/ichaly/go-next/lib/core/internal"
 	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/suite"
@@ -47,25 +48,23 @@ func (my *_MetadataSuite) TestDecoder() {
 			mapKey = strcase.ToSnake(mapKey)
 			return strings.EqualFold(mapKey, fieldName)
 		},
-		DecodeHook: func(f reflect.Value, t reflect.Value) (interface{}, error) {
-			data := f.Interface()
-			println(data)
+		DecodeHook: func(f reflect.Type, t reflect.Type, data interface{}) (interface{}, error) {
+			if t != reflect.TypeOf(Column{}) {
+				return data, nil
+			}
+			if val, ok := data.(Record); ok {
+				if val.IsPrimary {
+					val.DataType = "ID"
+				} else {
+					val.DataType = internal.DataTypes[val.DataType]
+				}
+				return val, nil
+			}
 			return data, nil
 		},
 	})
 	my.Require().NoError(err)
-	err = decoder.Decode(struct {
-		DataType          string `gorm:"column:data_type;"`
-		IsPrimary         bool   `gorm:"column:is_primary;"`
-		IsForeign         bool   `gorm:"column:is_foreign;"`
-		IsNullable        bool   `gorm:"column:is_nullable;"`
-		TableName         string `gorm:"column:table_name;"`
-		ColumnName        string `gorm:"column:column_name;"`
-		TableRelation     string `gorm:"column:table_relation;"`
-		ColumnRelation    string `gorm:"column:column_relation;"`
-		TableDescription  string `gorm:"column:table_description;"`
-		ColumnDescription string `gorm:"column:column_description;"`
-	}{
+	err = decoder.Decode(Record{
 		IsPrimary:         true,
 		IsForeign:         true,
 		IsNullable:        true,

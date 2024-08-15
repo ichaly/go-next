@@ -141,14 +141,14 @@ func (my *compilerContext) renderSelect(f *ast.Field) {
 				if i != 0 {
 					my.WriteString(",")
 				}
-				my.Quoted(table.Original)
+				my.Quoted(table.Name)
 				my.WriteString(".")
-				my.Quoted(column.Original)
+				my.Quoted(column.Name)
 				my.WriteString(` AS `)
 				my.Quoted(typ.Name)
 			}
 		}
 	}
 	my.WriteString(` FROM `)
-	my.Quoted(table.Original)
+	my.Quoted(table.Name)
 }
