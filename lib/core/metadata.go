@@ -179,9 +179,10 @@ func (my *Metadata) load() error {
 			//ManyToMany
 			rest := maputil.OmitByKeys(d, []string{k})
 			for _, s := range rest {
-				table := my.NamedTable(s.TableRelation)
-				column := my.NamedColumn(ft)
-				my.Nodes[table].Columns[column] = c.SetType(fmt.Sprintf("[%s]", ft))
+				_, c1, t2, _ := my.Named(s)
+				//table := my.NamedTable(s.TableRelation)
+				//column := my.NamedColumn(table)
+				my.Nodes[ft].Columns[c1] = c.SetType(fmt.Sprintf("[%s]", t2))
 			}
 		}
 	}
