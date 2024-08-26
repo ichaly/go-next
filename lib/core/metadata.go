@@ -2,9 +2,12 @@ package core
 
 import (
 	_ "embed"
+	"fmt"
+	"github.com/duke-git/lancet/v2/maputil"
 	"github.com/iancoleman/strcase"
 	"github.com/ichaly/go-next/lib/core/internal"
 	"github.com/ichaly/go-next/lib/util"
+	"github.com/jinzhu/inflection"
 	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/viper"
 	"gorm.io/gorm"
@@ -18,6 +21,10 @@ var pgsql string
 
 //go:embed assets/build.tpl
 var build string
+
+func init() {
+	inflection.AddUncountable("children")
+}
 
 type Record struct {
 	DataType          string `gorm:"column:data_type;"`
@@ -41,12 +48,18 @@ type Table struct {
 type Column struct {
 	Type           string `mapstructure:"data_type"`
 	Name           string `mapstructure:"column_name"`
+	Table          string `mapstructure:"table_name"`
 	IsPrimary      bool   `mapstructure:"is_primary"`
 	IsForeign      bool   `mapstructure:"is_foreign"`
 	IsNullable     bool   `mapstructure:"is_nullable"`
 	Description    string `mapstructure:"column_description"`
 	TableRelation  string `mapstructure:"table_relation"`
 	ColumnRelation string `mapstructure:"column_relation"`
+}
+
+func (my Column) SetType(dataType string) Column {
+	my.Type = dataType
+	return my
 }
 
 type Metadata struct {
@@ -73,11 +86,26 @@ func NewMetadata(v *viper.Viper, d *gorm.DB) (*Metadata, error) {
 	return my, nil
 }
 
+func (my *Metadata) named(table, column string) (string, string) {
+	//移除前缀
+	if val, ok := util.StartWithAny(table, my.cfg.Prefixes...); ok {
+		table = strings.Replace(table, val, "", 1)
+	}
+
+	//是否启用驼峰命名
+	if my.cfg.UseCamel {
+		table = strcase.ToCamel(table)
+		column = strcase.ToLowerCamel(column)
+	}
+	return table, column
+}
+
 func (my *Metadata) load() error {
 	var list []*Record
 	if err := my.db.Raw(pgsql).Scan(&list).Error; err != nil {
 		return err
 	}
+	data := make(map[string]map[string]Column)
 	for _, v := range list {
 		//判断是否包含黑名单关键字,执行忽略跳过
 		if _, ok := util.ContainsAny(v.ColumnName, my.cfg.BlockList...); ok {
@@ -100,7 +128,7 @@ func (my *Metadata) load() error {
 				if t != reflect.TypeOf(Column{}) {
 					return data, nil
 				}
-				if val, ok := data.(Record); !ok {
+				if val, ok := data.(*Record); !ok {
 					return data, nil
 				} else {
 					if val.IsPrimary {
@@ -117,51 +145,45 @@ func (my *Metadata) load() error {
 		}
 
 		//解析表
-		tableName, columnName := v.TableName, v.ColumnName
-		parentTable, parentColumn := v.TableRelation, v.ColumnRelation
-
-		//移除前缀
-		if val, ok := util.StartWithAny(tableName, my.cfg.Prefixes...); ok {
-			tableName = strings.Replace(tableName, val, "", 1)
-		}
-		if val, ok := util.StartWithAny(parentTable, my.cfg.Prefixes...); ok {
-			parentTable = strings.Replace(parentTable, val, "", 1)
-		}
-
-		//表名转大驼峰列转小驼峰
-		if my.cfg.UseCamel {
-			tableName = strcase.ToCamel(tableName)
-			parentTable = strcase.ToCamel(parentTable)
-			columnName = strcase.ToLowerCamel(columnName)
-			parentColumn = strcase.ToLowerCamel(parentColumn)
-		}
+		table, column := my.named(c.Table, c.Name)
 
 		//索引节点
-		node, ok := my.Nodes[tableName]
-		if !ok {
-			node = Table{
+		if node, ok := my.Nodes[table]; ok {
+			node.Columns[column] = c
+		} else {
+			my.Nodes[table] = Table{
 				Name:        v.TableName,
 				Description: v.TableDescription,
-				Columns:     make(map[string]Column),
+				Columns:     map[string]Column{column: c},
 			}
-			my.Nodes[tableName] = node
 		}
 
-		parent, ok := my.Nodes[parentTable]
-		if !ok {
-			parent = Table{
-				Name:        v.TableName,
-				Description: v.TableDescription,
-				Columns:     make(map[string]Column),
-			}
-			my.Nodes[tableName] = parent
-		}
+		//索引外键
 		if c.IsForeign {
-
+			if _, ok := data[table]; ok {
+				data[table][column] = c
+			} else {
+				data[table] = map[string]Column{column: c}
+			}
 		}
+	}
 
-		node.Columns[columnName] = c
-		parent.Columns[parentColumn] = c
+	//构建边信息
+	for _, d := range data {
+		for k, c := range d {
+			pt, pc, ft, fc := my.Named(c)
+			//OneToMany
+			my.Nodes[pt].Columns[pc] = c.SetType(ft)
+			//ManyToMany
+			my.Nodes[ft].Columns[fc] = c.SetType(fmt.Sprintf("[%s]", pt))
+			//ManyToMany
+			rest := maputil.OmitByKeys(d, []string{k})
+			for _, s := range rest {
+				table := my.NamedTable(s.TableRelation)
+				column := my.NamedColumn(ft)
+				my.Nodes[table].Columns[column] = c.SetType(fmt.Sprintf("[%s]", ft))
+			}
+		}
 	}
 	return nil
 }

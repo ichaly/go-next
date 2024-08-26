@@ -10,13 +10,13 @@ scalar DateTime
 """
 {{- end }}
 type {{ $key }} {
-{{- range $table.Columns }}
-    {{- if .Description }}
+{{- range $k,$c := $table.Columns }}
+    {{- if $c.Description }}
     """
-    {{ .Description }}
+    {{ $c.Description }}
     """
     {{- end }}
-    {{ .Name }}: {{ .Type }}
+    {{ $k }}: {{ $c.Type }}
 {{- end }}
 }
 {{ end }}
