@@ -86,6 +86,14 @@ func NewMetadata(v *viper.Viper, d *gorm.DB) (*Metadata, error) {
 	return my, nil
 }
 
+func (my *Metadata) MarshalSchema() (string, error) {
+	var w strings.Builder
+	if err := my.tpl.Execute(&w, my.Nodes); err != nil {
+		return "", err
+	}
+	return w.String(), nil
+}
+
 func (my *Metadata) named(table, column string) (string, string) {
 	//移除前缀
 	if val, ok := util.StartWithAny(table, my.cfg.Prefixes...); ok {
@@ -169,30 +177,38 @@ func (my *Metadata) load() error {
 	}
 
 	//构建边信息
-	for _, d := range data {
-		for k, c := range d {
-			pt, pc, ft, fc := my.Named(c)
+	for _, v := range data {
+		for f, c := range v {
+			pt, pc := my.Named(
+				c.Table, c.Name,
+				WithTrimSuffix(),
+				WithRecursion(c, true),
+			)
+			ft, fc := my.Named(
+				c.TableRelation,
+				c.ColumnRelation,
+				WithTrimSuffix(),
+				PrimaryColumn(pt),
+				JoinListSuffix(),
+				WithRecursion(c, false),
+			)
+			println(pt, pc, ft, fc)
 			//OneToMany
 			my.Nodes[pt].Columns[pc] = c.SetType(ft)
-			//ManyToMany
+			//ManyToOne
 			my.Nodes[ft].Columns[fc] = c.SetType(fmt.Sprintf("[%s]", pt))
 			//ManyToMany
-			rest := maputil.OmitByKeys(d, []string{k})
+			rest := maputil.OmitByKeys(v, []string{f})
 			for _, s := range rest {
-				_, c1, t2, _ := my.Named(s)
-				//table := my.NamedTable(s.TableRelation)
-				//column := my.NamedColumn(table)
-				my.Nodes[ft].Columns[c1] = c.SetType(fmt.Sprintf("[%s]", t2))
+				table, column := my.Named(
+					s.TableRelation,
+					s.Name,
+					WithTrimSuffix(),
+					JoinListSuffix(),
+				)
+				my.Nodes[ft].Columns[column] = c.SetType(fmt.Sprintf("[%s]", table))
 			}
 		}
 	}
 	return nil
-}
-
-func (my *Metadata) MarshalSchema() (string, error) {
-	var w strings.Builder
-	if err := my.tpl.Execute(&w, my.Nodes); err != nil {
-		return "", err
-	}
-	return w.String(), nil
 }
