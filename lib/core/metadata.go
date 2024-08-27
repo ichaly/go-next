@@ -26,40 +26,34 @@ func init() {
 	inflection.AddUncountable("children")
 }
 
-type Record struct {
-	DataType          string `gorm:"column:data_type;"`
-	IsPrimary         bool   `gorm:"column:is_primary;"`
-	IsForeign         bool   `gorm:"column:is_foreign;"`
-	IsNullable        bool   `gorm:"column:is_nullable;"`
-	TableName         string `gorm:"column:table_name;"`
-	ColumnName        string `gorm:"column:column_name;"`
-	TableRelation     string `gorm:"column:table_relation;"`
-	ColumnRelation    string `gorm:"column:column_relation;"`
-	TableDescription  string `gorm:"column:table_description;"`
-	ColumnDescription string `gorm:"column:column_description;"`
-}
-
 type Table struct {
 	Name        string
 	Description string
 	Columns     map[string]Column
+	Args        []Argument
 }
 
 type Column struct {
-	Type           string `mapstructure:"data_type"`
-	Name           string `mapstructure:"column_name"`
-	Table          string `mapstructure:"table_name"`
-	IsPrimary      bool   `mapstructure:"is_primary"`
-	IsForeign      bool   `mapstructure:"is_foreign"`
-	IsNullable     bool   `mapstructure:"is_nullable"`
-	Description    string `mapstructure:"column_description"`
-	TableRelation  string `mapstructure:"table_relation"`
-	ColumnRelation string `mapstructure:"column_relation"`
+	Type             string `gorm:"column:data_type;"`
+	Name             string `gorm:"column:column_name;"`
+	Table            string `gorm:"column:table_name;"`
+	IsPrimary        bool   `gorm:"column:is_primary;"`
+	IsForeign        bool   `gorm:"column:is_foreign;"`
+	IsNullable       bool   `gorm:"column:is_nullable;"`
+	Description      string `gorm:"column:column_description;"`
+	TableRelation    string `gorm:"column:table_relation;"`
+	ColumnRelation   string `gorm:"column:column_relation;"`
+	TableDescription string `gorm:"column:table_description;"`
 }
 
 func (my Column) SetType(dataType string) Column {
 	my.Type = dataType
 	return my
+}
+
+type Argument struct {
+	Name string `mapstructure:"name"`
+	Type string `mapstructure:"type"`
 }
 
 type Metadata struct {
@@ -95,40 +89,35 @@ func (my *Metadata) MarshalSchema() (string, error) {
 }
 
 func (my *Metadata) load() error {
-	var list []*Record
+	var list []*Column
 	if err := my.db.Raw(pgsql).Scan(&list).Error; err != nil {
 		return err
 	}
 	data := make(map[string]map[string]Column)
 	for _, v := range list {
 		//判断是否包含黑名单关键字,执行忽略跳过
-		if _, ok := util.ContainsAny(v.ColumnName, my.cfg.BlockList...); ok {
+		if _, ok := util.ContainsAny(v.Name, my.cfg.BlockList...); ok {
 			continue
 		}
-		if _, ok := util.ContainsAny(v.TableName, my.cfg.BlockList...); ok {
+		if _, ok := util.ContainsAny(v.Table, my.cfg.BlockList...); ok {
 			continue
 		}
 
 		//解析列
 		var c Column
 		decoder, _ := mapstructure.NewDecoder(&mapstructure.DecoderConfig{
-			Result:           &c,
-			WeaklyTypedInput: true,
-			MatchName: func(mapKey, fieldName string) bool {
-				mapKey = strcase.ToSnake(mapKey)
-				return strings.EqualFold(mapKey, fieldName)
-			},
+			Result: &c, WeaklyTypedInput: true,
 			DecodeHook: func(f reflect.Type, t reflect.Type, data interface{}) (interface{}, error) {
 				if t != reflect.TypeOf(Column{}) {
 					return data, nil
 				}
-				if val, ok := data.(*Record); !ok {
+				if val, ok := data.(*Column); !ok {
 					return data, nil
 				} else {
 					if val.IsPrimary {
-						val.DataType = "ID"
+						val.Type = "ID"
 					} else {
-						val.DataType = internal.DataTypes[val.DataType]
+						val.Type = internal.DataTypes[val.Type]
 					}
 					return val, nil
 				}
@@ -146,7 +135,7 @@ func (my *Metadata) load() error {
 			node.Columns[column] = c
 		} else {
 			my.Nodes[table] = Table{
-				Name:        v.TableName,
+				Name:        v.Table,
 				Description: v.TableDescription,
 				Columns:     map[string]Column{column: c},
 			}
@@ -162,7 +151,7 @@ func (my *Metadata) load() error {
 		}
 	}
 
-	//构建边信息
+	//构建关联信息
 	for _, v := range data {
 		for f, c := range v {
 			currentTable, currentColumn := my.Named(
@@ -200,5 +189,17 @@ func (my *Metadata) load() error {
 			}
 		}
 	}
+
+	query := Table{Columns: make(map[string]Column)}
+	for k := range my.Nodes {
+		name := strings.Join([]string{k, "list"}, "_")
+		if my.cfg.UseCamel {
+			name = strcase.ToLowerCamel(name)
+		}
+		query.Columns[name] = Column{
+			Name: name, Type: fmt.Sprintf("[%s]", k),
+		}
+	}
+	my.Nodes["Query"] = query
 	return nil
 }

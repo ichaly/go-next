@@ -1,15 +1,10 @@
 package core
 
 import (
-	"github.com/iancoleman/strcase"
 	"github.com/ichaly/go-next/lib/base"
-	"github.com/ichaly/go-next/lib/core/internal"
-	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/suite"
 	"gorm.io/gorm"
-	"reflect"
-	"strings"
 	"testing"
 )
 
@@ -37,44 +32,4 @@ func (my *_MetadataSuite) TestMetadata() {
 	str, err := metadata.MarshalSchema()
 	my.Require().NoError(err)
 	my.T().Log(str)
-}
-
-func (my *_MetadataSuite) TestDecoder() {
-	var c Column
-	decoder, err := mapstructure.NewDecoder(&mapstructure.DecoderConfig{
-		Result:           &c,
-		WeaklyTypedInput: true,
-		MatchName: func(mapKey, fieldName string) bool {
-			mapKey = strcase.ToSnake(mapKey)
-			return strings.EqualFold(mapKey, fieldName)
-		},
-		DecodeHook: func(f reflect.Type, t reflect.Type, data interface{}) (interface{}, error) {
-			if t != reflect.TypeOf(Column{}) {
-				return data, nil
-			}
-			if val, ok := data.(Record); ok {
-				if val.IsPrimary {
-					val.DataType = "ID"
-				} else {
-					val.DataType = internal.DataTypes[val.DataType]
-				}
-				return val, nil
-			}
-			return data, nil
-		},
-	})
-	my.Require().NoError(err)
-	err = decoder.Decode(Record{
-		IsPrimary:         true,
-		IsForeign:         true,
-		IsNullable:        true,
-		DataType:          "varchar",
-		TableName:         "users",
-		ColumnName:        "id",
-		TableRelation:     "users",
-		ColumnRelation:    "id",
-		TableDescription:  "用户表",
-		ColumnDescription: "用户id",
-	})
-	my.Require().NoError(err)
 }
