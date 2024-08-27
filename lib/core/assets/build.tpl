@@ -1,4 +1,8 @@
 """
+A cursor is an encoded string use for pagination
+"""
+scalar Cursor
+"""
 The `DateTime` scalar type represents a DateTime. The DateTime is serialized as an RFC 3339 quoted string
 """
 scalar DateTime
@@ -20,8 +24,3 @@ type {{ $key }} {
 {{- end }}
 }
 {{ end }}
-type Query {
-{{- range $key,$table := . }}
-    {{ toLowerCamel $key }}: {{ $key }}
-{{- end }}
-}

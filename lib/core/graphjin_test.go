@@ -5,7 +5,6 @@ import (
 	"github.com/dosco/graphjin/core/v3"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
-	"github.com/graphql-go/graphql"
 	"github.com/ichaly/go-next/lib/core/internal/intro"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/stretchr/testify/suite"
@@ -54,46 +53,6 @@ func (my *_GraphJinSuite) TestGraphJin() {
 		file, _ := os.ReadFile("./assets/schema.gql")
 		s, _ := gqlparser.LoadSchema(&ast.Source{Name: "schema", Input: string(file)})
 		ctx.JSON(http.StatusOK, gin.H{"data": intro.New(s)})
-	})
-	r.Match([]string{http.MethodGet, http.MethodPost}, "/graphql1", func(ctx *gin.Context) {
-		iface := graphql.NewInterface(graphql.InterfaceConfig{Name: "Character", Fields: graphql.Fields{
-			"username": &graphql.Field{
-				Type: &graphql.NonNull{OfType: graphql.String},
-			},
-		}})
-		input := graphql.NewInputObject(graphql.InputObjectConfig{Name: "LoginInput", Fields: graphql.InputObjectConfigFieldMap{
-			"username": &graphql.InputObjectFieldConfig{
-				Type: &graphql.NonNull{OfType: graphql.String},
-			},
-			"password": &graphql.InputObjectFieldConfig{
-				Type: &graphql.NonNull{OfType: graphql.String},
-			},
-		}})
-		object := graphql.NewObject(graphql.ObjectConfig{Name: "User", Fields: graphql.Fields{
-			"username": &graphql.Field{
-				Type: &graphql.NonNull{OfType: graphql.String},
-			},
-		}, Interfaces: []*graphql.Interface{
-			iface,
-		}})
-		config := graphql.SchemaConfig{Query: graphql.NewObject(graphql.ObjectConfig{Name: "Query", Fields: graphql.Fields{
-			"users": &graphql.Field{
-				Type: &graphql.NonNull{OfType: &graphql.List{OfType: &graphql.NonNull{OfType: object}}},
-				Args: graphql.FieldConfigArgument{
-					"input": &graphql.ArgumentConfig{
-						Type: &graphql.NonNull{OfType: input},
-					},
-				},
-			},
-		}})}
-		schema, _ := graphql.NewSchema(config)
-		params := graphql.Params{Schema: schema, RequestString: intro.Query}
-		result := graphql.Do(params)
-		ctx.JSON(http.StatusOK, result)
-	})
-	r.Match([]string{http.MethodGet, http.MethodPost}, "/graphql2", func(ctx *gin.Context) {
-		file, _ := os.ReadFile("./assets/intro.json")
-		_, _ = ctx.Writer.Write(file)
 	})
 	_ = r.Run(":8081")
 }
