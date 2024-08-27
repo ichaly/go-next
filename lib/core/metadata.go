@@ -94,20 +94,6 @@ func (my *Metadata) MarshalSchema() (string, error) {
 	return w.String(), nil
 }
 
-func (my *Metadata) named(table, column string) (string, string) {
-	//移除前缀
-	if val, ok := util.StartWithAny(table, my.cfg.Prefixes...); ok {
-		table = strings.Replace(table, val, "", 1)
-	}
-
-	//是否启用驼峰命名
-	if my.cfg.UseCamel {
-		table = strcase.ToCamel(table)
-		column = strcase.ToLowerCamel(column)
-	}
-	return table, column
-}
-
 func (my *Metadata) load() error {
 	var list []*Record
 	if err := my.db.Raw(pgsql).Scan(&list).Error; err != nil {
@@ -153,7 +139,7 @@ func (my *Metadata) load() error {
 		}
 
 		//解析表
-		table, column := my.named(c.Table, c.Name)
+		table, column := my.Named(c.Table, c.Name)
 
 		//索引节点
 		if node, ok := my.Nodes[table]; ok {
@@ -192,7 +178,6 @@ func (my *Metadata) load() error {
 				JoinListSuffix(),
 				WithRecursion(c, false),
 			)
-			println(pt, pc, ft, fc)
 			//OneToMany
 			my.Nodes[pt].Columns[pc] = c.SetType(ft)
 			//ManyToOne
@@ -206,7 +191,7 @@ func (my *Metadata) load() error {
 					WithTrimSuffix(),
 					JoinListSuffix(),
 				)
-				my.Nodes[ft].Columns[column] = c.SetType(fmt.Sprintf("[%s]", table))
+				my.Nodes[ft].Columns[column] = s.SetType(fmt.Sprintf("[%s]", table))
 			}
 		}
 	}
