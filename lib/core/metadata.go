@@ -165,25 +165,30 @@ func (my *Metadata) load() error {
 	//构建边信息
 	for _, v := range data {
 		for f, c := range v {
-			pt, pc := my.Named(
+			currentTable, currentColumn := my.Named(
 				c.Table, c.Name,
 				WithTrimSuffix(),
 				WithRecursion(c, true),
 			)
-			ft, fc := my.Named(
+			foreignTable, foreignColumn := my.Named(
 				c.TableRelation,
 				c.ColumnRelation,
 				WithTrimSuffix(),
-				PrimaryColumn(pt),
+				PrimaryColumn(currentTable),
 				JoinListSuffix(),
 				WithRecursion(c, false),
 			)
 			//OneToMany
-			my.Nodes[pt].Columns[pc] = c.SetType(ft)
+			my.Nodes[currentTable].Columns[currentColumn] = c.SetType(foreignTable)
 			//ManyToOne
-			my.Nodes[ft].Columns[fc] = c.SetType(fmt.Sprintf("[%s]", pt))
+			my.Nodes[foreignTable].Columns[foreignColumn] = c.SetType(fmt.Sprintf("[%s]", currentTable))
+			if c.Table == c.TableRelation {
+				continue
+			}
 			//ManyToMany
-			rest := maputil.OmitByKeys(v, []string{f})
+			rest := maputil.OmitBy(v, func(key string, value Column) bool {
+				return f == key || value.TableRelation == c.Table
+			})
 			for _, s := range rest {
 				table, column := my.Named(
 					s.TableRelation,
@@ -191,7 +196,7 @@ func (my *Metadata) load() error {
 					WithTrimSuffix(),
 					JoinListSuffix(),
 				)
-				my.Nodes[ft].Columns[column] = s.SetType(fmt.Sprintf("[%s]", table))
+				my.Nodes[foreignTable].Columns[column] = s.SetType(fmt.Sprintf("[%s]", table))
 			}
 		}
 	}
