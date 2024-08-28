@@ -22,7 +22,7 @@ func (my *_ExecutorSuite) SetupSuite() {
 	var err error
 
 	s := &ast.Source{Name: "metadata"}
-	s.Input, err = my.m.MarshalSchema()
+	s.Input, err = my.m.Marshal()
 	my.Require().NoError(err)
 
 	my.s, err = gqlparser.LoadSchema(s)

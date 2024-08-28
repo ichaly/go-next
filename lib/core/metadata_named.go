@@ -29,13 +29,22 @@ func (my *Metadata) Named(table, column string, ops ...ColumnOption) (string, st
 
 type ColumnOption func(table, column string) string
 
+// WithTrimSuffix 移除`_id`后缀
 func WithTrimSuffix() ColumnOption {
 	return func(t, s string) string {
 		return strings.TrimSuffix(s, "_id")
 	}
 }
 
-func PrimaryColumn(table string) ColumnOption {
+// JoinListSuffix 追加`_list`后缀
+func JoinListSuffix() ColumnOption {
+	return func(t, s string) string {
+		return strings.Join([]string{s, "list"}, "_")
+	}
+}
+
+// SwapPrimaryKey 替换id列的名称
+func SwapPrimaryKey(table string) ColumnOption {
 	return func(t, s string) string {
 		if s == "id" {
 			s = table
@@ -44,13 +53,8 @@ func PrimaryColumn(table string) ColumnOption {
 	}
 }
 
-func JoinListSuffix() ColumnOption {
-	return func(t, s string) string {
-		return strings.Join([]string{s, "list"}, "_")
-	}
-}
-
-func WithRecursion(c Column, b bool) ColumnOption {
+// NamedRecursion 重命名递归关联列名
+func NamedRecursion(c Column, b bool) ColumnOption {
 	return func(t, s string) string {
 		if c.TableRelation == c.Table {
 			s = condition.TernaryOperator(b, "parent", "children")

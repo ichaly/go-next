@@ -57,10 +57,12 @@ type Argument struct {
 }
 
 type Metadata struct {
-	db    *gorm.DB
-	cfg   *internal.TableConfig
-	tpl   *template.Template
-	Nodes map[string]Table
+	db     *gorm.DB
+	cfg    *internal.TableConfig
+	tpl    *template.Template
+	Nodes  map[string]Table
+	Edges  map[string]Table
+	Tables map[string]Table
 }
 
 func NewMetadata(v *viper.Viper, d *gorm.DB) (*Metadata, error) {
@@ -80,7 +82,7 @@ func NewMetadata(v *viper.Viper, d *gorm.DB) (*Metadata, error) {
 	return my, nil
 }
 
-func (my *Metadata) MarshalSchema() (string, error) {
+func (my *Metadata) Marshal() (string, error) {
 	var w strings.Builder
 	if err := my.tpl.Execute(&w, my.Nodes); err != nil {
 		return "", err
@@ -157,15 +159,15 @@ func (my *Metadata) load() error {
 			currentTable, currentColumn := my.Named(
 				c.Table, c.Name,
 				WithTrimSuffix(),
-				WithRecursion(c, true),
+				NamedRecursion(c, true),
 			)
 			foreignTable, foreignColumn := my.Named(
 				c.TableRelation,
 				c.ColumnRelation,
 				WithTrimSuffix(),
-				PrimaryColumn(currentTable),
+				SwapPrimaryKey(currentTable),
 				JoinListSuffix(),
-				WithRecursion(c, false),
+				NamedRecursion(c, false),
 			)
 			//OneToMany
 			my.Nodes[currentTable].Columns[currentColumn] = c.SetType(foreignTable)
