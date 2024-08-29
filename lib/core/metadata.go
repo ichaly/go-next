@@ -23,6 +23,8 @@ func init() {
 
 type Map[V any] map[string]V
 
+type Option func(my *Metadata) error
+
 type Metadata struct {
 	db  *gorm.DB
 	tpl *template.Template
@@ -47,10 +49,14 @@ func NewMetadata(v *viper.Viper, d *gorm.DB) (*Metadata, error) {
 		}).Parse(build)),
 	}
 
-	if err := my.load(); err != nil {
-		return nil, err
+	for _, o := range []Option{
+		tableOption,
+		buildOption,
+	} {
+		if err := o(my); err != nil {
+			return nil, err
+		}
 	}
-	my.build()
 
 	return my, nil
 }

@@ -5,7 +5,7 @@ import (
 	"github.com/duke-git/lancet/v2/maputil"
 )
 
-func (my *Metadata) build() {
+var buildOption = func(my *Metadata) error {
 	//构建关联信息
 	for _, v := range my.keys {
 		for f, c := range v {
@@ -59,4 +59,5 @@ func (my *Metadata) build() {
 	//sys_edge->user_id->sys_user->id
 	//sys_edge->team_id->sys_team->id
 	//sys_team->area_id->sys_area->id
+	return nil
 }
