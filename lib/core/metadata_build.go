@@ -6,6 +6,16 @@ import (
 )
 
 var buildOption = func(my *Metadata) error {
+	//构建节点信息
+	for t, c := range my.tree {
+		for k, f := range c.Fields {
+			maputil.GetOrSet(my.Nodes, t, Class{
+				Name:        f.Name,
+				Description: f.Description,
+				Fields:      make(Map[Field]),
+			}).Fields[k] = f
+		}
+	}
 	//构建关联信息
 	for _, v := range my.keys {
 		for f, c := range v {

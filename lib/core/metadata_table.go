@@ -5,7 +5,6 @@ import (
 	"github.com/duke-git/lancet/v2/maputil"
 	"github.com/ichaly/go-next/lib/core/internal"
 	"github.com/ichaly/go-next/lib/util"
-	"github.com/mitchellh/mapstructure"
 )
 
 type Input struct {
@@ -72,10 +71,6 @@ var tableOption = func(my *Metadata) error {
 		if c.IsForeign {
 			maputil.GetOrSet(my.keys, table, make(map[string]Field))[column] = c
 		}
-	}
-
-	if err := mapstructure.Decode(my.tree, &my.Nodes); err != nil {
-		return err
 	}
 
 	return nil
