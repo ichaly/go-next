@@ -47,6 +47,7 @@ func (my *_GraphJinSuite) TestGraphJin() {
 		}
 		_ = ctx.ShouldBindBodyWith(&req, binding.JSON)
 		res, _ := gj.GraphQL(ctx, req.Query, nil, nil)
+		println(res.SQL())
 		ctx.JSON(http.StatusOK, res)
 	})
 	r.Match([]string{http.MethodGet, http.MethodPost}, "/graphql0", func(ctx *gin.Context) {

@@ -1,49 +1,49 @@
-create table if not exists sys_user
+create table if not exists "user"
 (
     id bigserial
-        constraint sys_user_pk
+        constraint user_pk
             primary key
 );
 
-create table if not exists sys_area
+create table if not exists "area"
 (
     id bigserial
-        constraint sys_area_pk
+        constraint area_pk
             primary key
 );
 
-create table if not exists sys_item
+create table if not exists "item"
 (
     id      bigserial
-        constraint sys_item_pk
+        constraint item_pk
             primary key,
     user_id bigint
-        constraint sys_item_sys_user_id_fk
-            references sys_user
+        constraint item_user_id_fk
+            references "user"
 );
 
-create table if not exists sys_team
+create table if not exists "team"
 (
     id      bigserial
-        constraint sys_team_pk
+        constraint team_pk
             primary key,
     pid     bigint
-        constraint sys_team_sys_team_id_fk
-            references sys_team,
+        constraint team_team_id_fk
+            references "team",
     area_id bigint
-        constraint sys_team_sys_area_id_fk
-            references sys_area
+        constraint team_area_id_fk
+            references "area"
 );
 
-create table if not exists sys_edge
+create table if not exists "edge"
 (
     user_id bigint not null
-        constraint sys_edge_sys_user_id_fk
-            references sys_user,
+        constraint edge_user_id_fk
+            references "user",
     team_id bigint not null
-        constraint sys_edge_sys_team_id_fk
-            references sys_team,
-    constraint sys_edge_pk
+        constraint edge_team_id_fk
+            references "team",
+    constraint edge_pk
         primary key (user_id, team_id)
 );
 
