@@ -54,9 +54,9 @@ func SwapPrimaryKey(table string) ColumnOption {
 }
 
 // NamedRecursion 重命名递归关联列名
-func NamedRecursion(c Column, b bool) ColumnOption {
+func NamedRecursion(c Field, b bool) ColumnOption {
 	return func(t, s string) string {
-		if c.TableRelation == c.Table {
+		if c.TableRelation == c.TableName {
 			s = condition.TernaryOperator(b, "parent", "children")
 		}
 		return s

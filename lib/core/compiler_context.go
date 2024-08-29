@@ -136,7 +136,7 @@ func (my *compilerContext) renderSelect(f *ast.Field) {
 	for i, s := range f.SelectionSet {
 		switch typ := s.(type) {
 		case *ast.Field:
-			column, ok := table.Columns[typ.Name]
+			column, ok := table.Fields[typ.Name]
 			if ok {
 				if i != 0 {
 					my.WriteString(",")

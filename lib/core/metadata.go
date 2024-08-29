@@ -21,23 +21,18 @@ func init() {
 	inflection.AddUncountable("children")
 }
 
-type Directory[V any] map[string]V
-
-type Argument struct {
-	Name string `mapstructure:"name"`
-	Type string `mapstructure:"type"`
-}
+type Map[V any] map[string]V
 
 type Metadata struct {
 	db  *gorm.DB
 	tpl *template.Template
 	cfg *internal.TableConfig
 
-	list []Column
-	tree Directory[Table]
-	keys Directory[Directory[Column]]
+	list []Field
+	tree Map[Class]
+	keys Map[Map[Field]]
 
-	Nodes Directory[Object]
+	Nodes Map[Class]
 }
 
 func NewMetadata(v *viper.Viper, d *gorm.DB) (*Metadata, error) {
@@ -46,7 +41,7 @@ func NewMetadata(v *viper.Viper, d *gorm.DB) (*Metadata, error) {
 		return nil, err
 	}
 	my := &Metadata{
-		Nodes: make(Directory[Object]), db: d, cfg: cfg,
+		Nodes: make(Map[Class]), db: d, cfg: cfg,
 		tpl: template.Must(template.New("assets/build.tpl").Funcs(template.FuncMap{
 			"toLowerCamel": strcase.ToLowerCamel,
 		}).Parse(build)),

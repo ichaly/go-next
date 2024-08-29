@@ -7,20 +7,20 @@ The `DateTime` scalar type represents a DateTime. The DateTime is serialized as 
 """
 scalar DateTime
 
-{{- range $key,$table := . }}
-{{- if $table.Description }}
+{{- range $key,$obj := . }}
+{{- if $obj.Description }}
 """
-{{ $table.Description }}
+{{ $obj.Description }}
 """
 {{- end }}
 type {{ $key }} {
-{{- range $k,$c := $table.Columns }}
-    {{- if $c.Description }}
+{{- range $k,$f := $obj.Fields }}
+    {{- if $f.Description }}
     """
-    {{ $c.Description }}
+    {{ $f.Description }}
     """
     {{- end }}
-    {{ $k }}: {{ $c.Type }}
+    {{ $k }}: {{ $f.Type }}
 {{- end }}
 }
 {{ end }}
