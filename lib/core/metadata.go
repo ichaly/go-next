@@ -21,8 +21,6 @@ func init() {
 	inflection.AddUncountable("children")
 }
 
-type Map[V any] map[string]V
-
 type Option func(my *Metadata) error
 
 type Metadata struct {
@@ -31,10 +29,10 @@ type Metadata struct {
 	cfg *internal.TableConfig
 
 	list []Field
-	tree Map[Class]
-	keys Map[Map[Field]]
+	tree internal.TeeMap[string, string, Class]
+	keys internal.Dictionary[internal.Dictionary[Field]]
 
-	Nodes Map[Class]
+	Nodes internal.Dictionary[Class]
 }
 
 func NewMetadata(v *viper.Viper, d *gorm.DB) (*Metadata, error) {
@@ -43,7 +41,7 @@ func NewMetadata(v *viper.Viper, d *gorm.DB) (*Metadata, error) {
 		return nil, err
 	}
 	my := &Metadata{
-		Nodes: make(Map[Class]), db: d, cfg: cfg,
+		Nodes: make(internal.Dictionary[Class]), db: d, cfg: cfg,
 		tpl: template.Must(template.New("assets/build.tpl").Funcs(template.FuncMap{
 			"toLowerCamel": strcase.ToLowerCamel,
 		}).Parse(build)),
