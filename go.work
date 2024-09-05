@@ -1,8 +1,9 @@
-go 1.21.1
+go 1.22.5
 
 use (
 	./api
 	./cmd
 	./lib
 	./pkg
+	./tmp
 )
