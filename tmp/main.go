@@ -103,12 +103,15 @@ func main() {
 	blue := color.RGBA{0, 0, 255, 0}
 
 	for {
-		if ok := video.Read(&img); !ok {
+		if ok := video.Read(&img); !ok || img.Empty() {
+			fmt.Println("无法读取图像帧")
 			break
 		}
-		if img.Empty() {
-			continue
-		}
+
+		//dist := face.SquaredEuclideanDistance(f.Descriptor, descriptor)
+		//fmt.Println("欧拉距离 = ", dist)
+
+		//gocv.CvtColor(img, &img, gocv.ColorBGRToGray)
 
 		//detect faces
 		rects := classifier.DetectMultiScale(img)
@@ -117,7 +120,14 @@ func main() {
 		// draw a rectangle around each face on the original image
 		for _, r := range rects {
 			gocv.Rectangle(&img, r, blue, 1)
-			//face := img.Region(r)
+			// 在图片上画人脸框
+			//pt := image.Pt(r.Rectangle.Min.X, r.Rectangle.Min.Y-20)
+			//gocv.PutText(&background, "jay", pt, gocv.FontHersheyPlain, 2, c, 2)
+
+			//// 计算特征值之间的欧拉距离
+			//dist := face.SquaredEuclideanDistance(f.Descriptor, descriptor)
+			//fmt.Println("欧拉距离 = ", dist)
+
 			buff, err := gocv.IMEncode(".jpg", img.Region(r))
 			if err != nil {
 				fmt.Println("encoding to jpg err:%v", err)
@@ -128,7 +138,11 @@ func main() {
 
 		// show the image in the window, and wait 1 millisecond
 		window.IMShow(img)
-		window.WaitKey(1)
+
+		// 等待用户按下ESC键退出
+		if window.WaitKey(1) == 27 {
+			return
+		}
 	}
 }
 
@@ -142,7 +156,7 @@ func RecognizePeopleFromMemory(rec *face.Recognizer, img []byte) {
 		log.Println("图片上不是一张脸")
 		return
 	}
-	peopleID := rec.Classify(people.Descriptor)
+	peopleID := rec.ClassifyThreshold(people.Descriptor, 0.2)
 	if peopleID < 0 {
 		log.Println("无法区分")
 		return
