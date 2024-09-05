@@ -6,6 +6,7 @@ import (
 	"gocv.io/x/gocv"
 	"image/color"
 	"log"
+	"time"
 )
 
 //export PKG_CONFIG_PATH="/opt/homebrew/Cellar/dlib/19.24.6/lib/pkgconfig:$PKG_CONFIG_PATH"
@@ -40,7 +41,16 @@ var labels = []string{
 	"林俊杰",
 }
 
+func TrackTime() func() {
+	pre := time.Now()
+	return func() {
+		elapsed := time.Since(pre)
+		fmt.Println("elapsed:", elapsed)
+	}
+}
+
 func main() {
+	defer TrackTime()()
 	// initializes the identifier
 	rec, err := face.NewRecognizer(modelDir)
 	if err != nil {
