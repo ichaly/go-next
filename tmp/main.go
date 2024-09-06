@@ -140,7 +140,7 @@ func main() {
 
 			buff, err := gocv.IMEncode(".jpg", img.Region(r))
 			if err != nil {
-				fmt.Println("encoding to jpg err:%v", err)
+				fmt.Printf("encoding to jpg err:%v", err)
 				break
 			}
 			RecognizePeopleFromMemory(rec, buff.GetBytes())
@@ -159,7 +159,7 @@ func main() {
 func RecognizePeopleFromMemory(rec *face.Recognizer, img []byte) {
 	people, err := rec.RecognizeSingle(img)
 	if err != nil {
-		log.Println("无法识别: %v", err)
+		log.Printf("无法识别: %v", err)
 		return
 	}
 	if people == nil {
