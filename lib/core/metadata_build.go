@@ -17,10 +17,10 @@ var buildOption = func(my *Metadata) error {
 		}
 	}
 	//构建关联信息
-	for _, v := range my.keys {
+	for _, v := range my.edge {
 		for f, c := range v {
 			currentTable, currentColumn := my.Named(
-				c.TableName, c.Name,
+				c.Table, c.Name,
 				WithTrimSuffix(),
 				NamedRecursion(c, true),
 			)
@@ -36,12 +36,12 @@ var buildOption = func(my *Metadata) error {
 			my.Nodes[currentTable].Fields[currentColumn] = c.SetType(foreignTable)
 			//ManyToOne
 			my.Nodes[foreignTable].Fields[foreignColumn] = c.SetType(fmt.Sprintf("[%s]", currentTable))
-			if c.TableName == c.TableRelation {
+			if c.Table == c.TableRelation {
 				continue
 			}
 			//ManyToMany
 			rest := maputil.OmitBy(v, func(key string, value Field) bool {
-				return f == key || value.TableRelation == c.TableName
+				return f == key || value.TableRelation == c.Table
 			})
 			for _, s := range rest {
 				table, column := my.Named(

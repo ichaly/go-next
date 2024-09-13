@@ -29,10 +29,10 @@ type Metadata struct {
 	cfg *internal.TableConfig
 
 	list []Field
-	tree internal.TeeMap[string, string, Class]
-	keys internal.Dictionary[internal.Dictionary[Field]]
+	tree internal.AnyMap[Class]
+	edge internal.AnyMap[internal.AnyMap[Field]]
 
-	Nodes internal.Dictionary[Class]
+	Nodes internal.AnyMap[Class]
 }
 
 func NewMetadata(v *viper.Viper, d *gorm.DB) (*Metadata, error) {
@@ -41,7 +41,7 @@ func NewMetadata(v *viper.Viper, d *gorm.DB) (*Metadata, error) {
 		return nil, err
 	}
 	my := &Metadata{
-		Nodes: make(internal.Dictionary[Class]), db: d, cfg: cfg,
+		Nodes: make(internal.AnyMap[Class]), db: d, cfg: cfg,
 		tpl: template.Must(template.New("assets/build.tpl").Funcs(template.FuncMap{
 			"toLowerCamel": strcase.ToLowerCamel,
 		}).Parse(build)),

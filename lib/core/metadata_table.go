@@ -15,13 +15,13 @@ type Input struct {
 type Class struct {
 	Name        string
 	Description string
-	Fields      Map[Field]
+	Fields      map[string]Field
 }
 
 type Field struct {
 	Type             string `gorm:"column:data_type;"`
 	Name             string `gorm:"column:column_name;"`
-	TableName        string `gorm:"column:table_name;"`
+	Table            string `gorm:"column:table_name;"`
 	IsPrimary        bool   `gorm:"column:is_primary;"`
 	IsForeign        bool   `gorm:"column:is_foreign;"`
 	IsNullable       bool   `gorm:"column:is_nullable;"`
@@ -43,14 +43,14 @@ var tableOption = func(my *Metadata) error {
 		return err
 	}
 
-	my.tree, my.keys = make(Map[Class]), make(Map[Map[Field]])
+	my.tree, my.edge = make(internal.AnyMap[Class]), make(internal.AnyMap[internal.AnyMap[Field]])
 
 	for _, c := range my.list {
 		//判断是否包含黑名单关键字,执行忽略跳过
 		if _, ok := util.ContainsAny(c.Name, my.cfg.BlockList...); ok {
 			continue
 		}
-		if _, ok := util.ContainsAny(c.TableName, my.cfg.BlockList...); ok {
+		if _, ok := util.ContainsAny(c.Table, my.cfg.BlockList...); ok {
 			continue
 		}
 
@@ -58,18 +58,18 @@ var tableOption = func(my *Metadata) error {
 		c.Type = condition.TernaryOperator(c.IsPrimary, "ID", internal.DataTypes[c.Type])
 
 		//规范命名
-		table, column := my.Named(c.TableName, c.Name)
+		table, column := my.Named(c.Table, c.Name)
 
 		//索引节点
 		maputil.GetOrSet(my.tree, table, Class{
-			Name:        c.TableName,
+			Name:        c.Table,
 			Description: c.TableDescription,
-			Fields:      make(Map[Field]),
+			Fields:      make(internal.AnyMap[Field]),
 		}).Fields[column] = c
 
 		//索引外键
 		if c.IsForeign {
-			maputil.GetOrSet(my.keys, table, make(map[string]Field))[column] = c
+			maputil.GetOrSet(my.edge, table, make(map[string]Field))[column] = c
 		}
 	}
 
