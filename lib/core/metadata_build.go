@@ -86,11 +86,15 @@ var queryOption = func(my *Metadata) error {
 					Type: ast.NamedType("ID", nil),
 				},
 				{
+					Name: "distinct",
+					Type: ast.ListType(ast.NamedType("String", nil), nil),
+				},
+				{
 					Name: "limit",
 					Type: ast.NamedType("Int", nil),
 				},
 				{
-					Name: "size",
+					Name: "offset",
 					Type: ast.NamedType("Int", nil),
 				},
 				{
@@ -110,17 +114,13 @@ var queryOption = func(my *Metadata) error {
 					Type: ast.NamedType("Cursor", nil),
 				},
 				{
-					Name: "distinctOn",
-					Type: ast.ListType(ast.NamedType("String", nil), nil),
-				},
-				{
 					Name: "sort",
 					Type: ast.NamedType(strings.Join([]string{k, SUFFIX_SORT_INPUT}, ""), nil),
 				},
-				//{
-				//	Name: "where",
-				//	Type: ast.NamedType("WhereInput", nil),
-				//},
+				{
+					Name: "where",
+					Type: ast.NamedType(strings.Join([]string{k, SUFFIX_WHERE_INPUT}, ""), nil),
+				},
 			},
 			Type: ast.ListType(ast.NamedType(v.Name, nil), nil),
 		})

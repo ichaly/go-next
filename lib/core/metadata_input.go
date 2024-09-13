@@ -7,6 +7,9 @@ import (
 
 var inputOption = func(my *Metadata) error {
 	for k, v := range my.Nodes {
+		if v.Kind != ast.InputObject {
+			continue
+		}
 		name := strings.Join([]string{k, SUFFIX_SORT_INPUT}, "")
 		sort := &ast.Definition{
 			Name: name,

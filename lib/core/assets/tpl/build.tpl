@@ -23,8 +23,7 @@ enum SortDirection {
   DESC_NULLS_LAST
 }
 
-
-{{- range $key,$obj := . }}
+{{ range $key,$obj := . }}
 {{- if $obj.Description }}
 """
 {{ $obj.Description }}
