@@ -14,13 +14,13 @@ scalar DateTime
 """
 {{- end }}
 type {{ $key }} {
-{{- range $k,$f := $obj.Fields }}
+{{- range $f := $obj.Fields }}
     {{- if $f.Description }}
     """
     {{ $f.Description }}
     """
     {{- end }}
-    {{ $k }}: {{ $f.Type }}
+    {{ $f.Name }}: {{ $f.Type }}
 {{- end }}
 }
 {{ end }}

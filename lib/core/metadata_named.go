@@ -7,44 +7,44 @@ import (
 	"strings"
 )
 
-func (my *Metadata) Named(table, column string, ops ...ColumnOption) (string, string) {
+func (my *Metadata) Named(class, field string, ops ...NamedOption) (string, string) {
 	//移除表前缀
-	if val, ok := util.StartWithAny(table, my.cfg.Prefixes...); ok {
-		table = strings.TrimPrefix(table, val)
+	if val, ok := util.StartWithAny(class, my.cfg.Prefixes...); ok {
+		class = strings.TrimPrefix(class, val)
 	}
 
 	//应用配置选项
 	for _, o := range ops {
-		column = o(table, column)
+		field = o(class, field)
 	}
 
 	//是否驼峰命名
 	if my.cfg.UseCamel {
-		table = strcase.ToCamel(table)
-		column = strcase.ToLowerCamel(column)
+		class = strcase.ToCamel(class)
+		field = strcase.ToLowerCamel(field)
 	}
 
-	return table, column
+	return class, field
 }
 
-type ColumnOption func(table, column string) string
+type NamedOption func(table, column string) string
 
 // WithTrimSuffix 移除`_id`后缀
-func WithTrimSuffix() ColumnOption {
+func WithTrimSuffix() NamedOption {
 	return func(t, s string) string {
 		return strings.TrimSuffix(s, "_id")
 	}
 }
 
 // JoinListSuffix 追加`_list`后缀
-func JoinListSuffix() ColumnOption {
+func JoinListSuffix() NamedOption {
 	return func(t, s string) string {
 		return strings.Join([]string{s, "list"}, "_")
 	}
 }
 
 // SwapPrimaryKey 替换id列的名称
-func SwapPrimaryKey(table string) ColumnOption {
+func SwapPrimaryKey(table string) NamedOption {
 	return func(t, s string) string {
 		if s == "id" {
 			s = table
@@ -54,7 +54,7 @@ func SwapPrimaryKey(table string) ColumnOption {
 }
 
 // NamedRecursion 重命名递归关联列名
-func NamedRecursion(c Field, b bool) ColumnOption {
+func NamedRecursion(c Field, b bool) NamedOption {
 	return func(t, s string) string {
 		if c.TableRelation == c.Table {
 			s = condition.TernaryOperator(b, "parent", "children")

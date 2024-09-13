@@ -136,17 +136,18 @@ func (my *compilerContext) renderSelect(f *ast.Field) {
 	for i, s := range f.SelectionSet {
 		switch typ := s.(type) {
 		case *ast.Field:
-			column, ok := table.Fields[typ.Name]
-			if ok {
-				if i != 0 {
-					my.WriteString(",")
-				}
-				my.Quoted(table.Name)
-				my.WriteString(".")
-				my.Quoted(column.Name)
-				my.WriteString(` AS `)
-				my.Quoted(typ.Name)
-			}
+			println(i, typ)
+			//column, ok := table.Fields[typ.Name]
+			//if ok {
+			//	if i != 0 {
+			//		my.WriteString(",")
+			//	}
+			//	my.Quoted(table.Name)
+			//	my.WriteString(".")
+			//	my.Quoted(column.Name)
+			//	my.WriteString(` AS `)
+			//	my.Quoted(typ.Name)
+			//}
 		}
 	}
 	my.WriteString(` FROM `)

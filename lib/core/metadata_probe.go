@@ -32,11 +32,6 @@ type Field struct {
 	TableDescription string `gorm:"column:table_description;"`
 }
 
-func (my Field) SetType(dataType string) Field {
-	my.Type = dataType
-	return my
-}
-
 var tableOption = func(my *Metadata) error {
 	// 查询表结构
 	if err := my.db.Raw(pgsql).Scan(&my.list).Error; err != nil {
