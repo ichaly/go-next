@@ -55,7 +55,7 @@ var tableOption = func(my *Metadata) error {
 		}
 
 		//转化类型
-		c.Type = condition.TernaryOperator(c.IsPrimary, "ID", internal.DataTypes[c.Type])
+		c.Type = condition.TernaryOperator(c.IsPrimary, "ID", my.cfg.Mapping[c.Type])
 
 		//规范命名
 		table, column := my.Named(c.Table, c.Name)

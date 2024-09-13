@@ -6,6 +6,7 @@ import (
 	"github.com/ichaly/go-next/lib/core/internal"
 	"github.com/jinzhu/inflection"
 	"github.com/spf13/viper"
+	"github.com/vektah/gqlparser/v2/ast"
 	"gorm.io/gorm"
 	"strings"
 	"text/template"
@@ -32,7 +33,7 @@ type Metadata struct {
 	tree internal.AnyMap[Class]
 	edge internal.AnyMap[internal.AnyMap[Field]]
 
-	Nodes internal.AnyMap[Class]
+	Nodes internal.AnyMap[*ast.Definition]
 }
 
 func NewMetadata(v *viper.Viper, d *gorm.DB) (*Metadata, error) {
@@ -41,7 +42,7 @@ func NewMetadata(v *viper.Viper, d *gorm.DB) (*Metadata, error) {
 		return nil, err
 	}
 	my := &Metadata{
-		Nodes: make(internal.AnyMap[Class]), db: d, cfg: cfg,
+		Nodes: make(internal.AnyMap[*ast.Definition]), db: d, cfg: cfg,
 		tpl: template.Must(template.New("assets/build.tpl").Funcs(template.FuncMap{
 			"toLowerCamel": strcase.ToLowerCamel,
 		}).Parse(build)),
