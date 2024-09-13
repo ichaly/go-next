@@ -3,6 +3,7 @@ package core
 import (
 	"github.com/duke-git/lancet/v2/maputil"
 	"github.com/vektah/gqlparser/v2/ast"
+	"strings"
 )
 
 var buildOption = func(my *Metadata) error {
@@ -69,12 +70,58 @@ var buildOption = func(my *Metadata) error {
 			}
 		}
 	}
+	return nil
+}
+
+var queryOption = func(my *Metadata) error {
 	//构建Query
-	query := &ast.Definition{Name: "Query"}
+	query := &ast.Definition{Name: QUERY}
 	for k, v := range my.Nodes {
 		_, name := my.Named(query.Name, k, JoinListSuffix())
 		query.Fields = append(query.Fields, &ast.FieldDefinition{
 			Name: name,
+			Arguments: []*ast.ArgumentDefinition{
+				{
+					Name: "id",
+					Type: ast.NamedType("ID", nil),
+				},
+				{
+					Name: "limit",
+					Type: ast.NamedType("Int", nil),
+				},
+				{
+					Name: "size",
+					Type: ast.NamedType("Int", nil),
+				},
+				{
+					Name: "first",
+					Type: ast.NamedType("Int", nil),
+				},
+				{
+					Name: "last",
+					Type: ast.NamedType("Int", nil),
+				},
+				{
+					Name: "after",
+					Type: ast.NamedType("Cursor", nil),
+				},
+				{
+					Name: "before",
+					Type: ast.NamedType("Cursor", nil),
+				},
+				{
+					Name: "distinctOn",
+					Type: ast.ListType(ast.NamedType("String", nil), nil),
+				},
+				{
+					Name: "sort",
+					Type: ast.NamedType(strings.Join([]string{k, SUFFIX_SORT_INPUT}, ""), nil),
+				},
+				//{
+				//	Name: "where",
+				//	Type: ast.NamedType("WhereInput", nil),
+				//},
+			},
 			Type: ast.ListType(ast.NamedType(v.Name, nil), nil),
 		})
 	}

@@ -1,8 +1,8 @@
 package core
 
 import (
+	"embed"
 	_ "embed"
-	"github.com/iancoleman/strcase"
 	"github.com/ichaly/go-next/lib/core/internal"
 	"github.com/jinzhu/inflection"
 	"github.com/spf13/viper"
@@ -12,11 +12,11 @@ import (
 	"text/template"
 )
 
-//go:embed assets/pgsql.sql
-var pgsql string
+//go:embed assets/tpl/*
+var templates embed.FS
 
-//go:embed assets/build.tpl
-var build string
+//go:embed assets/sql/pgsql.sql
+var pgsql string
 
 func init() {
 	inflection.AddUncountable("children")
@@ -37,20 +37,26 @@ type Metadata struct {
 }
 
 func NewMetadata(v *viper.Viper, d *gorm.DB) (*Metadata, error) {
-	cfg := &internal.TableConfig{Mapping: internal.DataTypes}
-	if err := v.Sub("schema").Unmarshal(cfg); err != nil {
+	tpl, err := template.ParseFS(templates, "assets/tpl/*.tpl")
+	if err != nil {
 		return nil, err
 	}
+
+	cfg := &internal.TableConfig{Mapping: internal.DataTypes}
+	if err = v.Sub("schema").Unmarshal(cfg); err != nil {
+		return nil, err
+	}
+
 	my := &Metadata{
-		Nodes: make(internal.AnyMap[*ast.Definition]), db: d, cfg: cfg,
-		tpl: template.Must(template.New("assets/build.tpl").Funcs(template.FuncMap{
-			"toLowerCamel": strcase.ToLowerCamel,
-		}).Parse(build)),
+		db: d, cfg: cfg, tpl: tpl,
+		Nodes: make(internal.AnyMap[*ast.Definition]),
 	}
 
 	for _, o := range []Option{
 		tableOption,
 		buildOption,
+		inputOption,
+		queryOption,
 	} {
 		if err := o(my); err != nil {
 			return nil, err
@@ -62,7 +68,7 @@ func NewMetadata(v *viper.Viper, d *gorm.DB) (*Metadata, error) {
 
 func (my *Metadata) Marshal() (string, error) {
 	var w strings.Builder
-	if err := my.tpl.Execute(&w, my.Nodes); err != nil {
+	if err := my.tpl.ExecuteTemplate(&w, "build.tpl", my.Nodes); err != nil {
 		return "", err
 	}
 	return w.String(), nil
