@@ -1,6 +1,6 @@
 package internal
 
-type Dictionary[V any] map[string]V
+type AnyMap[V any] map[string]V
 
 // TeeMap 用于存储两个不同类型的key对应同一个value的映射
 type TeeMap[L comparable, R comparable, V any] struct {
