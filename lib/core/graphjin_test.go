@@ -51,8 +51,9 @@ func (my *_GraphJinSuite) TestGraphJin() {
 		ctx.JSON(http.StatusOK, res)
 	})
 	r.Match([]string{http.MethodGet, http.MethodPost}, "/graphql0", func(ctx *gin.Context) {
-		file, _ := os.ReadFile("./assets/schema.gql")
-		s, _ := gqlparser.LoadSchema(&ast.Source{Name: "schema", Input: string(file)})
+		file, _ := os.ReadFile("./assets/gql/schema.gql")
+		s, err := gqlparser.LoadSchema(&ast.Source{Name: "schema", Input: string(file)})
+		my.Require().NoError(err)
 		ctx.JSON(http.StatusOK, gin.H{"data": intro.New(s)})
 	})
 	_ = r.Run(":8081")

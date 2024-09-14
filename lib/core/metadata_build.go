@@ -2,16 +2,17 @@ package core
 
 import (
 	"github.com/duke-git/lancet/v2/maputil"
+	"github.com/ichaly/go-next/lib/util"
 	"github.com/vektah/gqlparser/v2/ast"
-	"strings"
 )
 
-var buildOption = func(my *Metadata) error {
+func (my *Metadata) buildOption() error {
 	//构建节点信息
 	for t, c := range my.tree {
 		for k, f := range c.Fields {
 			def := maputil.GetOrSet(my.Nodes, t, &ast.Definition{
 				Name:        t,
+				Kind:        ast.Object,
 				Description: f.TableDescription,
 			})
 			def.Fields = append(def.Fields, &ast.FieldDefinition{
@@ -37,7 +38,6 @@ var buildOption = func(my *Metadata) error {
 				JoinListSuffix(),
 				NamedRecursion(f, false),
 			)
-			println(k, currentTable, currentColumn, foreignTable, foreignColumn)
 			//OneToMany
 			my.Nodes[currentTable].Fields = append(my.Nodes[currentTable].Fields, &ast.FieldDefinition{
 				Name: currentColumn,
@@ -73,54 +73,57 @@ var buildOption = func(my *Metadata) error {
 	return nil
 }
 
-var queryOption = func(my *Metadata) error {
+func (my *Metadata) queryOption() error {
 	//构建Query
 	query := &ast.Definition{Name: QUERY}
 	for k, v := range my.Nodes {
+		if v.Kind != ast.Object {
+			continue
+		}
 		_, name := my.Named(query.Name, k, JoinListSuffix())
 		query.Fields = append(query.Fields, &ast.FieldDefinition{
 			Name: name,
 			Arguments: []*ast.ArgumentDefinition{
 				{
 					Name: "id",
-					Type: ast.NamedType("ID", nil),
+					Type: ast.NamedType(SCALAR_ID, nil),
 				},
 				{
 					Name: "distinct",
-					Type: ast.ListType(ast.NamedType("String", nil), nil),
+					Type: ast.ListType(ast.NamedType(SCALAR_STRING, nil), nil),
 				},
 				{
 					Name: "limit",
-					Type: ast.NamedType("Int", nil),
+					Type: ast.NamedType(SCALAR_INT, nil),
 				},
 				{
 					Name: "offset",
-					Type: ast.NamedType("Int", nil),
+					Type: ast.NamedType(SCALAR_INT, nil),
 				},
 				{
 					Name: "first",
-					Type: ast.NamedType("Int", nil),
+					Type: ast.NamedType(SCALAR_INT, nil),
 				},
 				{
 					Name: "last",
-					Type: ast.NamedType("Int", nil),
+					Type: ast.NamedType(SCALAR_INT, nil),
 				},
 				{
 					Name: "after",
-					Type: ast.NamedType("Cursor", nil),
+					Type: ast.NamedType(SCALAR_CURSOR, nil),
 				},
 				{
 					Name: "before",
-					Type: ast.NamedType("Cursor", nil),
+					Type: ast.NamedType(SCALAR_CURSOR, nil),
 				},
 				{
 					Name: "sort",
-					Type: ast.NamedType(strings.Join([]string{k, SUFFIX_SORT_INPUT}, ""), nil),
+					Type: ast.NamedType(util.JoinString(k, SUFFIX_SORT_INPUT), nil),
 				},
-				{
-					Name: "where",
-					Type: ast.NamedType(strings.Join([]string{k, SUFFIX_WHERE_INPUT}, ""), nil),
-				},
+				//{
+				//	Name: "where",
+				//	Type: ast.NamedType(strings.Join([]string{k, SUFFIX_WHERE_INPUT}, ""), nil),
+				//},
 			},
 			Type: ast.ListType(ast.NamedType(v.Name, nil), nil),
 		})

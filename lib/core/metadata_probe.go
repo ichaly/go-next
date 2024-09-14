@@ -32,7 +32,7 @@ type Field struct {
 	TableDescription string `gorm:"column:table_description;"`
 }
 
-var tableOption = func(my *Metadata) error {
+func (my *Metadata) tableOption() error {
 	// 查询表结构
 	if err := my.db.Raw(pgsql).Scan(&my.list).Error; err != nil {
 		return err

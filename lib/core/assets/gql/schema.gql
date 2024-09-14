@@ -1,34 +1,94 @@
-scalar Cursor @specifiedBy(url: "https://www.baidu.com")
-scalar DateTime @specifiedBy(url: "https://www.baidu.com")
+"""
+A cursor is an encoded string use for pagination
+"""
+scalar Cursor
+"""
+The `DateTime` scalar type represents a DateTime. The DateTime is serialized as an RFC 3339 quoted string
+"""
+scalar DateTime
 
-enum Direction {
+"The direction of result ordering."
+enum SortDirection {
+    "Ascending order"
     ASC
+    "Descending order"
     DESC
+    "Ascending nulls first order"
+    ASC_NULLS_FIRST
+    "Descending nulls first order"
+    DESC_NULLS_FIRST
+    "Ascending nulls last order"
+    ASC_NULLS_LAST
+    "Descending nulls last order"
+    DESC_NULLS_LAST
 }
 
-type User  {
-    id:ID!
-    username:String!
-    nickname:String!
-    teams:[Team]!
+type Area {
+    id: ID
+    teamList: [Team]
 }
-
-input UserSortInput{
-    id:Direction
+input AreaSortInput {
+    id: SortDirection
+    teamList: SortDirection
 }
-
-input UserWhereInput{
-    not:UserWhereInput
-    and:UserWhereInput
-    or:UserWhereInput
+type Edge {
+    userId: ID
+    teamId: ID
+    user: User
+    team: Team
 }
-
-type Team  {
-    id:ID!
-    name:String!
-    users:[User]!
+input EdgeSortInput {
+    userId: SortDirection
+    teamId: SortDirection
+    user: SortDirection
+    team: SortDirection
 }
-
-type Query{
-    users(id:ID,limit:Int,offset:Int,distinct:[String],first:Int,last:Int,after:Cursor,before:Cursor,sort:UserSortInput,where:UserWhereInput):[User]!
+type Item {
+    id: ID
+    userId: Int
+    user: User
+}
+input ItemSortInput {
+    id: SortDirection
+    userId: SortDirection
+    user: SortDirection
+}
+type Query {
+    edgeList(id:ID,distinct:[String],limit:Int,offset:Int,first:Int,last:Int,after:Cursor,before:Cursor,sort:EdgeSortInput): [Edge]
+    teamList(id:ID,distinct:[String],limit:Int,offset:Int,first:Int,last:Int,after:Cursor,before:Cursor,sort:TeamSortInput): [Team]
+    areaList(id:ID,distinct:[String],limit:Int,offset:Int,first:Int,last:Int,after:Cursor,before:Cursor,sort:AreaSortInput): [Area]
+    itemList(id:ID,distinct:[String],limit:Int,offset:Int,first:Int,last:Int,after:Cursor,before:Cursor,sort:ItemSortInput): [Item]
+    userList(id:ID,distinct:[String],limit:Int,offset:Int,first:Int,last:Int,after:Cursor,before:Cursor,sort:UserSortInput): [User]
+}
+type Team {
+    pid: Int
+    areaId: Int
+    id: ID
+    parent: Team
+    children: [Team]
+    area: Area
+    edgeList: [Edge]
+    userList: [User]
+}
+input TeamSortInput {
+    pid: SortDirection
+    areaId: SortDirection
+    id: SortDirection
+    parent: SortDirection
+    children: SortDirection
+    area: SortDirection
+    edgeList: SortDirection
+    userList: SortDirection
+}
+type User {
+    id: ID
+    itemList: [Item]
+    edgeList: [Edge]
+    teamList: [Team]
+}
+input UserSortInput {
+    id: SortDirection
+    itemList: SortDirection
+    edgeList: SortDirection
+    teamList: SortDirection
 }

@@ -22,7 +22,7 @@ func init() {
 	inflection.AddUncountable("children")
 }
 
-type Option func(my *Metadata) error
+type Option func() error
 
 type Metadata struct {
 	db  *gorm.DB
@@ -53,12 +53,12 @@ func NewMetadata(v *viper.Viper, d *gorm.DB) (*Metadata, error) {
 	}
 
 	for _, o := range []Option{
-		tableOption,
-		buildOption,
-		inputOption,
-		queryOption,
+		my.tableOption,
+		my.buildOption,
+		my.inputOption,
+		my.queryOption,
 	} {
-		if err := o(my); err != nil {
+		if err := o(); err != nil {
 			return nil, err
 		}
 	}

@@ -28,8 +28,14 @@ enum SortDirection {
 """
 {{ $obj.Description }}
 """
-{{- end }}
+{{ end }}
+
+{{- if eq $obj.Kind "INPUT_OBJECT" -}}
+input {{ $key }} {
+{{- else -}}
 type {{ $key }} {
+{{- end -}}
+
 {{- range $obj.Fields }}
     {{- if .Description }}
     """

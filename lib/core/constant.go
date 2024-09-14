@@ -32,3 +32,19 @@ const (
 	SUFFIX_EXPRESSION = "Expression"
 	SUFFIX_EXPR_LIST  = "ListExpression"
 )
+
+// 内置枚举类型
+const (
+	ENUM_SORT_DIRECTION = "SortDirection"
+)
+
+// 内置枚举类型
+const (
+	SCALAR_ID        = "ID"
+	SCALAR_INT       = "Int"
+	SCALAR_FLOAT     = "Float"
+	SCALAR_STRING    = "String"
+	SCALAR_CURSOR    = "Cursor"
+	SCALAR_BOOLEAN   = "Boolean"
+	SCALAR_DATE_TIME = "DateTime"
+)
