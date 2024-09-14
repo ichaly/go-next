@@ -9,40 +9,40 @@ scalar DateTime
 
 "The direction of result ordering."
 enum SortDirection {
-  "Ascending order"
-  ASC
-  "Descending order"
-  DESC
-  "Ascending nulls first order"
-  ASC_NULLS_FIRST
-  "Descending nulls first order"
-  DESC_NULLS_FIRST
-  "Ascending nulls last order"
-  ASC_NULLS_LAST
-  "Descending nulls last order"
-  DESC_NULLS_LAST
+    "Ascending order"
+    ASC
+    "Descending order"
+    DESC
+    "Ascending nulls first order"
+    ASC_NULLS_FIRST
+    "Descending nulls first order"
+    DESC_NULLS_FIRST
+    "Ascending nulls last order"
+    ASC_NULLS_LAST
+    "Descending nulls last order"
+    DESC_NULLS_LAST
 }
 
 {{ range $key,$obj := . }}
-{{- if $obj.Description }}
-"""
-{{ $obj.Description }}
-"""
-{{ end }}
+    {{- if $obj.Description }}
+        """
+        {{ $obj.Description }}
+        """
+    {{ end }}
 
-{{- if eq $obj.Kind "INPUT_OBJECT" -}}
-input {{ $key }} {
-{{- else -}}
-type {{ $key }} {
-{{- end -}}
+    {{- if eq $obj.Kind "INPUT_OBJECT" -}}
+        input {{ $key }} {
+    {{- else -}}
+        type {{ $key }} {
+    {{- end -}}
 
-{{- range $obj.Fields }}
-    {{- if .Description }}
-    """
-    {{ .Description }}
-    """
+    {{- range $obj.Fields }}
+        {{- if .Description }}
+            """
+            {{ .Description }}
+            """
+        {{- end }}
+        {{ .Name }}{{template "input.tpl" .}}: {{ .Type }}
     {{- end }}
-    {{ .Name }}{{template "input.tpl" .}}: {{ .Type }}
-{{- end }}
-}
+    }
 {{ end }}

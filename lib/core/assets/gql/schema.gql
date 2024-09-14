@@ -54,41 +54,41 @@ input ItemSortInput {
     user: SortDirection
 }
 type Query {
-    edgeList(id:ID,distinct:[String],limit:Int,offset:Int,first:Int,last:Int,after:Cursor,before:Cursor,sort:EdgeSortInput): [Edge]
-    teamList(id:ID,distinct:[String],limit:Int,offset:Int,first:Int,last:Int,after:Cursor,before:Cursor,sort:TeamSortInput): [Team]
-    areaList(id:ID,distinct:[String],limit:Int,offset:Int,first:Int,last:Int,after:Cursor,before:Cursor,sort:AreaSortInput): [Area]
-    itemList(id:ID,distinct:[String],limit:Int,offset:Int,first:Int,last:Int,after:Cursor,before:Cursor,sort:ItemSortInput): [Item]
     userList(id:ID,distinct:[String],limit:Int,offset:Int,first:Int,last:Int,after:Cursor,before:Cursor,sort:UserSortInput): [User]
+    areaList(id:ID,distinct:[String],limit:Int,offset:Int,first:Int,last:Int,after:Cursor,before:Cursor,sort:AreaSortInput): [Area]
+    teamList(id:ID,distinct:[String],limit:Int,offset:Int,first:Int,last:Int,after:Cursor,before:Cursor,sort:TeamSortInput): [Team]
+    edgeList(id:ID,distinct:[String],limit:Int,offset:Int,first:Int,last:Int,after:Cursor,before:Cursor,sort:EdgeSortInput): [Edge]
+    itemList(id:ID,distinct:[String],limit:Int,offset:Int,first:Int,last:Int,after:Cursor,before:Cursor,sort:ItemSortInput): [Item]
 }
 type Team {
+    id: ID
     pid: Int
     areaId: Int
-    id: ID
+    edgeList: [Edge]
+    userList: [User]
     parent: Team
     children: [Team]
     area: Area
-    edgeList: [Edge]
-    userList: [User]
 }
 input TeamSortInput {
+    id: SortDirection
     pid: SortDirection
     areaId: SortDirection
-    id: SortDirection
+    edgeList: SortDirection
+    userList: SortDirection
     parent: SortDirection
     children: SortDirection
     area: SortDirection
-    edgeList: SortDirection
-    userList: SortDirection
 }
 type User {
     id: ID
-    itemList: [Item]
     edgeList: [Edge]
     teamList: [Team]
+    itemList: [Item]
 }
 input UserSortInput {
     id: SortDirection
-    itemList: SortDirection
     edgeList: SortDirection
     teamList: SortDirection
+    itemList: SortDirection
 }
