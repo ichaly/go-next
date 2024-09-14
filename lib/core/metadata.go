@@ -53,9 +53,11 @@ func NewMetadata(v *viper.Viper, d *gorm.DB) (*Metadata, error) {
 	}
 
 	for _, o := range []Option{
+		my.expression,
 		my.tableOption,
 		my.buildOption,
 		my.inputOption,
+		my.whereOption,
 		my.queryOption,
 	} {
 		if err := o(); err != nil {

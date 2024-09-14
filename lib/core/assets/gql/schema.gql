@@ -25,11 +25,58 @@ enum SortDirection {
 
 type Area {
     id: ID
+    code: Int
     teamList: [Team]
 }
 input AreaSortInput {
     id: SortDirection
+    code: SortDirection
     teamList: SortDirection
+}
+input AreaWhereInput {
+    and: AreaWhereInput
+    not: AreaWhereInput
+    or: AreaWhereInput
+    id: IDExpression
+    code: IntExpression
+}
+input BooleanExpression {
+    """
+    Is value null (true) or not null (false)
+    """
+    isNull: Boolean
+    """
+    Equals value
+    """
+    eq: Boolean
+    """
+    Does not equal value
+    """
+    ne: Boolean
+    """
+    Is greater than value
+    """
+    gt: Boolean
+    """
+    Is lesser than value
+    """
+    lt: Boolean
+    """
+    Is greater than or equals value
+    """
+    ge: Boolean
+    """
+    Is lesser than or equals value
+    """
+    le: Boolean
+    """
+    Value matching (case-insensitive) pattern where '%' represents zero or more characters and '_' represents a single character. Eg. '_r%' finds values having 'r' in second position
+    """
+    like: Boolean
+    """
+    Value not matching pattern where '%' represents zero or more characters and '_' represents a single character. Eg. '_r%' finds values not having 'r' in second position
+    """
+    notLike: Boolean
 }
 type Edge {
     userId: ID
@@ -43,6 +90,127 @@ input EdgeSortInput {
     user: SortDirection
     team: SortDirection
 }
+input EdgeWhereInput {
+    and: EdgeWhereInput
+    not: EdgeWhereInput
+    or: EdgeWhereInput
+    userId: IDExpression
+    teamId: IDExpression
+}
+input FloatExpression {
+    """
+    Is value null (true) or not null (false)
+    """
+    isNull: Boolean
+    """
+    Equals value
+    """
+    eq: Float
+    """
+    Does not equal value
+    """
+    ne: Float
+    """
+    Is greater than value
+    """
+    gt: Float
+    """
+    Is lesser than value
+    """
+    lt: Float
+    """
+    Is greater than or equals value
+    """
+    ge: Float
+    """
+    Is lesser than or equals value
+    """
+    le: Float
+    """
+    Value matching (case-insensitive) pattern where '%' represents zero or more characters and '_' represents a single character. Eg. '_r%' finds values having 'r' in second position
+    """
+    like: Float
+    """
+    Value not matching pattern where '%' represents zero or more characters and '_' represents a single character. Eg. '_r%' finds values not having 'r' in second position
+    """
+    notLike: Float
+}
+input IDExpression {
+    """
+    Is value null (true) or not null (false)
+    """
+    isNull: Boolean
+    """
+    Equals value
+    """
+    eq: ID
+    """
+    Does not equal value
+    """
+    ne: ID
+    """
+    Is greater than value
+    """
+    gt: ID
+    """
+    Is lesser than value
+    """
+    lt: ID
+    """
+    Is greater than or equals value
+    """
+    ge: ID
+    """
+    Is lesser than or equals value
+    """
+    le: ID
+    """
+    Value matching (case-insensitive) pattern where '%' represents zero or more characters and '_' represents a single character. Eg. '_r%' finds values having 'r' in second position
+    """
+    like: ID
+    """
+    Value not matching pattern where '%' represents zero or more characters and '_' represents a single character. Eg. '_r%' finds values not having 'r' in second position
+    """
+    notLike: ID
+}
+input IntExpression {
+    """
+    Is value null (true) or not null (false)
+    """
+    isNull: Boolean
+    """
+    Equals value
+    """
+    eq: Int
+    """
+    Does not equal value
+    """
+    ne: Int
+    """
+    Is greater than value
+    """
+    gt: Int
+    """
+    Is lesser than value
+    """
+    lt: Int
+    """
+    Is greater than or equals value
+    """
+    ge: Int
+    """
+    Is lesser than or equals value
+    """
+    le: Int
+    """
+    Value matching (case-insensitive) pattern where '%' represents zero or more characters and '_' represents a single character. Eg. '_r%' finds values having 'r' in second position
+    """
+    like: Int
+    """
+    Value not matching pattern where '%' represents zero or more characters and '_' represents a single character. Eg. '_r%' finds values not having 'r' in second position
+    """
+    notLike: Int
+}
 type Item {
     id: ID
     userId: Int
@@ -53,42 +221,101 @@ input ItemSortInput {
     userId: SortDirection
     user: SortDirection
 }
+input ItemWhereInput {
+    and: ItemWhereInput
+    not: ItemWhereInput
+    or: ItemWhereInput
+    id: IDExpression
+    userId: IntExpression
+}
 type Query {
-    userList(id:ID,distinct:[String],limit:Int,offset:Int,first:Int,last:Int,after:Cursor,before:Cursor,sort:UserSortInput): [User]
-    areaList(id:ID,distinct:[String],limit:Int,offset:Int,first:Int,last:Int,after:Cursor,before:Cursor,sort:AreaSortInput): [Area]
-    teamList(id:ID,distinct:[String],limit:Int,offset:Int,first:Int,last:Int,after:Cursor,before:Cursor,sort:TeamSortInput): [Team]
-    edgeList(id:ID,distinct:[String],limit:Int,offset:Int,first:Int,last:Int,after:Cursor,before:Cursor,sort:EdgeSortInput): [Edge]
-    itemList(id:ID,distinct:[String],limit:Int,offset:Int,first:Int,last:Int,after:Cursor,before:Cursor,sort:ItemSortInput): [Item]
+    userList(id:ID,distinct:[String],limit:Int,offset:Int,first:Int,last:Int,after:Cursor,before:Cursor,sort:UserSortInput,where:UserWhereInput): [User]
+    areaList(id:ID,distinct:[String],limit:Int,offset:Int,first:Int,last:Int,after:Cursor,before:Cursor,sort:AreaSortInput,where:AreaWhereInput): [Area]
+    itemList(id:ID,distinct:[String],limit:Int,offset:Int,first:Int,last:Int,after:Cursor,before:Cursor,sort:ItemSortInput,where:ItemWhereInput): [Item]
+    teamList(id:ID,distinct:[String],limit:Int,offset:Int,first:Int,last:Int,after:Cursor,before:Cursor,sort:TeamSortInput,where:TeamWhereInput): [Team]
+    edgeList(id:ID,distinct:[String],limit:Int,offset:Int,first:Int,last:Int,after:Cursor,before:Cursor,sort:EdgeSortInput,where:EdgeWhereInput): [Edge]
+}
+input StringExpression {
+    """
+    Is value null (true) or not null (false)
+    """
+    isNull: Boolean
+    """
+    Equals value
+    """
+    eq: String
+    """
+    Does not equal value
+    """
+    ne: String
+    """
+    Is greater than value
+    """
+    gt: String
+    """
+    Is lesser than value
+    """
+    lt: String
+    """
+    Is greater than or equals value
+    """
+    ge: String
+    """
+    Is lesser than or equals value
+    """
+    le: String
+    """
+    Value matching (case-insensitive) pattern where '%' represents zero or more characters and '_' represents a single character. Eg. '_r%' finds values having 'r' in second position
+    """
+    like: String
+    """
+    Value not matching pattern where '%' represents zero or more characters and '_' represents a single character. Eg. '_r%' finds values not having 'r' in second position
+    """
+    notLike: String
 }
 type Team {
     id: ID
     pid: Int
     areaId: Int
-    edgeList: [Edge]
-    userList: [User]
     parent: Team
     children: [Team]
     area: Area
+    edgeList: [Edge]
+    userList: [User]
 }
 input TeamSortInput {
     id: SortDirection
     pid: SortDirection
     areaId: SortDirection
-    edgeList: SortDirection
-    userList: SortDirection
     parent: SortDirection
     children: SortDirection
     area: SortDirection
+    edgeList: SortDirection
+    userList: SortDirection
+}
+input TeamWhereInput {
+    and: TeamWhereInput
+    not: TeamWhereInput
+    or: TeamWhereInput
+    id: IDExpression
+    pid: IntExpression
+    areaId: IntExpression
 }
 type User {
     id: ID
+    itemList: [Item]
     edgeList: [Edge]
     teamList: [Team]
-    itemList: [Item]
 }
 input UserSortInput {
     id: SortDirection
+    itemList: SortDirection
     edgeList: SortDirection
     teamList: SortDirection
-    itemList: SortDirection
+}
+input UserWhereInput {
+    and: UserWhereInput
+    not: UserWhereInput
+    or: UserWhereInput
+    id: IDExpression
 }

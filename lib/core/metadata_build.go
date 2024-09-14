@@ -120,10 +120,10 @@ func (my *Metadata) queryOption() error {
 					Name: "sort",
 					Type: ast.NamedType(util.JoinString(k, SUFFIX_SORT_INPUT), nil),
 				},
-				//{
-				//	Name: "where",
-				//	Type: ast.NamedType(strings.Join([]string{k, SUFFIX_WHERE_INPUT}, ""), nil),
-				//},
+				{
+					Name: "where",
+					Type: ast.NamedType(util.JoinString(k, SUFFIX_WHERE_INPUT), nil),
+				},
 			},
 			Type: ast.ListType(ast.NamedType(v.Name, nil), nil),
 		})
