@@ -31,8 +31,8 @@ func (my *_ExecutorSuite) SetupSuite() {
 }
 
 func (my *_ExecutorSuite) TestExecutor() {
-	e, err := NewExecutor(my.c, nil)
+	e, err := NewExecutor(my.c, my.s)
 	my.Require().NoError(err)
-	r := e.Execute(context.Background(), `query getUserAndTeam{user{id}team{id}}`, nil)
+	r := e.Execute(context.Background(), `query getUserAndTeam{userList{id}areaList{id}}`, nil)
 	my.T().Log(r)
 }

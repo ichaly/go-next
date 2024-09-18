@@ -128,28 +128,33 @@ func (my *compilerContext) renderJsonClose(id int) {
 }
 
 func (my *compilerContext) renderSelect(f *ast.Field) {
-	table, ok := my.meta.Nodes[f.Definition.Type.Name()]
+	node, ok := my.meta.Nodes[f.Definition.Type.Name()]
 	if !ok {
 		return
 	}
+	table, ok := my.meta.TableName(node.Name)
+	if !ok {
+		return
+	}
+
 	my.WriteString(`SELECT `)
 	for i, s := range f.SelectionSet {
 		switch typ := s.(type) {
 		case *ast.Field:
-			println(i, typ)
-			//column, ok := table.Fields[typ.Name]
-			//if ok {
-			//	if i != 0 {
-			//		my.WriteString(",")
-			//	}
-			//	my.Quoted(table.Name)
-			//	my.WriteString(".")
-			//	my.Quoted(column.Name)
-			//	my.WriteString(` AS `)
-			//	my.Quoted(typ.Name)
-			//}
+			column, ok := my.meta.ColumnName(node.Name, typ.Name)
+			if !ok {
+				continue
+			}
+			if i != 0 {
+				my.WriteString(",")
+			}
+			my.Quoted(table)
+			my.WriteString(".")
+			my.Quoted(column)
+			my.WriteString(` AS `)
+			my.Quoted(typ.Alias)
 		}
 	}
 	my.WriteString(` FROM `)
-	my.Quoted(table.Name)
+	my.Quoted(table)
 }

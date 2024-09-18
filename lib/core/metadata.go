@@ -75,3 +75,23 @@ func (my *Metadata) Marshal() (string, error) {
 	}
 	return w.String(), nil
 }
+
+func (my *Metadata) TableName(className string) (string, bool) {
+	class, ok := my.tree[className]
+	if !ok {
+		return "", false
+	}
+	return class.Name, true
+}
+
+func (my *Metadata) ColumnName(className, fieldName string) (string, bool) {
+	class, ok := my.tree[className]
+	if !ok {
+		return "", false
+	}
+	field, ok := class.Fields[fieldName]
+	if !ok {
+		return "", false
+	}
+	return field.Name, true
+}
