@@ -58,6 +58,9 @@ func (my *Metadata) inputOption() error {
 			Kind: ast.InputObject,
 		}
 		for _, f := range v.Fields {
+			if !slice.Contain(scalars, f.Type.Name()) {
+				continue
+			}
 			sort.Fields = append(sort.Fields, &ast.FieldDefinition{
 				Name: f.Name,
 				Type: ast.NamedType(ENUM_SORT_DIRECTION, nil),

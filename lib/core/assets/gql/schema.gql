@@ -25,11 +25,10 @@ enum SortDirection {
 
 type Area {
     id: ID
-    userList: [User]
+    userList(distinct:[String],limit:Int,offset:Int,first:Int,last:Int,after:Cursor,before:Cursor,sort:UserSortInput,where:UserWhereInput): [User]
 }
 input AreaSortInput {
     id: SortDirection
-    userList: SortDirection
 }
 input AreaWhereInput {
     and: AreaWhereInput
@@ -246,8 +245,8 @@ input IntListExpression {
     notIn: Int
 }
 type Query {
-    userList(id:ID,distinct:[String],limit:Int,offset:Int,first:Int,last:Int,after:Cursor,before:Cursor,sort:UserSortInput,where:UserWhereInput): [User]
     areaList(id:ID,distinct:[String],limit:Int,offset:Int,first:Int,last:Int,after:Cursor,before:Cursor,sort:AreaSortInput,where:AreaWhereInput): [Area]
+    userList(id:ID,distinct:[String],limit:Int,offset:Int,first:Int,last:Int,after:Cursor,before:Cursor,sort:UserSortInput,where:UserWhereInput): [User]
 }
 input StringExpression {
     """
@@ -304,12 +303,11 @@ input StringListExpression {
 type User {
     id: ID
     areaId: Int
-    area: Area
+    area(distinct:[String],limit:Int,offset:Int,first:Int,last:Int,after:Cursor,before:Cursor,sort:AreaSortInput,where:AreaWhereInput): Area
 }
 input UserSortInput {
     id: SortDirection
     areaId: SortDirection
-    area: SortDirection
 }
 input UserWhereInput {
     and: UserWhereInput

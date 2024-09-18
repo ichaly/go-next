@@ -6,6 +6,47 @@ import (
 	"github.com/vektah/gqlparser/v2/ast"
 )
 
+var args = func(name string) []*ast.ArgumentDefinition {
+	return []*ast.ArgumentDefinition{
+		{
+			Name: "distinct",
+			Type: ast.ListType(ast.NamedType(SCALAR_STRING, nil), nil),
+		},
+		{
+			Name: "limit",
+			Type: ast.NamedType(SCALAR_INT, nil),
+		},
+		{
+			Name: "offset",
+			Type: ast.NamedType(SCALAR_INT, nil),
+		},
+		{
+			Name: "first",
+			Type: ast.NamedType(SCALAR_INT, nil),
+		},
+		{
+			Name: "last",
+			Type: ast.NamedType(SCALAR_INT, nil),
+		},
+		{
+			Name: "after",
+			Type: ast.NamedType(SCALAR_CURSOR, nil),
+		},
+		{
+			Name: "before",
+			Type: ast.NamedType(SCALAR_CURSOR, nil),
+		},
+		{
+			Name: "sort",
+			Type: ast.NamedType(util.JoinString(name, SUFFIX_SORT_INPUT), nil),
+		},
+		{
+			Name: "where",
+			Type: ast.NamedType(util.JoinString(name, SUFFIX_WHERE_INPUT), nil),
+		},
+	}
+}
+
 func (my *Metadata) buildOption() error {
 	//构建节点信息
 	for t, c := range my.tree {
@@ -40,13 +81,15 @@ func (my *Metadata) buildOption() error {
 			)
 			//OneToMany
 			my.Nodes[currentTable].Fields = append(my.Nodes[currentTable].Fields, &ast.FieldDefinition{
-				Name: currentColumn,
-				Type: ast.NamedType(foreignTable, nil),
+				Name:      currentColumn,
+				Type:      ast.NamedType(foreignTable, nil),
+				Arguments: args(foreignTable),
 			})
 			//ManyToOne
 			my.Nodes[foreignTable].Fields = append(my.Nodes[foreignTable].Fields, &ast.FieldDefinition{
-				Name: foreignColumn,
-				Type: ast.ListType(ast.NamedType(currentTable, nil), nil),
+				Name:      foreignColumn,
+				Type:      ast.ListType(ast.NamedType(currentTable, nil), nil),
+				Arguments: args(currentTable),
 			})
 			//如果是自关联的表则不进行多对多关联
 			if f.Table == f.TableRelation {
@@ -64,8 +107,9 @@ func (my *Metadata) buildOption() error {
 					JoinListSuffix(),
 				)
 				my.Nodes[foreignTable].Fields = append(my.Nodes[foreignTable].Fields, &ast.FieldDefinition{
-					Name: column,
-					Type: ast.ListType(ast.NamedType(table, nil), nil),
+					Name:      column,
+					Type:      ast.ListType(ast.NamedType(table, nil), nil),
+					Arguments: args(table),
 				})
 			}
 		}
@@ -83,49 +127,13 @@ func (my *Metadata) queryOption() error {
 		_, name := my.Named(query.Name, k, JoinListSuffix())
 		query.Fields = append(query.Fields, &ast.FieldDefinition{
 			Name: name,
-			Arguments: []*ast.ArgumentDefinition{
+			Type: ast.ListType(ast.NamedType(v.Name, nil), nil),
+			Arguments: append([]*ast.ArgumentDefinition{
 				{
 					Name: "id",
 					Type: ast.NamedType(SCALAR_ID, nil),
 				},
-				{
-					Name: "distinct",
-					Type: ast.ListType(ast.NamedType(SCALAR_STRING, nil), nil),
-				},
-				{
-					Name: "limit",
-					Type: ast.NamedType(SCALAR_INT, nil),
-				},
-				{
-					Name: "offset",
-					Type: ast.NamedType(SCALAR_INT, nil),
-				},
-				{
-					Name: "first",
-					Type: ast.NamedType(SCALAR_INT, nil),
-				},
-				{
-					Name: "last",
-					Type: ast.NamedType(SCALAR_INT, nil),
-				},
-				{
-					Name: "after",
-					Type: ast.NamedType(SCALAR_CURSOR, nil),
-				},
-				{
-					Name: "before",
-					Type: ast.NamedType(SCALAR_CURSOR, nil),
-				},
-				{
-					Name: "sort",
-					Type: ast.NamedType(util.JoinString(k, SUFFIX_SORT_INPUT), nil),
-				},
-				{
-					Name: "where",
-					Type: ast.NamedType(util.JoinString(k, SUFFIX_WHERE_INPUT), nil),
-				},
-			},
-			Type: ast.ListType(ast.NamedType(v.Name, nil), nil),
+			}, args(k)...),
 		})
 	}
 	my.Nodes[query.Name] = query
