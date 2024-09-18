@@ -25,20 +25,17 @@ enum SortDirection {
 
 type Area {
     id: ID
-    code: Int
-    teamList: [Team]
+    userList: [User]
 }
 input AreaSortInput {
     id: SortDirection
-    code: SortDirection
-    teamList: SortDirection
+    userList: SortDirection
 }
 input AreaWhereInput {
     and: AreaWhereInput
     not: AreaWhereInput
     or: AreaWhereInput
     id: IDExpression
-    code: IntExpression
 }
 input BooleanExpression {
     """
@@ -78,24 +75,19 @@ input BooleanExpression {
     """
     notLike: Boolean
 }
-type Edge {
-    userId: ID
-    teamId: ID
-    user: User
-    team: Team
-}
-input EdgeSortInput {
-    userId: SortDirection
-    teamId: SortDirection
-    user: SortDirection
-    team: SortDirection
-}
-input EdgeWhereInput {
-    and: EdgeWhereInput
-    not: EdgeWhereInput
-    or: EdgeWhereInput
-    userId: IDExpression
-    teamId: IDExpression
+input BooleanListExpression {
+    """
+    Is value null (true) or not null (false)
+    """
+    isNull: Boolean
+    """
+    Is in list of values
+    """
+    in: Boolean
+    """
+    Is not in list of values
+    """
+    notIn: Boolean
 }
 input FloatExpression {
     """
@@ -135,6 +127,20 @@ input FloatExpression {
     """
     notLike: Float
 }
+input FloatListExpression {
+    """
+    Is value null (true) or not null (false)
+    """
+    isNull: Boolean
+    """
+    Is in list of values
+    """
+    in: Float
+    """
+    Is not in list of values
+    """
+    notIn: Float
+}
 input IDExpression {
     """
     Is value null (true) or not null (false)
@@ -172,6 +178,20 @@ input IDExpression {
     Value not matching pattern where '%' represents zero or more characters and '_' represents a single character. Eg. '_r%' finds values not having 'r' in second position
     """
     notLike: ID
+}
+input IDListExpression {
+    """
+    Is value null (true) or not null (false)
+    """
+    isNull: Boolean
+    """
+    Is in list of values
+    """
+    in: ID
+    """
+    Is not in list of values
+    """
+    notIn: ID
 }
 input IntExpression {
     """
@@ -211,29 +231,23 @@ input IntExpression {
     """
     notLike: Int
 }
-type Item {
-    id: ID
-    userId: Int
-    user: User
-}
-input ItemSortInput {
-    id: SortDirection
-    userId: SortDirection
-    user: SortDirection
-}
-input ItemWhereInput {
-    and: ItemWhereInput
-    not: ItemWhereInput
-    or: ItemWhereInput
-    id: IDExpression
-    userId: IntExpression
+input IntListExpression {
+    """
+    Is value null (true) or not null (false)
+    """
+    isNull: Boolean
+    """
+    Is in list of values
+    """
+    in: Int
+    """
+    Is not in list of values
+    """
+    notIn: Int
 }
 type Query {
     userList(id:ID,distinct:[String],limit:Int,offset:Int,first:Int,last:Int,after:Cursor,before:Cursor,sort:UserSortInput,where:UserWhereInput): [User]
     areaList(id:ID,distinct:[String],limit:Int,offset:Int,first:Int,last:Int,after:Cursor,before:Cursor,sort:AreaSortInput,where:AreaWhereInput): [Area]
-    itemList(id:ID,distinct:[String],limit:Int,offset:Int,first:Int,last:Int,after:Cursor,before:Cursor,sort:ItemSortInput,where:ItemWhereInput): [Item]
-    teamList(id:ID,distinct:[String],limit:Int,offset:Int,first:Int,last:Int,after:Cursor,before:Cursor,sort:TeamSortInput,where:TeamWhereInput): [Team]
-    edgeList(id:ID,distinct:[String],limit:Int,offset:Int,first:Int,last:Int,after:Cursor,before:Cursor,sort:EdgeSortInput,where:EdgeWhereInput): [Edge]
 }
 input StringExpression {
     """
@@ -273,49 +287,34 @@ input StringExpression {
     """
     notLike: String
 }
-type Team {
-    id: ID
-    pid: Int
-    areaId: Int
-    parent: Team
-    children: [Team]
-    area: Area
-    edgeList: [Edge]
-    userList: [User]
-}
-input TeamSortInput {
-    id: SortDirection
-    pid: SortDirection
-    areaId: SortDirection
-    parent: SortDirection
-    children: SortDirection
-    area: SortDirection
-    edgeList: SortDirection
-    userList: SortDirection
-}
-input TeamWhereInput {
-    and: TeamWhereInput
-    not: TeamWhereInput
-    or: TeamWhereInput
-    id: IDExpression
-    pid: IntExpression
-    areaId: IntExpression
+input StringListExpression {
+    """
+    Is value null (true) or not null (false)
+    """
+    isNull: Boolean
+    """
+    Is in list of values
+    """
+    in: String
+    """
+    Is not in list of values
+    """
+    notIn: String
 }
 type User {
     id: ID
-    itemList: [Item]
-    edgeList: [Edge]
-    teamList: [Team]
+    areaId: Int
+    area: Area
 }
 input UserSortInput {
     id: SortDirection
-    itemList: SortDirection
-    edgeList: SortDirection
-    teamList: SortDirection
+    areaId: SortDirection
+    area: SortDirection
 }
 input UserWhereInput {
     and: UserWhereInput
     not: UserWhereInput
     or: UserWhereInput
     id: IDExpression
+    areaId: IntExpression
 }

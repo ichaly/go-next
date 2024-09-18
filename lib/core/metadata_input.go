@@ -6,37 +6,43 @@ import (
 	"github.com/vektah/gqlparser/v2/ast"
 )
 
-var symbols = []struct {
-	Name string
-	Desc string
-}{
-	{"eq", "Equals value"},
-	{"ne", "Does not equal value"},
-	{"gt", "Is greater than value"},
-	{"lt", "Is lesser than value"},
-	{"ge", "Is greater than or equals value"},
-	{"le", "Is lesser than or equals value"},
-	{"like", "Value matching (case-insensitive) pattern where '%' represents zero or more characters and '_' represents a single character. Eg. '_r%' finds values having 'r' in second position"},
-	{"notLike", "Value not matching pattern where '%' represents zero or more characters and '_' represents a single character. Eg. '_r%' finds values not having 'r' in second position"},
-}
 var scalars = []string{SCALAR_ID, SCALAR_INT, SCALAR_FLOAT, SCALAR_STRING, SCALAR_BOOLEAN}
 
 func (my *Metadata) expression() error {
-	for _, t := range scalars {
-		name := util.JoinString(t, SUFFIX_EXPRESSION)
+	type symbol = struct {
+		Name string
+		Desc string
+	}
+	var build = func(scalar, suffix string, symbols []symbol) {
+		name := util.JoinString(scalar, suffix)
 		expr := &ast.Definition{Name: name, Kind: ast.InputObject}
 		expr.Fields = append(expr.Fields, &ast.FieldDefinition{
 			Name:        "isNull",
 			Type:        ast.NamedType(SCALAR_BOOLEAN, nil),
 			Description: "Is value null (true) or not null (false)",
 		})
-
-		for _, s := range symbols {
+		for _, v := range symbols {
 			expr.Fields = append(expr.Fields, &ast.FieldDefinition{
-				Name: s.Name, Type: ast.NamedType(t, nil), Description: s.Desc,
+				Name: v.Name, Type: ast.NamedType(scalar, nil), Description: v.Desc,
 			})
 		}
 		my.Nodes[name] = expr
+	}
+	for _, s := range scalars {
+		build(s, SUFFIX_EXPR_LIST, []symbol{
+			{"in", "Is in list of values"},
+			{"notIn", "Is not in list of values"},
+		})
+		build(s, SUFFIX_EXPRESSION, []symbol{
+			{"eq", "Equals value"},
+			{"ne", "Does not equal value"},
+			{"gt", "Is greater than value"},
+			{"lt", "Is lesser than value"},
+			{"ge", "Is greater than or equals value"},
+			{"le", "Is lesser than or equals value"},
+			{"like", "Value matching (case-insensitive) pattern where '%' represents zero or more characters and '_' represents a single character. Eg. '_r%' finds values having 'r' in second position"},
+			{"notLike", "Value not matching pattern where '%' represents zero or more characters and '_' represents a single character. Eg. '_r%' finds values not having 'r' in second position"},
+		})
 	}
 	return nil
 }
