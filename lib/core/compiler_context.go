@@ -4,7 +4,9 @@ import (
 	"bytes"
 	"github.com/duke-git/lancet/v2/convertor"
 	stack "github.com/duke-git/lancet/v2/datastructure/stack"
+	"github.com/ichaly/go-next/lib/util"
 	"github.com/vektah/gqlparser/v2/ast"
+	"strconv"
 )
 
 type compilerContext struct {
@@ -87,7 +89,7 @@ func (my *compilerContext) renderField(q *stack.LinkedStack[compilerElement]) {
 		my.renderList(index)
 		my.renderJson(index)
 
-		my.renderSelect(field)
+		my.renderSelect(field, index)
 
 		my.renderJsonClose(index)
 		my.renderListClose(index)
@@ -127,7 +129,7 @@ func (my *compilerContext) renderJsonClose(id int) {
 	my.WriteInt(id)
 }
 
-func (my *compilerContext) renderSelect(f *ast.Field) {
+func (my *compilerContext) renderSelect(f *ast.Field, i int) {
 	node, ok := my.meta.Nodes[f.Definition.Type.Name()]
 	if !ok {
 		return
@@ -136,6 +138,11 @@ func (my *compilerContext) renderSelect(f *ast.Field) {
 	if !ok {
 		return
 	}
+
+	alias := util.JoinString(table, "_", strconv.Itoa(i))
+	my.WriteString(` SELECT `)
+	my.Quoted(alias)
+	my.WriteString(`.* FROM (`)
 
 	my.WriteString(`SELECT `)
 	for i, s := range f.SelectionSet {
@@ -157,4 +164,6 @@ func (my *compilerContext) renderSelect(f *ast.Field) {
 	}
 	my.WriteString(` FROM `)
 	my.Quoted(table)
+	my.WriteString(` LIMIT 20 ) AS`)
+	my.Quoted(alias)
 }

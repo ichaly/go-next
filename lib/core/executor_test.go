@@ -30,9 +30,16 @@ func (my *_ExecutorSuite) SetupSuite() {
 	my.c = NewCompiler(my.m, my.s)
 }
 
-func (my *_ExecutorSuite) TestExecutor() {
+func (my *_ExecutorSuite) TestExecutorBase() {
 	e, err := NewExecutor(my.c, my.s)
 	my.Require().NoError(err)
-	r := e.Execute(context.Background(), `query getUserAndTeam{userList{id}areaList{id}}`, nil)
+	r := e.Execute(context.Background(), `query{areaList{id name}}`, nil)
+	my.T().Log(r)
+}
+
+func (my *_ExecutorSuite) TestExecutorJoin() {
+	e, err := NewExecutor(my.c, my.s)
+	my.Require().NoError(err)
+	r := e.Execute(context.Background(), `query{userList{id area{id}}}`, nil)
 	my.T().Log(r)
 }
