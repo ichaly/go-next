@@ -3,10 +3,8 @@ package core
 import (
 	"bytes"
 	"github.com/duke-git/lancet/v2/convertor"
-	stack "github.com/duke-git/lancet/v2/datastructure/stack"
 	"github.com/ichaly/go-next/lib/util"
 	"github.com/vektah/gqlparser/v2/ast"
-	"strconv"
 )
 
 type compilerContext struct {
@@ -43,58 +41,56 @@ func (my *compilerContext) WriteString(s string) {
 }
 
 func (my *compilerContext) RenderQuery(set ast.SelectionSet) {
-	sk := stack.NewLinkedStack[compilerElement]()
 	my.WriteString(`SELECT jsonb_build_object(`)
-	my.getFields(set, 0, func(index, level int, field *ast.Field) {
-		size := sk.Size()
-		if level == 0 {
-			if index != 0 {
-				my.WriteString(`,`)
-			}
-			my.WriteString(`'`)
-			my.WriteString(field.Name)
-			my.WriteString(`', __sj_`)
-			my.WriteInt(index)
-			my.WriteString(`.json`)
+	my.eachField(set, func(index int, field *ast.Field) {
+		if index != 0 {
+			my.WriteString(`,`)
 		}
-
-		sk.Push(compilerElement{index: size, level: level, field: field})
+		id := my.fieldId(field)
+		my.WriteString(`'`)
+		my.WriteString(field.Name)
+		my.WriteString(`', __sj_`)
+		my.WriteInt(id)
+		my.WriteString(`.json`)
 	})
 	my.WriteString(`) AS __root FROM (SELECT true) AS __root_x`)
-	my.renderField(sk)
+	my.renderField(set)
 }
 
-func (my *compilerContext) getFields(set ast.SelectionSet, level int, callback func(index, level int, field *ast.Field)) {
+func (my *compilerContext) fieldId(field *ast.Field) int {
+	p := field.GetPosition()
+	return p.Line<<32 | p.Column
+}
+
+func (my *compilerContext) eachField(set ast.SelectionSet, callback func(index int, field *ast.Field)) {
 	for i, s := range set {
 		switch t := s.(type) {
 		case *ast.Field:
 			_, ok := my.meta.Nodes[t.Definition.Type.Name()]
 			if ok && callback != nil {
-				callback(i, level, t)
-				my.getFields(t.SelectionSet, level+1, callback)
+				callback(i, t)
 			}
 		}
 	}
 }
 
-func (my *compilerContext) renderField(q *stack.LinkedStack[compilerElement]) {
-	for {
-		if q.IsEmpty() {
-			break
+func (my *compilerContext) renderField(set ast.SelectionSet) {
+	my.eachField(set, func(index int, field *ast.Field) {
+		id := my.fieldId(field)
+
+		my.renderJoin(id)
+		my.renderList(id)
+		my.renderJson(id)
+
+		my.renderSelect(id, field)
+		if len(field.SelectionSet) > 0 {
+			my.renderField(field.SelectionSet)
 		}
-		e, _ := q.Pop()
-		index, _, field := e.index, e.level, e.field
 
-		my.renderJoin(index)
-		my.renderList(index)
-		my.renderJson(index)
-
-		my.renderSelect(field, index)
-
-		my.renderJsonClose(index)
-		my.renderListClose(index)
-		my.renderJoinClose(index)
-	}
+		my.renderJsonClose(id)
+		my.renderListClose(id)
+		my.renderJoinClose(id)
+	})
 }
 
 func (my *compilerContext) renderJoin(id int) {
@@ -129,8 +125,8 @@ func (my *compilerContext) renderJsonClose(id int) {
 	my.WriteInt(id)
 }
 
-func (my *compilerContext) renderSelect(f *ast.Field, i int) {
-	node, ok := my.meta.Nodes[f.Definition.Type.Name()]
+func (my *compilerContext) renderSelect(id int, field *ast.Field) {
+	node, ok := my.meta.Nodes[field.Definition.Type.Name()]
 	if !ok {
 		return
 	}
@@ -139,13 +135,31 @@ func (my *compilerContext) renderSelect(f *ast.Field, i int) {
 		return
 	}
 
-	alias := util.JoinString(table, "_", strconv.Itoa(i))
+	alias := util.JoinString(table, "_", convertor.ToString(id))
 	my.WriteString(` SELECT `)
-	my.Quoted(alias)
-	my.WriteString(`.* FROM (`)
+	for i, s := range field.SelectionSet {
+		switch f := s.(type) {
+		case *ast.Field:
+			_, ok := my.meta.Nodes[f.Definition.Type.Name()]
+			if i != 0 {
+				my.WriteString(",")
+			}
+			if ok {
+				my.Quoted(util.JoinString("__sj_", convertor.ToString(my.fieldId(f))))
+				my.WriteString(".")
+				my.Quoted("json")
+			} else {
+				my.Quoted(alias)
+				my.WriteString(".")
+				my.Quoted(f.Name)
+			}
 
-	my.WriteString(`SELECT `)
-	for i, s := range f.SelectionSet {
+			my.WriteString(` AS `)
+			my.Quoted(f.Name)
+		}
+	}
+	my.WriteString(`FROM ( SELECT `)
+	for i, s := range field.SelectionSet {
 		switch typ := s.(type) {
 		case *ast.Field:
 			column, ok := my.meta.ColumnName(node.Name, typ.Name)
