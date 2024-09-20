@@ -40,6 +40,6 @@ func (my *_ExecutorSuite) TestExecutorBase() {
 func (my *_ExecutorSuite) TestExecutorJoin() {
 	e, err := NewExecutor(my.c, my.s)
 	my.Require().NoError(err)
-	r := e.Execute(context.Background(), `query{userList{id area{id}}}`, nil)
+	r := e.Execute(context.Background(), `query{areaList{id name userList{id}}}`, nil)
 	my.T().Log(r)
 }
