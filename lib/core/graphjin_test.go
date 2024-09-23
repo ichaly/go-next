@@ -11,13 +11,13 @@ import (
 	"github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
 	"net/http"
-	"os"
 	"testing"
 )
 
 type _GraphJinSuite struct {
-	suite.Suite
-	db *sql.DB
+	_MetadataSuite
+	db   *sql.DB
+	meta *Metadata
 }
 
 func TestGraphJin(t *testing.T) {
@@ -25,9 +25,14 @@ func TestGraphJin(t *testing.T) {
 }
 
 func (my *_GraphJinSuite) SetupSuite() {
-	db, err := sql.Open("pgx", "postgres://postgres:postgres@localhost:5678/demo?sslmode=disable")
+	var err error
+	my._MetadataSuite.SetupSuite()
+
+	my.meta, err = NewMetadata(my.v, my.d)
 	my.Require().NoError(err)
-	my.db = db
+
+	my.db, err = sql.Open("pgx", "postgres://postgres:postgres@localhost:5678/demo?sslmode=disable")
+	my.Require().NoError(err)
 }
 
 func (my *_GraphJinSuite) TestGraphJin() {
@@ -39,7 +44,7 @@ func (my *_GraphJinSuite) TestGraphJin() {
 	my.Require().NoError(err)
 
 	r := gin.Default()
-	r.Match([]string{http.MethodGet, http.MethodPost}, "/graphql", func(ctx *gin.Context) {
+	r.Match([]string{http.MethodGet, http.MethodPost}, "/v0/graphql", func(ctx *gin.Context) {
 		var req struct {
 			Query     string                 `form:"query"`
 			Operation string                 `form:"operationName" json:"operationName"`
@@ -50,10 +55,13 @@ func (my *_GraphJinSuite) TestGraphJin() {
 		println(res.SQL())
 		ctx.JSON(http.StatusOK, res)
 	})
-	r.Match([]string{http.MethodGet, http.MethodPost}, "/graphql0", func(ctx *gin.Context) {
-		file, _ := os.ReadFile("./assets/gql/schema.gql")
-		s, err := gqlparser.LoadSchema(&ast.Source{Name: "schema", Input: string(file)})
+	r.Match([]string{http.MethodGet, http.MethodPost}, "/v1/graphql", func(ctx *gin.Context) {
+		schema, err := my.meta.Marshal()
 		my.Require().NoError(err)
+
+		s, err := gqlparser.LoadSchema(&ast.Source{Name: "schema", Input: schema})
+		my.Require().NoError(err)
+
 		ctx.JSON(http.StatusOK, gin.H{"data": intro.New(s)})
 	})
 	_ = r.Run(":8081")
