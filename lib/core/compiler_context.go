@@ -46,7 +46,7 @@ func (my *compilerContext) RenderQuery(set ast.SelectionSet) {
 		if index != 0 {
 			my.WriteString(`,`)
 		}
-		id := my.fieldId(field)
+		id := my.fieldFlag(field)
 		my.WriteString(`'`)
 		my.WriteString(field.Name)
 		my.WriteString(`', __sj_`)
@@ -57,7 +57,7 @@ func (my *compilerContext) RenderQuery(set ast.SelectionSet) {
 	my.renderField(set)
 }
 
-func (my *compilerContext) fieldId(field *ast.Field) int {
+func (my *compilerContext) fieldFlag(field *ast.Field) int {
 	p := field.GetPosition()
 	return p.Line<<32 | p.Column
 }
@@ -66,8 +66,7 @@ func (my *compilerContext) eachField(set ast.SelectionSet, callback func(index i
 	for i, s := range set {
 		switch t := s.(type) {
 		case *ast.Field:
-			_, ok := my.meta.Nodes[t.Definition.Type.Name()]
-			if ok && callback != nil {
+			if callback != nil {
 				callback(i, t)
 			}
 		}
@@ -76,7 +75,7 @@ func (my *compilerContext) eachField(set ast.SelectionSet, callback func(index i
 
 func (my *compilerContext) renderField(set ast.SelectionSet) {
 	my.eachField(set, func(index int, field *ast.Field) {
-		id := my.fieldId(field)
+		id := my.fieldFlag(field)
 
 		my.renderJoin(id)
 		my.renderList(id)
@@ -137,45 +136,37 @@ func (my *compilerContext) renderSelect(id int, field *ast.Field) {
 
 	alias := util.JoinString(table, "_", convertor.ToString(id))
 	my.WriteString(` SELECT `)
-	for i, s := range field.SelectionSet {
-		switch f := s.(type) {
-		case *ast.Field:
-			_, ok := my.meta.Nodes[f.Definition.Type.Name()]
-			if i != 0 {
-				my.WriteString(",")
-			}
-			if ok {
-				my.Quoted(util.JoinString("__sj_", convertor.ToString(my.fieldId(f))))
-				my.WriteString(".")
-				my.Quoted("json")
-			} else {
-				my.Quoted(alias)
-				my.WriteString(".")
-				my.Quoted(f.Name)
-			}
-
-			my.WriteString(` AS `)
+	my.eachField(field.SelectionSet, func(index int, f *ast.Field) {
+		if index != 0 {
+			my.WriteString(",")
+		}
+		if _, exist := my.meta.Nodes[f.Definition.Type.Name()]; exist {
+			my.Quoted(util.JoinString("__sj_", convertor.ToString(my.fieldFlag(f))))
+			my.WriteString(".")
+			my.Quoted("json")
+		} else {
+			my.Quoted(alias)
+			my.WriteString(".")
 			my.Quoted(f.Name)
 		}
-	}
+		my.WriteString(` AS `)
+		my.Quoted(f.Name)
+	})
 	my.WriteString(`FROM ( SELECT `)
-	for i, s := range field.SelectionSet {
-		switch typ := s.(type) {
-		case *ast.Field:
-			column, ok := my.meta.ColumnName(node.Name, typ.Name)
-			if !ok {
-				continue
-			}
-			if i != 0 {
-				my.WriteString(",")
-			}
-			my.Quoted(table)
-			my.WriteString(".")
-			my.Quoted(column)
-			my.WriteString(` AS `)
-			my.Quoted(typ.Alias)
+	my.eachField(field.SelectionSet, func(index int, f *ast.Field) {
+		column, exist := my.meta.ColumnName(node.Name, f.Name)
+		if !exist {
+			return
 		}
-	}
+		if index != 0 {
+			my.WriteString(",")
+		}
+		my.Quoted(table)
+		my.WriteString(".")
+		my.Quoted(column)
+		my.WriteString(` AS `)
+		my.Quoted(f.Alias)
+	})
 	my.WriteString(` FROM `)
 	my.Quoted(table)
 	my.WriteString(` LIMIT 20 ) AS`)

@@ -37,9 +37,16 @@ func (my *_ExecutorSuite) TestExecutorBase() {
 	my.T().Log(r)
 }
 
-func (my *_ExecutorSuite) TestExecutorJoin() {
+func (my *_ExecutorSuite) TestExecutorOne2Many() {
 	e, err := NewExecutor(my.c, my.s)
 	my.Require().NoError(err)
-	r := e.Execute(context.Background(), `query{areaList{id name userList{id}}}`, nil)
+	r := e.Execute(context.Background(), `query{areaList{id userList{id}}}`, nil)
+	my.T().Log(r)
+}
+
+func (my *_ExecutorSuite) TestExecutorMany2Many() {
+	e, err := NewExecutor(my.c, my.s)
+	my.Require().NoError(err)
+	r := e.Execute(context.Background(), `query{userList{id teamList{id}}}`, nil)
 	my.T().Log(r)
 }
