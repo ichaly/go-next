@@ -66,7 +66,8 @@ func (my *compilerContext) eachField(set ast.SelectionSet, callback func(index i
 	for i, s := range set {
 		switch t := s.(type) {
 		case *ast.Field:
-			if callback != nil {
+			_, ok := my.meta.Nodes[t.Definition.Type.Name()]
+			if ok && callback != nil {
 				callback(i, t)
 			}
 		}
@@ -136,37 +137,44 @@ func (my *compilerContext) renderSelect(id int, field *ast.Field) {
 
 	alias := util.JoinString(table, "_", convertor.ToString(id))
 	my.WriteString(` SELECT `)
-	my.eachField(field.SelectionSet, func(index int, f *ast.Field) {
-		if index != 0 {
-			my.WriteString(",")
-		}
-		if _, exist := my.meta.Nodes[f.Definition.Type.Name()]; exist {
-			my.Quoted(util.JoinString("__sj_", convertor.ToString(my.fieldFlag(f))))
-			my.WriteString(".")
-			my.Quoted("json")
-		} else {
-			my.Quoted(alias)
-			my.WriteString(".")
+	for i, s := range field.SelectionSet {
+		switch f := s.(type) {
+		case *ast.Field:
+			if i != 0 {
+				my.WriteString(",")
+			}
+			if _, ok := my.meta.Nodes[f.Definition.Type.Name()]; ok {
+				my.Quoted(util.JoinString("__sj_", convertor.ToString(my.fieldFlag(f))))
+				my.WriteString(".")
+				my.Quoted("json")
+			} else {
+				my.Quoted(alias)
+				my.WriteString(".")
+				my.Quoted(f.Name)
+			}
+
+			my.WriteString(` AS `)
 			my.Quoted(f.Name)
 		}
-		my.WriteString(` AS `)
-		my.Quoted(f.Name)
-	})
+	}
 	my.WriteString(`FROM ( SELECT `)
-	my.eachField(field.SelectionSet, func(index int, f *ast.Field) {
-		column, exist := my.meta.ColumnName(node.Name, f.Name)
-		if !exist {
-			return
+	for i, s := range field.SelectionSet {
+		switch typ := s.(type) {
+		case *ast.Field:
+			column, ok := my.meta.ColumnName(node.Name, typ.Name)
+			if !ok {
+				continue
+			}
+			if i != 0 {
+				my.WriteString(",")
+			}
+			my.Quoted(table)
+			my.WriteString(".")
+			my.Quoted(column)
+			my.WriteString(` AS `)
+			my.Quoted(typ.Alias)
 		}
-		if index != 0 {
-			my.WriteString(",")
-		}
-		my.Quoted(table)
-		my.WriteString(".")
-		my.Quoted(column)
-		my.WriteString(` AS `)
-		my.Quoted(f.Alias)
-	})
+	}
 	my.WriteString(` FROM `)
 	my.Quoted(table)
 	my.WriteString(` LIMIT 20 ) AS`)
