@@ -15,16 +15,16 @@ func (my *Metadata) expression() error {
 	}
 	var build = func(scalar, suffix string, symbols []symbol) {
 		name := util.JoinString(scalar, suffix)
-		expr := &ast.Definition{Name: name, Kind: ast.InputObject}
-		expr.Fields = append(expr.Fields, &ast.FieldDefinition{
+		expr := &Class{Name: name, Kind: ast.InputObject, Fields: make(map[string]*Field)}
+		expr.Fields["isNull"] = &Field{
 			Name:        "isNull",
 			Type:        ast.NamedType(SCALAR_BOOLEAN, nil),
 			Description: "Is value null (true) or not null (false)",
-		})
+		}
 		for _, v := range symbols {
-			expr.Fields = append(expr.Fields, &ast.FieldDefinition{
+			expr.Fields[v.Name] = &Field{
 				Name: v.Name, Type: ast.NamedType(scalar, nil), Description: v.Desc,
-			})
+			}
 		}
 		my.Nodes[name] = expr
 	}
@@ -53,18 +53,19 @@ func (my *Metadata) inputOption() error {
 			continue
 		}
 		name := util.JoinString(k, SUFFIX_SORT_INPUT)
-		sort := &ast.Definition{
-			Name: name,
-			Kind: ast.InputObject,
+		sort := &Class{
+			Name:   name,
+			Kind:   ast.InputObject,
+			Fields: make(map[string]*Field),
 		}
 		for _, f := range v.Fields {
 			if !slice.Contain(scalars, f.Type.Name()) {
 				continue
 			}
-			sort.Fields = append(sort.Fields, &ast.FieldDefinition{
+			sort.Fields[f.Name] = &Field{
 				Name: f.Name,
 				Type: ast.NamedType(ENUM_SORT_DIRECTION, nil),
-			})
+			}
 		}
 		my.Nodes[name] = sort
 	}
@@ -77,19 +78,23 @@ func (my *Metadata) whereOption() error {
 			continue
 		}
 		name := util.JoinString(k, SUFFIX_WHERE_INPUT)
-		where := &ast.Definition{
+		where := &Class{
 			Name: name,
 			Kind: ast.InputObject,
-			Fields: []*ast.FieldDefinition{
-				{
+			Fields: map[string]*Field{
+				"isNull": {
+					Name: "isNull",
+					Type: ast.NamedType(SCALAR_BOOLEAN, nil),
+				},
+				"and": {
 					Name: "and",
 					Type: ast.NamedType(name, nil),
 				},
-				{
+				"not": {
 					Name: "not",
 					Type: ast.NamedType(name, nil),
 				},
-				{
+				"or": {
 					Name: "or",
 					Type: ast.NamedType(name, nil),
 				},
@@ -99,10 +104,10 @@ func (my *Metadata) whereOption() error {
 			if !slice.Contain(scalars, f.Type.Name()) {
 				continue
 			}
-			where.Fields = append(where.Fields, &ast.FieldDefinition{
+			where.Fields[f.Name] = &Field{
 				Name: f.Name,
 				Type: ast.NamedType(util.JoinString(f.Type.Name(), SUFFIX_EXPRESSION), nil),
-			})
+			}
 		}
 		my.Nodes[name] = where
 	}

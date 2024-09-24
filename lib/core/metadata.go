@@ -6,7 +6,6 @@ import (
 	"github.com/ichaly/go-next/lib/core/internal"
 	"github.com/jinzhu/inflection"
 	"github.com/spf13/viper"
-	"github.com/vektah/gqlparser/v2/ast"
 	"gorm.io/gorm"
 	"strings"
 	"text/template"
@@ -29,11 +28,7 @@ type Metadata struct {
 	tpl *template.Template
 	cfg *internal.TableConfig
 
-	list []Field
-	tree internal.AnyMap[Class]
-	edge internal.AnyMap[internal.AnyMap[Field]]
-
-	Nodes internal.AnyMap[*ast.Definition]
+	Nodes internal.AnyMap[*Class]
 }
 
 func NewMetadata(v *viper.Viper, d *gorm.DB) (*Metadata, error) {
@@ -49,13 +44,12 @@ func NewMetadata(v *viper.Viper, d *gorm.DB) (*Metadata, error) {
 
 	my := &Metadata{
 		db: d, cfg: cfg, tpl: tpl,
-		Nodes: make(internal.AnyMap[*ast.Definition]),
+		Nodes: make(internal.AnyMap[*Class]),
 	}
 
 	for _, o := range []Option{
 		my.expression,
 		my.tableOption,
-		my.buildOption,
 		my.inputOption,
 		my.whereOption,
 		my.queryOption,
@@ -77,7 +71,7 @@ func (my *Metadata) Marshal() (string, error) {
 }
 
 func (my *Metadata) TableName(className string) (string, bool) {
-	class, ok := my.tree[className]
+	class, ok := my.Nodes[className]
 	if !ok {
 		return "", false
 	}
@@ -85,7 +79,7 @@ func (my *Metadata) TableName(className string) (string, bool) {
 }
 
 func (my *Metadata) ColumnName(className, fieldName string) (string, bool) {
-	class, ok := my.tree[className]
+	class, ok := my.Nodes[className]
 	if !ok {
 		return "", false
 	}
@@ -93,5 +87,5 @@ func (my *Metadata) ColumnName(className, fieldName string) (string, bool) {
 	if !ok {
 		return "", false
 	}
-	return field.Name, true
+	return field.Column, true
 }

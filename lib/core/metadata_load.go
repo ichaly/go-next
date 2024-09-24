@@ -5,66 +5,132 @@ import (
 	"github.com/duke-git/lancet/v2/maputil"
 	"github.com/ichaly/go-next/lib/core/internal"
 	"github.com/ichaly/go-next/lib/util"
+	"github.com/vektah/gqlparser/v2/ast"
 )
 
-type Input struct {
-	Name string
-	Type string
-}
-
 type Class struct {
+	Kind        ast.DefinitionKind
 	Name        string
+	Table       string
+	Fields      map[string]*Field
 	Description string
-	Fields      map[string]Field
 }
 
 type Field struct {
-	Type             string `gorm:"column:data_type;"`
-	Name             string `gorm:"column:column_name;"`
-	Table            string `gorm:"column:table_name;"`
-	IsPrimary        bool   `gorm:"column:is_primary;"`
-	IsForeign        bool   `gorm:"column:is_foreign;"`
-	IsNullable       bool   `gorm:"column:is_nullable;"`
-	IsIterable       bool   `gorm:"column:is_iterable;"`
-	Description      string `gorm:"column:column_description;"`
-	TableRelation    string `gorm:"column:table_relation;"`
-	ColumnRelation   string `gorm:"column:column_relation;"`
-	TableDescription string `gorm:"column:table_description;"`
+	Type        *ast.Type
+	Name        string
+	Path        string
+	Table       string
+	Column      string
+	Arguments   []*Input
+	Description string
+}
+
+type Input struct {
+	Name        string
+	Type        *ast.Type
+	Default     *Value
+	Description string
+}
+
+type Value struct {
 }
 
 func (my *Metadata) tableOption() error {
 	// 查询表结构
-	if err := my.db.Raw(pgsql).Scan(&my.list).Error; err != nil {
+	var list []*internal.Record
+	if err := my.db.Raw(pgsql).Scan(&list).Error; err != nil {
 		return err
 	}
 
-	my.tree, my.edge = make(internal.AnyMap[Class]), make(internal.AnyMap[internal.AnyMap[Field]])
-
-	for _, c := range my.list {
+	edge := make(internal.AnyMap[internal.AnyMap[*internal.Record]])
+	//构建节点信息
+	for _, r := range list {
 		//判断是否包含黑名单关键字,执行忽略跳过
-		if _, ok := util.ContainsAny(c.Name, my.cfg.BlockList...); ok {
+		if _, ok := util.ContainsAny(r.ColumnName, my.cfg.BlockList...); ok {
 			continue
 		}
-		if _, ok := util.ContainsAny(c.Table, my.cfg.BlockList...); ok {
+		if _, ok := util.ContainsAny(r.TableName, my.cfg.BlockList...); ok {
 			continue
 		}
 
 		//转化类型
-		c.Type = condition.TernaryOperator(c.IsPrimary, "ID", my.cfg.Mapping[c.Type])
+		r.DataType = condition.TernaryOperator(r.IsPrimary, "ID", my.cfg.Mapping[r.DataType])
 
 		//规范命名
-		table, column := my.Named(c.Table, c.Name)
+		table, column := my.Named(r.TableName, r.ColumnName)
+
+		//构建字段
+		field := &Field{
+			Type:        ast.NamedType(r.DataType, nil),
+			Name:        column,
+			Table:       r.TableName,
+			Column:      r.ColumnName,
+			Description: r.ColumnDescription,
+		}
 
 		//索引节点
-		maputil.GetOrSet(my.tree, table, Class{
-			Name:        c.Table,
-			Description: c.TableDescription,
-			Fields:      make(internal.AnyMap[Field]),
-		}).Fields[column] = c
+		maputil.GetOrSet(my.Nodes, table, &Class{
+			Name:        table,
+			Kind:        ast.Object,
+			Table:       r.TableName,
+			Description: r.TableDescription,
+			Fields:      make(internal.AnyMap[*Field]),
+		}).Fields[column] = field
 
 		//索引外键
-		if c.IsForeign {
-			maputil.GetOrSet(my.edge, table, make(map[string]Field))[column] = c
+		if r.IsForeign {
+			maputil.GetOrSet(edge, table, make(map[string]*internal.Record))[column] = r
+		}
+	}
+
+	//构建关联信息
+	for _, v := range edge {
+		for k, r := range v {
+			currentTable, currentColumn := my.Named(
+				r.TableName, r.ColumnName,
+				WithTrimSuffix(),
+				NamedRecursion(r, true),
+			)
+			//r.Path
+			foreignTable, foreignColumn := my.Named(
+				r.TableRelation,
+				r.ColumnRelation,
+				WithTrimSuffix(),
+				SwapPrimaryKey(currentTable),
+				JoinListSuffix(),
+				NamedRecursion(r, false),
+			)
+			println(k, currentTable, currentColumn, foreignTable, foreignColumn)
+			//OneToMany
+			my.Nodes[currentTable].Fields[currentColumn] = &Field{
+				Name:      currentColumn,
+				Type:      ast.NamedType(foreignTable, nil),
+				Arguments: inputs(foreignTable),
+			}
+			//ManyToOne
+			my.Nodes[foreignTable].Fields[foreignColumn] = &Field{
+				Name:      foreignColumn,
+				Type:      ast.ListType(ast.NamedType(currentTable, nil), nil),
+				Arguments: inputs(currentTable),
+			}
+			//ManyToMany
+			rest := maputil.OmitBy(v, func(key string, value *internal.Record) bool {
+				return k == key || value.TableName == r.TableName
+			})
+			for _, s := range rest {
+				table, column := my.Named(
+					s.TableName,
+					s.ColumnName,
+					WithTrimSuffix(),
+					JoinListSuffix(),
+				)
+				my.Nodes[foreignTable].Fields[column] = &Field{
+					Name:      column,
+					Type:      ast.ListType(ast.NamedType(table, nil), nil),
+					Arguments: inputs(table),
+				}
+			}
 		}
 	}
 
