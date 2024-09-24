@@ -92,7 +92,6 @@ func (my *Metadata) tableOption() error {
 				WithTrimSuffix(),
 				NamedRecursion(r, true),
 			)
-			//r.Path
 			foreignTable, foreignColumn := my.Named(
 				r.TableRelation,
 				r.ColumnRelation,
@@ -101,7 +100,6 @@ func (my *Metadata) tableOption() error {
 				JoinListSuffix(),
 				NamedRecursion(r, false),
 			)
-			println(k, currentTable, currentColumn, foreignTable, foreignColumn)
 			//OneToMany
 			my.Nodes[currentTable].Fields[currentColumn] = &Field{
 				Name:      currentColumn,
@@ -116,7 +114,7 @@ func (my *Metadata) tableOption() error {
 			}
 			//ManyToMany
 			rest := maputil.OmitBy(v, func(key string, value *internal.Record) bool {
-				return k == key || value.TableName == r.TableName
+				return k == key || value.TableRelation == r.TableName
 			})
 			for _, s := range rest {
 				table, column := my.Named(
