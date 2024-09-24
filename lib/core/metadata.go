@@ -75,7 +75,7 @@ func (my *Metadata) TableName(className string) (string, bool) {
 	if !ok {
 		return "", false
 	}
-	return class.Name, true
+	return class.Table, true
 }
 
 func (my *Metadata) ColumnName(className, fieldName string) (string, bool) {

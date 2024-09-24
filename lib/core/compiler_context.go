@@ -152,16 +152,18 @@ func (my *compilerContext) renderSelect(id int, field *ast.Field) {
 				my.WriteString(".")
 				my.Quoted(f.Name)
 			}
-
 			my.WriteString(` AS `)
 			my.Quoted(f.Name)
 		}
 	}
 	my.WriteString(`FROM ( SELECT `)
 	for i, s := range field.SelectionSet {
-		switch typ := s.(type) {
+		switch f := s.(type) {
 		case *ast.Field:
-			column, ok := my.meta.ColumnName(node.Name, typ.Name)
+			if _, ok := my.meta.Nodes[f.Definition.Type.Name()]; ok {
+				continue
+			}
+			column, ok := my.meta.ColumnName(node.Name, f.Name)
 			if !ok {
 				continue
 			}
@@ -172,11 +174,22 @@ func (my *compilerContext) renderSelect(id int, field *ast.Field) {
 			my.WriteString(".")
 			my.Quoted(column)
 			my.WriteString(` AS `)
-			my.Quoted(typ.Alias)
+			my.Quoted(f.Alias)
 		}
 	}
 	my.WriteString(` FROM `)
 	my.Quoted(table)
+
+	my.renderWhere(id, field)
+
 	my.WriteString(` LIMIT 20 ) AS`)
 	my.Quoted(alias)
+}
+
+func (my *compilerContext) renderWhere(id int, field *ast.Field) {
+	f := my.meta.Nodes[field.Definition.Type.Name()].Fields[field.Name]
+	if f == nil || f.Path == "" {
+		return
+	}
+	my.WriteString(` WHERE `)
 }
