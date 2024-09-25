@@ -8,6 +8,20 @@ import (
 	"github.com/vektah/gqlparser/v2/ast"
 )
 
+type Entry struct {
+	DataType          string `gorm:"column:data_type;"`
+	Nullable          bool   `gorm:"column:is_nullable;"`
+	Iterable          bool   `gorm:"column:is_iterable;"`
+	IsPrimary         bool   `gorm:"column:is_primary;"`
+	IsForeign         bool   `gorm:"column:is_foreign;"`
+	TableName         string `gorm:"column:table_name;"`
+	ColumnName        string `gorm:"column:column_name;"`
+	TableRelation     string `gorm:"column:table_relation;"`
+	ColumnRelation    string `gorm:"column:column_relation;"`
+	TableDescription  string `gorm:"column:table_description;"`
+	ColumnDescription string `gorm:"column:column_description;"`
+}
+
 type Class struct {
 	Kind        ast.DefinitionKind
 	Name        string
@@ -20,7 +34,7 @@ type Class struct {
 type Field struct {
 	Type        *ast.Type
 	Name        string
-	Path        string
+	Path        []*Entry
 	Table       string
 	Column      string
 	Custom      bool
@@ -40,12 +54,12 @@ type Value struct {
 
 func (my *Metadata) tableOption() error {
 	// 查询表结构
-	var list []*internal.Record
+	var list []*Entry
 	if err := my.db.Raw(pgsql).Scan(&list).Error; err != nil {
 		return err
 	}
 
-	edge := make(internal.AnyMap[internal.AnyMap[*internal.Record]])
+	edge := make(internal.AnyMap[internal.AnyMap[*Entry]])
 	//构建节点信息
 	for _, r := range list {
 		//判断是否包含黑名单关键字,执行忽略跳过
@@ -82,7 +96,7 @@ func (my *Metadata) tableOption() error {
 
 		//索引外键
 		if r.IsForeign {
-			maputil.GetOrSet(edge, table, make(map[string]*internal.Record))[column] = r
+			maputil.GetOrSet(edge, table, make(map[string]*Entry))[column] = r
 		}
 	}
 
@@ -102,22 +116,29 @@ func (my *Metadata) tableOption() error {
 				JoinListSuffix(),
 				NamedRecursion(r, false),
 			)
-			//OneToMany
+			//ManyToOne
 			my.Nodes[currentTable].Fields[currentColumn] = &Field{
-				Name:      currentColumn,
-				Type:      ast.NamedType(foreignTable, nil),
+				Name: currentColumn,
+				Type: ast.NamedType(foreignTable, nil),
+				Path: []*Entry{{
+					TableName:      r.TableRelation,
+					ColumnName:     r.ColumnRelation,
+					TableRelation:  r.TableName,
+					ColumnRelation: r.ColumnName,
+				}},
 				Custom:    true,
 				Arguments: inputs(foreignTable),
 			}
-			//ManyToOne
+			//OneToMany
 			my.Nodes[foreignTable].Fields[foreignColumn] = &Field{
 				Name:      foreignColumn,
 				Type:      ast.ListType(ast.NamedType(currentTable, nil), nil),
+				Path:      []*Entry{r},
 				Custom:    true,
 				Arguments: inputs(currentTable),
 			}
 			//ManyToMany
-			rest := maputil.OmitBy(v, func(key string, value *internal.Record) bool {
+			rest := maputil.OmitBy(v, func(key string, value *Entry) bool {
 				return k == key || value.TableRelation == r.TableName
 			})
 			for _, s := range rest {

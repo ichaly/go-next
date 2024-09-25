@@ -48,7 +48,7 @@ func (my *compilerContext) RenderQuery(set ast.SelectionSet) {
 		my.WriteString(`.json`)
 	})
 	my.WriteString(`) AS __root FROM (SELECT true) AS __root_x`)
-	my.renderField(set)
+	my.renderField(0, set)
 }
 
 func (my *compilerContext) fieldFlag(field *ast.Field) int {
@@ -68,7 +68,7 @@ func (my *compilerContext) eachField(set ast.SelectionSet, callback func(index i
 	}
 }
 
-func (my *compilerContext) renderField(set ast.SelectionSet) {
+func (my *compilerContext) renderField(pid int, set ast.SelectionSet) {
 	my.eachField(set, func(index int, field *ast.Field) {
 		id := my.fieldFlag(field)
 
@@ -76,9 +76,9 @@ func (my *compilerContext) renderField(set ast.SelectionSet) {
 		my.renderList(id)
 		my.renderJson(id)
 
-		my.renderSelect(id, field)
+		my.renderSelect(id, pid, field)
 		if len(field.SelectionSet) > 0 {
-			my.renderField(field.SelectionSet)
+			my.renderField(id, field.SelectionSet)
 		}
 
 		my.renderJsonClose(id)
@@ -119,7 +119,7 @@ func (my *compilerContext) renderJsonClose(id int) {
 	my.WriteInt(id)
 }
 
-func (my *compilerContext) renderSelect(id int, field *ast.Field) {
+func (my *compilerContext) renderSelect(id, pid int, field *ast.Field) {
 	name := field.Definition.Type.Name()
 	table, ok := my.meta.TableName(name, false)
 	if !ok {
@@ -169,16 +169,34 @@ func (my *compilerContext) renderSelect(id int, field *ast.Field) {
 	my.WriteString(` FROM `)
 	my.Quoted(table)
 
-	my.renderWhere(id, field)
+	my.renderWhere(id, pid, field)
 
 	my.WriteString(` LIMIT 20 ) AS`)
 	my.Quoted(alias)
 }
 
-func (my *compilerContext) renderWhere(id int, field *ast.Field) {
-	f := my.meta.Nodes[field.Definition.Type.Name()].Fields[field.Name]
-	if f == nil || f.Path == "" {
-		return
+func (my *compilerContext) renderWhere(id, pid int, f *ast.Field) {
+	class := my.meta.Nodes[f.ObjectDefinition.Name]
+	field, ok := class.Fields[f.Name]
+	if ok && len(field.Path) > 0 {
+		my.WriteString(` WHERE (`)
+
+		for i, v := range field.Path {
+			if i != 0 {
+				my.WriteString(" AND ")
+			}
+
+			my.Quoted(v.TableName)
+			my.WriteString(".")
+			my.Quoted(v.ColumnName)
+
+			my.WriteString(" = ")
+
+			my.Quoted(util.JoinString(v.TableRelation, "_", convertor.ToString(pid)))
+			my.WriteString(".")
+			my.Quoted(v.ColumnRelation)
+		}
+
+		my.WriteString(`)`)
 	}
-	my.WriteString(` WHERE `)
 }

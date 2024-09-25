@@ -3,7 +3,6 @@ package core
 import (
 	"github.com/duke-git/lancet/v2/condition"
 	"github.com/iancoleman/strcase"
-	"github.com/ichaly/go-next/lib/core/internal"
 	"github.com/ichaly/go-next/lib/util"
 	"strings"
 )
@@ -55,7 +54,7 @@ func SwapPrimaryKey(table string) NamedOption {
 }
 
 // NamedRecursion 重命名递归关联列名
-func NamedRecursion(c *internal.Record, b bool) NamedOption {
+func NamedRecursion(c *Entry, b bool) NamedOption {
 	return func(t, s string) string {
 		if c.TableRelation == c.TableName {
 			s = condition.TernaryOperator(b, "parent", "children")
