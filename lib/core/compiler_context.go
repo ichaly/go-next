@@ -12,12 +12,6 @@ type compilerContext struct {
 	meta *Metadata
 }
 
-type compilerElement struct {
-	index int
-	level int
-	field *ast.Field
-}
-
 func newContext(m *Metadata) *compilerContext {
 	return &compilerContext{meta: m, buf: bytes.NewBuffer([]byte{})}
 }
@@ -126,16 +120,14 @@ func (my *compilerContext) renderJsonClose(id int) {
 }
 
 func (my *compilerContext) renderSelect(id int, field *ast.Field) {
-	node, ok := my.meta.Nodes[field.Definition.Type.Name()]
-	if !ok {
-		return
-	}
-	table, ok := my.meta.TableName(node.Name)
+	name := field.Definition.Type.Name()
+	table, ok := my.meta.TableName(name, false)
 	if !ok {
 		return
 	}
 
 	alias := util.JoinString(table, "_", convertor.ToString(id))
+
 	my.WriteString(` SELECT `)
 	for i, s := range field.SelectionSet {
 		switch f := s.(type) {
@@ -143,7 +135,7 @@ func (my *compilerContext) renderSelect(id int, field *ast.Field) {
 			if i != 0 {
 				my.WriteString(",")
 			}
-			if _, ok := my.meta.Nodes[f.Definition.Type.Name()]; ok {
+			if _, ok := my.meta.TableName(f.Definition.Type.Name(), false); ok {
 				my.Quoted(util.JoinString("__sj_", convertor.ToString(my.fieldFlag(f))))
 				my.WriteString(".")
 				my.Quoted("json")
@@ -160,10 +152,7 @@ func (my *compilerContext) renderSelect(id int, field *ast.Field) {
 	for i, s := range field.SelectionSet {
 		switch f := s.(type) {
 		case *ast.Field:
-			if _, ok := my.meta.Nodes[f.Definition.Type.Name()]; ok {
-				continue
-			}
-			column, ok := my.meta.ColumnName(node.Name, f.Name)
+			column, ok := my.meta.ColumnName(name, f.Name, false)
 			if !ok {
 				continue
 			}

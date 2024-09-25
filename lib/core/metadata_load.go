@@ -13,6 +13,7 @@ type Class struct {
 	Name        string
 	Table       string
 	Fields      map[string]*Field
+	Custom      bool
 	Description string
 }
 
@@ -22,6 +23,7 @@ type Field struct {
 	Path        string
 	Table       string
 	Column      string
+	Custom      bool
 	Arguments   []*Input
 	Description string
 }
@@ -104,12 +106,14 @@ func (my *Metadata) tableOption() error {
 			my.Nodes[currentTable].Fields[currentColumn] = &Field{
 				Name:      currentColumn,
 				Type:      ast.NamedType(foreignTable, nil),
+				Custom:    true,
 				Arguments: inputs(foreignTable),
 			}
 			//ManyToOne
 			my.Nodes[foreignTable].Fields[foreignColumn] = &Field{
 				Name:      foreignColumn,
 				Type:      ast.ListType(ast.NamedType(currentTable, nil), nil),
+				Custom:    true,
 				Arguments: inputs(currentTable),
 			}
 			//ManyToMany
@@ -126,6 +130,7 @@ func (my *Metadata) tableOption() error {
 				my.Nodes[foreignTable].Fields[column] = &Field{
 					Name:      column,
 					Type:      ast.ListType(ast.NamedType(table, nil), nil),
+					Custom:    true,
 					Arguments: inputs(table),
 				}
 			}
