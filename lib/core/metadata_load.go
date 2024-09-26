@@ -27,7 +27,7 @@ type Class struct {
 	Name        string
 	Table       string
 	Fields      map[string]*Field
-	Custom      bool
+	Virtual     bool
 	Description string
 }
 
@@ -37,7 +37,7 @@ type Field struct {
 	Path         []*Entry
 	Table        string
 	Column       string
-	Custom       bool
+	Virtual      bool
 	Arguments    []*Input
 	Description  string
 	RelationKind string
@@ -131,17 +131,17 @@ func (my *Metadata) tableOption() error {
 					TableRelation:  r.TableName,
 					ColumnRelation: r.ColumnName,
 				}},
-				Table:     r.TableName,
-				Column:    r.ColumnName,
-				//Custom:    true,
+				Table:  r.TableName,
+				Column: r.ColumnName,
+				//Virtual:    true,
 				Arguments: inputs(foreignTable),
 			}
 			//OneToMany
 			my.Nodes[foreignTable].Fields[foreignColumn] = &Field{
-				Name:      foreignColumn,
-				Type:      ast.ListType(ast.NamedType(currentTable, nil), nil),
-				Path:      []*Entry{r},
-				//Custom:    true,
+				Name: foreignColumn,
+				Type: ast.ListType(ast.NamedType(currentTable, nil), nil),
+				Path: []*Entry{r},
+				//Virtual:    true,
 				Arguments: inputs(currentTable),
 			}
 			//ManyToMany
@@ -158,7 +158,7 @@ func (my *Metadata) tableOption() error {
 				my.Nodes[foreignTable].Fields[column] = &Field{
 					Name:      column,
 					Type:      ast.ListType(ast.NamedType(table, nil), nil),
-					Custom:    true,
+					Virtual:   true,
 					Arguments: inputs(table),
 				}
 			}

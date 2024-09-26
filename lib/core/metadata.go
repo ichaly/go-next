@@ -70,21 +70,21 @@ func (my *Metadata) Marshal() (string, error) {
 	return w.String(), nil
 }
 
-func (my *Metadata) TableName(className string, custom bool) (string, bool) {
+func (my *Metadata) TableName(className string, virtual bool) (string, bool) {
 	class, ok := my.Nodes[className]
-	if !ok || class.Custom != custom {
+	if !ok || class.Virtual != virtual {
 		return "", false
 	}
 	return class.Table, len(class.Table) > 0
 }
 
-func (my *Metadata) ColumnName(className, fieldName string, custom bool) (string, bool) {
+func (my *Metadata) ColumnName(className, fieldName string, virtual bool) (string, bool) {
 	class, ok := my.Nodes[className]
-	if !ok || class.Custom != custom {
+	if !ok || class.Virtual != virtual {
 		return "", false
 	}
 	field, ok := class.Fields[fieldName]
-	if !ok || field.Custom != custom {
+	if !ok || field.Virtual != virtual {
 		return "", false
 	}
 	return field.Column, len(field.Column) > 0
