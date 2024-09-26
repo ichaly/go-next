@@ -145,7 +145,7 @@ func (my *compilerContext) renderSelect(id, pid int, field *ast.Field) {
 				my.Quoted(f.Name)
 			}
 			my.WriteString(` AS `)
-			my.Quoted(f.Name)
+			my.Quoted(f.Alias)
 		}
 	}
 	my.WriteString(`FROM ( SELECT `)
@@ -162,8 +162,6 @@ func (my *compilerContext) renderSelect(id, pid int, field *ast.Field) {
 			my.Quoted(table)
 			my.WriteString(".")
 			my.Quoted(column)
-			my.WriteString(` AS `)
-			my.Quoted(f.Alias)
 		}
 	}
 	my.WriteString(` FROM `)

@@ -7,6 +7,12 @@ const (
 	SUBSCRIPTION = "Subscription"
 )
 
+const (
+	ONE_TO_MANY  = "OneToMany"
+	MANY_TO_ONE  = "ManyToOne"
+	MANY_TO_MANY = "ManyToMany"
+)
+
 // tag名
 const (
 	TAG_NAME        = "name"

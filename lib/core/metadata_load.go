@@ -32,14 +32,19 @@ type Class struct {
 }
 
 type Field struct {
-	Type        *ast.Type
-	Name        string
-	Path        []*Entry
-	Table       string
-	Column      string
-	Custom      bool
-	Arguments   []*Input
-	Description string
+	Name         string
+	Type         *ast.Type
+	Path         []*Entry
+	Table        string
+	Column       string
+	Custom       bool
+	Arguments    []*Input
+	Description  string
+	RelationKind string
+}
+
+type Chain struct {
+	Kind string
 }
 
 type Input struct {
@@ -126,7 +131,9 @@ func (my *Metadata) tableOption() error {
 					TableRelation:  r.TableName,
 					ColumnRelation: r.ColumnName,
 				}},
-				Custom:    true,
+				Table:     r.TableName,
+				Column:    r.ColumnName,
+				//Custom:    true,
 				Arguments: inputs(foreignTable),
 			}
 			//OneToMany
@@ -134,7 +141,7 @@ func (my *Metadata) tableOption() error {
 				Name:      foreignColumn,
 				Type:      ast.ListType(ast.NamedType(currentTable, nil), nil),
 				Path:      []*Entry{r},
-				Custom:    true,
+				//Custom:    true,
 				Arguments: inputs(currentTable),
 			}
 			//ManyToMany

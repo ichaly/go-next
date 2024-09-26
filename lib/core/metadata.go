@@ -75,7 +75,7 @@ func (my *Metadata) TableName(className string, custom bool) (string, bool) {
 	if !ok || class.Custom != custom {
 		return "", false
 	}
-	return class.Table, true
+	return class.Table, len(class.Table) > 0
 }
 
 func (my *Metadata) ColumnName(className, fieldName string, custom bool) (string, bool) {
@@ -87,5 +87,5 @@ func (my *Metadata) ColumnName(className, fieldName string, custom bool) (string
 	if !ok || field.Custom != custom {
 		return "", false
 	}
-	return field.Column, true
+	return field.Column, len(field.Column) > 0
 }
