@@ -70,6 +70,26 @@ func (my *Metadata) Marshal() (string, error) {
 	return w.String(), nil
 }
 
+func (my *Metadata) FindClass(className string, virtual bool) (*Class, bool) {
+	class, ok := my.Nodes[className]
+	if !ok || class.Virtual != virtual {
+		return nil, false
+	}
+	return class, true
+}
+
+func (my *Metadata) FindField(className, fieldName string, virtual bool) (*Field, bool) {
+	class, ok := my.Nodes[className]
+	if !ok || class.Virtual != virtual {
+		return nil, false
+	}
+	field, ok := class.Fields[fieldName]
+	if !ok || field.Virtual != virtual {
+		return nil, false
+	}
+	return field, true
+}
+
 func (my *Metadata) TableName(className string, virtual bool) (string, bool) {
 	class, ok := my.Nodes[className]
 	if !ok || class.Virtual != virtual {

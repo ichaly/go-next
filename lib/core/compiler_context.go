@@ -132,10 +132,14 @@ func (my *compilerContext) renderSelect(id, pid int, field *ast.Field) {
 	for i, s := range field.SelectionSet {
 		switch f := s.(type) {
 		case *ast.Field:
+			_field, ok := my.meta.FindField(name, f.Name, false)
+			if !ok {
+				continue
+			}
 			if i != 0 {
 				my.WriteString(",")
 			}
-			if _, ok := my.meta.TableName(f.Definition.Type.Name(), false); ok {
+			if _field.Chain != nil {
 				my.Quoted(util.JoinString("__sj_", convertor.ToString(my.fieldFlag(f))))
 				my.WriteString(".")
 				my.Quoted("json")

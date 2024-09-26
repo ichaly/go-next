@@ -35,6 +35,7 @@ type Field struct {
 	Name         string
 	Type         *ast.Type
 	Path         []*Entry
+	Chain        *Chain
 	Table        string
 	Column       string
 	Virtual      bool
@@ -131,9 +132,9 @@ func (my *Metadata) tableOption() error {
 					TableRelation:  r.TableName,
 					ColumnRelation: r.ColumnName,
 				}},
-				Table:  r.TableName,
-				Column: r.ColumnName,
-				//Virtual:    true,
+				Chain:     &Chain{Kind: MANY_TO_ONE},
+				Table:     r.TableName,
+				Column:    r.ColumnName,
 				Arguments: inputs(foreignTable),
 			}
 			//OneToMany
@@ -141,7 +142,9 @@ func (my *Metadata) tableOption() error {
 				Name: foreignColumn,
 				Type: ast.ListType(ast.NamedType(currentTable, nil), nil),
 				Path: []*Entry{r},
-				//Virtual:    true,
+				Chain: &Chain{Kind: ONE_TO_MANY},
+				//Table:     r.TableRelation,
+				//Column:    r.ColumnRelation,
 				Arguments: inputs(currentTable),
 			}
 			//ManyToMany

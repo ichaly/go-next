@@ -48,15 +48,16 @@ var inputs = func(name string) []*Input {
 
 func (my *Metadata) queryOption() error {
 	//构建Query
-	query := &Class{Name: QUERY, Fields: make(map[string]*Field)}
+	query := &Class{Name: QUERY, Fields: make(map[string]*Field), Virtual: true}
 	for k, v := range my.Nodes {
 		if v.Kind != ast.Object {
 			continue
 		}
 		_, name := my.Named(query.Name, k, JoinListSuffix())
 		query.Fields[name] = &Field{
-			Name: name,
-			Type: ast.ListType(ast.NamedType(v.Name, nil), nil),
+			Name:    name,
+			Type:    ast.ListType(ast.NamedType(v.Name, nil), nil),
+			Virtual: query.Virtual,
 			Arguments: append([]*Input{
 				{
 					Name: "id",
