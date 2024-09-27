@@ -139,7 +139,7 @@ func (my *compilerContext) renderSelect(id, pid int, field *ast.Field) {
 			if i != 0 {
 				my.WriteString(",")
 			}
-			if _field.Chain != nil {
+			if _field.Link != nil {
 				my.Quoted(util.JoinString("__sj_", convertor.ToString(my.fieldFlag(f))))
 				my.WriteString(".")
 				my.Quoted("json")
@@ -156,21 +156,22 @@ func (my *compilerContext) renderSelect(id, pid int, field *ast.Field) {
 	for i, s := range field.SelectionSet {
 		switch f := s.(type) {
 		case *ast.Field:
-			column, ok := my.meta.ColumnName(name, f.Name, false)
-			if !ok {
+			_field, ok := my.meta.FindField(f.ObjectDefinition.Name, f.Name, false)
+			if !ok || len(_field.Table) == 0 || len(_field.Column) == 0 {
 				continue
 			}
 			if i != 0 {
 				my.WriteString(",")
 			}
-			my.Quoted(table)
+			my.Quoted(_field.Table)
 			my.WriteString(".")
-			my.Quoted(column)
+			my.Quoted(_field.Column)
 		}
 	}
 	my.WriteString(` FROM `)
 	my.Quoted(table)
 
+	my.renderInner(id, pid, field)
 	my.renderWhere(id, pid, field)
 
 	my.WriteString(` LIMIT 20 ) AS`)
@@ -197,7 +198,7 @@ func (my *compilerContext) renderWhere(id, pid int, f *ast.Field) {
 			my.Quoted(v.ColumnName)
 
 			my.WriteString(" = ")
-			if field.Chain.Kind == MANY_TO_MANY {
+			if field.Link.Kind == MANY_TO_MANY {
 				my.Quoted(v.TableRelation)
 			} else {
 				my.Quoted(util.JoinString(v.TableRelation, "_", convertor.ToString(pid)))
