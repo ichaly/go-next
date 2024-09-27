@@ -168,7 +168,6 @@ func (my *Metadata) tableOption() error {
 						ColumnRelation: s.ColumnName,
 					}},
 					Chain:     &Chain{Kind: MANY_TO_MANY},
-					Virtual:   true,
 					Arguments: inputs(class),
 				}
 			}

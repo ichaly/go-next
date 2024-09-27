@@ -132,7 +132,7 @@ func (my *compilerContext) renderSelect(id, pid int, field *ast.Field) {
 	for i, s := range field.SelectionSet {
 		switch f := s.(type) {
 		case *ast.Field:
-			_field, ok := my.meta.FindField(name, f.Name, false)
+			_field, ok := my.meta.FindField(f.ObjectDefinition.Name, f.Name, false)
 			if !ok {
 				continue
 			}
