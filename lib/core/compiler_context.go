@@ -60,7 +60,7 @@ func (my *compilerContext) eachField(set ast.SelectionSet, callback func(index i
 	for i, s := range set {
 		switch t := s.(type) {
 		case *ast.Field:
-			_, ok := my.meta.Nodes[t.Definition.Type.Name()]
+			_, ok := my.meta.FindClass(t.Definition.Type.Name(), false)
 			if ok && callback != nil {
 				callback(i, t)
 			}
