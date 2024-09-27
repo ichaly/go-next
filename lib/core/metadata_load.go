@@ -153,7 +153,7 @@ func (my *Metadata) tableOption() error {
 			})
 			for _, s := range rest {
 				table, column := my.Named(
-					s.TableName,
+					s.TableRelation,
 					s.ColumnName,
 					WithTrimSuffix(),
 					JoinListSuffix(),
@@ -161,6 +161,13 @@ func (my *Metadata) tableOption() error {
 				my.Nodes[foreignTable].Fields[column] = &Field{
 					Name:      column,
 					Type:      ast.ListType(ast.NamedType(table, nil), nil),
+					Path: []*Entry{{
+						TableName:      s.TableRelation,
+						ColumnName:     r.ColumnRelation,
+						TableRelation:  r.TableName,
+						ColumnRelation: s.ColumnName,
+					}},
+					Chain: &Chain{Kind: MANY_TO_MANY},
 					Virtual:   true,
 					Arguments: inputs(table),
 				}

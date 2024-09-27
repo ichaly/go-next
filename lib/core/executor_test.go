@@ -54,6 +54,6 @@ func (my *_ExecutorSuite) TestExecutorMany2One() {
 func (my *_ExecutorSuite) TestExecutorMany2Many() {
 	e, err := NewExecutor(my.c, my.s)
 	my.Require().NoError(err)
-	r := e.Execute(context.Background(), `query{userList{id teamList{id}}}`, nil)
+	r := e.Execute(context.Background(), `query{userList{key:id teamList{key:id}}}`, nil)
 	my.T().Log(r)
 }

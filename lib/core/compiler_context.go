@@ -177,6 +177,10 @@ func (my *compilerContext) renderSelect(id, pid int, field *ast.Field) {
 	my.Quoted(alias)
 }
 
+func (my *compilerContext) renderInner(id, pid int, f *ast.Field) {
+
+}
+
 func (my *compilerContext) renderWhere(id, pid int, f *ast.Field) {
 	class := my.meta.Nodes[f.ObjectDefinition.Name]
 	field, ok := class.Fields[f.Name]
@@ -193,8 +197,11 @@ func (my *compilerContext) renderWhere(id, pid int, f *ast.Field) {
 			my.Quoted(v.ColumnName)
 
 			my.WriteString(" = ")
-
-			my.Quoted(util.JoinString(v.TableRelation, "_", convertor.ToString(pid)))
+			if field.Chain.Kind == MANY_TO_MANY {
+				my.Quoted(v.TableRelation)
+			} else {
+				my.Quoted(util.JoinString(v.TableRelation, "_", convertor.ToString(pid)))
+			}
 			my.WriteString(".")
 			my.Quoted(v.ColumnRelation)
 		}
