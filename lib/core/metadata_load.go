@@ -35,6 +35,7 @@ type Field struct {
 	Name         string
 	Type         *ast.Type
 	Path         []*Entry
+	Join         []*Entry
 	Link         *Chain
 	Table        string
 	Column       string
@@ -108,66 +109,67 @@ func (my *Metadata) tableOption() error {
 
 	//构建关联信息
 	for _, v := range edge {
-		for k, r := range v {
+		for k, e := range v {
 			currentClass, currentField := my.Named(
-				r.TableName, r.ColumnName,
+				e.TableName, e.ColumnName,
 				WithTrimSuffix(),
-				NamedRecursion(r, true),
+				NamedRecursion(e, true),
 			)
 			foreignClass, foreignField := my.Named(
-				r.TableRelation,
-				r.ColumnRelation,
+				e.TableRelation,
+				e.ColumnRelation,
 				WithTrimSuffix(),
 				SwapPrimaryKey(currentClass),
 				JoinListSuffix(),
-				NamedRecursion(r, false),
+				NamedRecursion(e, false),
 			)
 			//ManyToOne
 			my.Nodes[currentClass].Fields[currentField] = &Field{
 				Name: currentField,
 				Type: ast.NamedType(foreignClass, nil),
-				Path: []*Entry{{
-					TableName:      r.TableRelation,
-					ColumnName:     r.ColumnRelation,
-					TableRelation:  r.TableName,
-					ColumnRelation: r.ColumnName,
-				}},
 				Link:      &Chain{Kind: MANY_TO_ONE},
-				Table:     r.TableName,
-				Column:    r.ColumnName,
+				Path: []*Entry{{
+					TableName:      e.TableRelation,
+					ColumnName:     e.ColumnRelation,
+					TableRelation:  e.TableName,
+					ColumnRelation: e.ColumnName,
+				}},
+				Table:     e.TableName,
+				Column:    e.ColumnName,
 				Arguments: inputs(foreignClass),
 			}
 			//OneToMany
 			my.Nodes[foreignClass].Fields[foreignField] = &Field{
 				Name: foreignField,
 				Type: ast.ListType(ast.NamedType(currentClass, nil), nil),
-				Path: []*Entry{r},
 				Link: &Chain{Kind: ONE_TO_MANY},
-				//Table:     r.TableRelation,
-				//Column:    r.ColumnRelation,
+				Path: []*Entry{e},
+				//Table:     e.TableRelation,
+				//Column:    e.ColumnRelation,
 				Arguments: inputs(currentClass),
 			}
 			//ManyToMany
 			rest := maputil.OmitBy(v, func(key string, value *Entry) bool {
-				return k == key || value.TableRelation == r.TableName
+				return k == key || value.TableRelation == e.TableName
 			})
-			for _, s := range rest {
+			for _, r := range rest {
 				class, field := my.Named(
-					s.TableRelation,
-					s.ColumnName,
+					r.TableRelation,
+					r.ColumnName,
 					WithTrimSuffix(),
 					JoinListSuffix(),
 				)
 				my.Nodes[foreignClass].Fields[field] = &Field{
 					Name: field,
 					Type: ast.ListType(ast.NamedType(class, nil), nil),
-					Path: []*Entry{{
-						TableName:      s.TableRelation,
-						ColumnName:     r.ColumnRelation,
-						TableRelation:  r.TableName,
-						ColumnRelation: s.ColumnName,
-					}},
 					Link:      &Chain{Kind: MANY_TO_MANY},
+					Path: []*Entry{{
+						TableName:      r.TableRelation,
+						ColumnName:     e.ColumnRelation,
+						TableRelation:  e.TableName,
+						ColumnRelation: r.ColumnName,
+					}},
+					Join:[]*Entry{e},
 					Arguments: inputs(class),
 				}
 			}

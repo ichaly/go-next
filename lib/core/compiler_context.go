@@ -179,7 +179,23 @@ func (my *compilerContext) renderSelect(id, pid int, field *ast.Field) {
 }
 
 func (my *compilerContext) renderInner(id, pid int, f *ast.Field) {
-
+	field, ok := my.meta.FindField(f.ObjectDefinition.Name, f.Name, false)
+	if !ok || len(field.Join) == 0 {
+		return
+	}
+	for _, v := range field.Join {
+		my.WriteString(` INNER JOIN `)
+		my.WriteString(v.TableName)
+		my.WriteString(` ON ((`)
+		my.Quoted(v.TableName)
+		my.WriteString(` . `)
+		my.Quoted(v.ColumnName)
+		my.WriteString(` = `)
+		my.Quoted(util.JoinString(v.TableRelation, "_", convertor.ToString(pid)))
+		my.WriteString(` . `)
+		my.Quoted(v.ColumnRelation)
+		my.WriteString(`))`)
+	}
 }
 
 func (my *compilerContext) renderWhere(id, pid int, f *ast.Field) {
