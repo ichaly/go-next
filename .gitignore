@@ -278,3 +278,4 @@ Temporary Items
 go.work.sum
 /tmp/testdata/
 /tmp/out/
+**/.idea
