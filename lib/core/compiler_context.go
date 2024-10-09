@@ -119,9 +119,8 @@ func (my *compilerContext) renderJsonClose(id int) {
 	my.WriteInt(id)
 }
 
-func (my *compilerContext) renderSelect(id, pid int, field *ast.Field) {
-	name := field.Definition.Type.Name()
-	table, ok := my.meta.TableName(name, false)
+func (my *compilerContext) renderSelect(id, pid int, f *ast.Field) {
+	table, ok := my.meta.TableName(f.Definition.Type.Name(), false)
 	if !ok {
 		return
 	}
@@ -129,7 +128,7 @@ func (my *compilerContext) renderSelect(id, pid int, field *ast.Field) {
 	alias := util.JoinString(table, "_", convertor.ToString(id))
 
 	my.WriteString(` SELECT `)
-	for i, s := range field.SelectionSet {
+	for i, s := range f.SelectionSet {
 		switch f := s.(type) {
 		case *ast.Field:
 			_field, ok := my.meta.FindField(f.ObjectDefinition.Name, f.Name, false)
@@ -153,26 +152,12 @@ func (my *compilerContext) renderSelect(id, pid int, field *ast.Field) {
 		}
 	}
 	my.WriteString(`FROM ( SELECT `)
-	for i, s := range field.SelectionSet {
-		switch f := s.(type) {
-		case *ast.Field:
-			_field, ok := my.meta.FindField(f.ObjectDefinition.Name, f.Name, false)
-			if !ok || len(_field.Table) == 0 || len(_field.Column) == 0 {
-				continue
-			}
-			if i != 0 {
-				my.WriteString(",")
-			}
-			my.Quoted(_field.Table)
-			my.WriteString(".")
-			my.Quoted(_field.Column)
-		}
+	field, ok := my.meta.FindField(f.Definition.Type.Name(), f.Name, false)
+	if ok && field.Link != nil {
+		my.renderRecursiveSelect(id, pid, f)
+	} else {
+		my.renderUniversalSelect(id, pid, f)
 	}
-	my.WriteString(` FROM `)
-	my.Quoted(table)
-
-	my.renderInner(id, pid, field)
-	my.renderWhere(id, pid, field)
 
 	my.WriteString(` LIMIT 20 ) AS`)
 	my.Quoted(alias)
@@ -225,4 +210,32 @@ func (my *compilerContext) renderWhere(id, pid int, f *ast.Field) {
 
 		my.WriteString(`)`)
 	}
+}
+
+func (my *compilerContext) renderUniversalSelect(id, pid int, f *ast.Field) {
+	table, _ := my.meta.TableName(f.Definition.Type.Name(), false)
+	for i, s := range f.SelectionSet {
+		switch f := s.(type) {
+		case *ast.Field:
+			_field, ok := my.meta.FindField(f.ObjectDefinition.Name, f.Name, false)
+			if !ok || len(_field.Table) == 0 || len(_field.Column) == 0 {
+				continue
+			}
+			if i != 0 {
+				my.WriteString(",")
+			}
+			my.Quoted(_field.Table)
+			my.WriteString(".")
+			my.Quoted(_field.Column)
+		}
+	}
+	my.WriteString(` FROM `)
+	my.Quoted(table)
+
+	my.renderInner(id, pid, f)
+	my.renderWhere(id, pid, f)
+}
+
+func (my *compilerContext) renderRecursiveSelect(id, pid int, f *ast.Field) {
+
 }
