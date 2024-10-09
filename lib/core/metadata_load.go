@@ -127,7 +127,7 @@ func (my *Metadata) tableOption() error {
 			my.Nodes[currentClass].Fields[currentField] = &Field{
 				Name: currentField,
 				Type: ast.NamedType(foreignClass, nil),
-				Link:      &Chain{Kind: MANY_TO_ONE},
+				Link: &Chain{Kind: MANY_TO_ONE},
 				Path: []*Entry{{
 					TableName:      e.TableRelation,
 					ColumnName:     e.ColumnRelation,
@@ -142,7 +142,7 @@ func (my *Metadata) tableOption() error {
 			my.Nodes[foreignClass].Fields[foreignField] = &Field{
 				Name: foreignField,
 				Type: ast.ListType(ast.NamedType(currentClass, nil), nil),
-				Link: &Chain{Kind: ONE_TO_MANY},
+				Link: &Chain{Kind: condition.TernaryOperator(e.TableRelation == e.TableName, RECURSIVE, ONE_TO_MANY)},
 				Path: []*Entry{e},
 				//Table:     e.TableRelation,
 				//Column:    e.ColumnRelation,
@@ -162,14 +162,14 @@ func (my *Metadata) tableOption() error {
 				my.Nodes[foreignClass].Fields[field] = &Field{
 					Name: field,
 					Type: ast.ListType(ast.NamedType(class, nil), nil),
-					Link:      &Chain{Kind: MANY_TO_MANY},
+					Link: &Chain{Kind: MANY_TO_MANY},
 					Path: []*Entry{{
 						TableName:      r.TableRelation,
 						ColumnName:     e.ColumnRelation,
 						TableRelation:  e.TableName,
 						ColumnRelation: r.ColumnName,
 					}},
-					Join:[]*Entry{e},
+					Join:      []*Entry{e},
 					Arguments: inputs(class),
 				}
 			}
