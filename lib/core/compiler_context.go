@@ -131,14 +131,14 @@ func (my *compilerContext) renderSelect(id, pid int, f *ast.Field) {
 	for i, s := range f.SelectionSet {
 		switch f := s.(type) {
 		case *ast.Field:
-			_field, ok := my.meta.FindField(f.ObjectDefinition.Name, f.Name, false)
+			field, ok := my.meta.FindField(f.ObjectDefinition.Name, f.Name, false)
 			if !ok {
 				continue
 			}
 			if i != 0 {
 				my.WriteString(",")
 			}
-			if _field.Link != nil {
+			if len(field.Link) > 0 {
 				my.Quoted(util.JoinString("__sj_", convertor.ToString(my.fieldFlag(f))))
 				my.WriteString(".")
 				my.Quoted("json")
@@ -151,9 +151,9 @@ func (my *compilerContext) renderSelect(id, pid int, f *ast.Field) {
 			my.Quoted(f.Alias)
 		}
 	}
-	my.WriteString(`FROM ( SELECT `)
+	my.WriteString(`FROM (`)
 	field, ok := my.meta.FindField(f.Definition.Type.Name(), f.Name, false)
-	if ok && field.Link != nil {
+	if ok && field.Link == RECURSIVE {
 		my.renderRecursiveSelect(id, pid, f)
 	} else {
 		my.renderUniversalSelect(id, pid, f)
@@ -199,7 +199,7 @@ func (my *compilerContext) renderWhere(id, pid int, f *ast.Field) {
 			my.Quoted(v.ColumnName)
 
 			my.WriteString(" = ")
-			if field.Link.Kind == MANY_TO_MANY {
+			if field.Link == MANY_TO_MANY {
 				my.Quoted(v.TableRelation)
 			} else {
 				my.Quoted(util.JoinString(v.TableRelation, "_", convertor.ToString(pid)))
@@ -214,6 +214,8 @@ func (my *compilerContext) renderWhere(id, pid int, f *ast.Field) {
 
 func (my *compilerContext) renderUniversalSelect(id, pid int, f *ast.Field) {
 	table, _ := my.meta.TableName(f.Definition.Type.Name(), false)
+
+	my.WriteString(` SELECT `)
 	for i, s := range f.SelectionSet {
 		switch f := s.(type) {
 		case *ast.Field:
@@ -237,5 +239,87 @@ func (my *compilerContext) renderUniversalSelect(id, pid int, f *ast.Field) {
 }
 
 func (my *compilerContext) renderRecursiveSelect(id, pid int, f *ast.Field) {
+	field, _ := my.meta.FindField(f.Definition.Type.Name(), f.Name, false)
+	alias := util.JoinString("__rcte_", field.Table)
+	table := field.Table
 
+	my.WriteString(` WITH RECURSIVE `)
+	my.Quoted(alias)
+	my.WriteString(` AS ((SELECT `)
+	for i, s := range f.SelectionSet {
+		switch f := s.(type) {
+		case *ast.Field:
+			_field, ok := my.meta.FindField(f.ObjectDefinition.Name, f.Name, false)
+			if !ok || len(_field.Table) == 0 || len(_field.Column) == 0 {
+				continue
+			}
+			if i != 0 {
+				my.WriteString(",")
+			}
+			my.Quoted(_field.Table)
+			my.WriteString(".")
+			my.Quoted(_field.Column)
+		}
+	}
+
+	my.WriteString(",")
+	my.Quoted(table)
+	my.WriteString(".")
+	my.Quoted(field.Column)
+	my.WriteString(" FROM ")
+	my.Quoted(table)
+
+	my.WriteString(` LIMIT 1 ) UNION ALL `)
+
+	my.WriteString(` SELECT `)
+	for i, s := range f.SelectionSet {
+		switch f := s.(type) {
+		case *ast.Field:
+			_field, ok := my.meta.FindField(f.ObjectDefinition.Name, f.Name, false)
+			if !ok || len(_field.Table) == 0 || len(_field.Column) == 0 {
+				continue
+			}
+			if i != 0 {
+				my.WriteString(",")
+			}
+			my.Quoted(_field.Table)
+			my.WriteString(".")
+			my.Quoted(_field.Column)
+			my.WriteString(" AS ")
+			my.Quoted(_field.Column)
+		}
+	}
+
+	my.WriteString(",")
+	my.Quoted(table)
+	my.WriteString(".")
+	my.Quoted(field.Column)
+	my.WriteString(" FROM ")
+	my.Quoted(table)
+
+	my.WriteString(" , ")
+	my.Quoted(alias)
+	my.WriteString(") SELECT ")
+
+	for i, s := range f.SelectionSet {
+		switch f := s.(type) {
+		case *ast.Field:
+			_field, ok := my.meta.FindField(f.ObjectDefinition.Name, f.Name, false)
+			if !ok || len(_field.Table) == 0 || len(_field.Column) == 0 {
+				continue
+			}
+			if i != 0 {
+				my.WriteString(",")
+			}
+			my.Quoted(_field.Table)
+			my.WriteString(".")
+			my.Quoted(_field.Column)
+			my.WriteString(" AS ")
+			my.Quoted(_field.Column)
+		}
+	}
+	my.WriteString(` FROM (SELECT * FROM `)
+	my.Quoted(alias)
+	my.WriteString(` OFFSET 1) AS  `)
+	my.Quoted(table)
 }

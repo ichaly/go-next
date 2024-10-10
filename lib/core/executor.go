@@ -17,6 +17,7 @@ type (
 		Variables     map[string]interface{}
 	}
 	gqlResult struct {
+		Sql    string          `json:"-"`
 		Data   jsonmap.Ordered `json:"data,omitempty"`
 		Errors gqlerror.List   `json:"errors,omitempty"`
 	}
@@ -46,7 +47,7 @@ func (my *Executor) Execute(ctx context.Context, query string, vars json.RawMess
 	//resultChans := make([]<-chan gqlValue, 0, len(set))
 	for _, o := range doc.Operations {
 		sql, _ := my.compiler.Compile(o.SelectionSet)
-		println(sql)
+		r.Sql = sql
 	}
 	return
 }
