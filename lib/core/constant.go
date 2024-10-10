@@ -8,10 +8,10 @@ const (
 )
 
 const (
-	RECURSIVE    = "Recursive"
-	ONE_TO_MANY  = "OneToMany"
-	MANY_TO_ONE  = "ManyToOne"
-	MANY_TO_MANY = "ManyToMany"
+	RECURSIVE    Chain = "Recursive"
+	ONE_TO_MANY  Chain = "OneToMany"
+	MANY_TO_ONE  Chain = "ManyToOne"
+	MANY_TO_MANY Chain = "ManyToMany"
 )
 
 // tag名
