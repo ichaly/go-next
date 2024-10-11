@@ -45,9 +45,9 @@ type Class struct {
 type Field struct {
 	Name         string
 	Type         *ast.Type
-	Path         *Entry
+	Kind         Chain
+	Link         *Entry
 	Join         *Entry
-	Link         Chain
 	Table        string
 	Column       string
 	Virtual      bool
@@ -136,8 +136,8 @@ func (my *Metadata) tableOption() error {
 			my.Nodes[currentClass].Fields[currentField] = &Field{
 				Name: currentField,
 				Type: ast.NamedType(foreignClass, nil),
-				Link: MANY_TO_ONE,
-				Path: &Entry{
+				Kind: condition.TernaryOperator(e.TableRelation == e.TableName, RECURSIVE, MANY_TO_ONE),
+				Link: &Entry{
 					TableName:      e.TableRelation,
 					ColumnName:     e.ColumnRelation,
 					TableRelation:  e.TableName,
@@ -151,8 +151,8 @@ func (my *Metadata) tableOption() error {
 			my.Nodes[foreignClass].Fields[foreignField] = &Field{
 				Name:      foreignField,
 				Type:      ast.ListType(ast.NamedType(currentClass, nil), nil),
-				Link:      condition.TernaryOperator(e.TableRelation == e.TableName, RECURSIVE, ONE_TO_MANY),
-				Path:      e,
+				Kind:      condition.TernaryOperator(e.TableRelation == e.TableName, RECURSIVE, ONE_TO_MANY),
+				Link:      e,
 				Arguments: inputs(currentClass),
 			}
 			//ManyToMany
@@ -169,8 +169,8 @@ func (my *Metadata) tableOption() error {
 				my.Nodes[foreignClass].Fields[field] = &Field{
 					Name: field,
 					Type: ast.ListType(ast.NamedType(class, nil), nil),
-					Link: MANY_TO_MANY,
-					Path: &Entry{
+					Kind: MANY_TO_MANY,
+					Link: &Entry{
 						TableName:      r.TableRelation,
 						ColumnName:     e.ColumnRelation,
 						TableRelation:  e.TableName,

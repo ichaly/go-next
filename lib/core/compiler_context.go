@@ -131,7 +131,7 @@ func (my *compilerContext) renderSelect(id, pid int, f *ast.Field) {
 			if i != 0 {
 				my.WriteString(",")
 			}
-			if len(field.Link) > 0 {
+			if len(field.Kind) > 0 {
 				my.Quoted("__sj_", my.fieldId(f))
 				my.WriteString(".").Quoted("json")
 			} else {
@@ -145,7 +145,7 @@ func (my *compilerContext) renderSelect(id, pid int, f *ast.Field) {
 	}
 	my.WriteString(`FROM (`)
 	field, ok := my.meta.FindField(f.Definition.Type.Name(), f.Name, false)
-	if ok && field.Link == RECURSIVE {
+	if ok && field.Kind == RECURSIVE {
 		my.renderRecursiveSelect(id, pid, f)
 	} else {
 		my.renderUniversalSelect(id, pid, f)
@@ -176,8 +176,8 @@ func (my *compilerContext) renderInner(id, pid int, f *ast.Field) {
 
 func (my *compilerContext) renderWhere(id, pid int, f *ast.Field) {
 	field, ok := my.meta.FindField(f.ObjectDefinition.Name, f.Name, false)
-	if ok && field.Path != nil {
-		path := field.Path
+	if ok && field.Link != nil {
+		path := field.Link
 		my.WriteString(` WHERE (`)
 
 		my.Quoted(path.TableName)
@@ -185,7 +185,7 @@ func (my *compilerContext) renderWhere(id, pid int, f *ast.Field) {
 		my.Quoted(path.ColumnName)
 
 		my.WriteString(" = ")
-		if field.Link == MANY_TO_MANY {
+		if field.Kind == MANY_TO_MANY {
 			my.Quoted(path.TableRelation)
 		} else {
 			my.Quoted(util.JoinString(path.TableRelation, "_", convertor.ToString(pid)))
@@ -225,7 +225,7 @@ func (my *compilerContext) renderUniversalSelect(id, pid int, f *ast.Field) {
 
 func (my *compilerContext) renderRecursiveSelect(id, pid int, f *ast.Field) {
 	field, _ := my.meta.FindField(f.Definition.Type.Name(), f.Name, false)
-	table, column := field.Path.TableName, field.Path.ColumnName
+	table, column := field.Link.TableName, field.Link.ColumnName
 	alias := util.JoinString("__rcte_", table)
 
 	my.WriteString(` WITH RECURSIVE `)
@@ -255,9 +255,9 @@ func (my *compilerContext) renderRecursiveSelect(id, pid int, f *ast.Field) {
 	my.Quoted(table)
 
 	my.WriteString(` WHERE `)
-	my.Quoted(table).WriteString(".").WriteString(field.Path.ColumnRelation)
+	my.Quoted(table).WriteString(".").WriteString(field.Link.ColumnRelation)
 	my.WriteString(" = ")
-	my.Quoted(table, "_", pid).WriteString(".").WriteString(field.Path.ColumnRelation)
+	my.Quoted(table, "_", pid).WriteString(".").WriteString(field.Link.ColumnRelation)
 
 	my.WriteString(` LIMIT 1 ) UNION ALL `)
 
@@ -290,8 +290,8 @@ func (my *compilerContext) renderRecursiveSelect(id, pid int, f *ast.Field) {
 
 	my.WriteString("WHERE (")
 	my.WriteString("(").Quoted(table).WriteString(".").Quoted(column).WriteString("IS NOT NULL)")
-	my.WriteString("AND").WriteString("(").Quoted(table).WriteString(".").Quoted(column).WriteString("!=").Quoted(field.Path.TableRelation).WriteString(".").Quoted(field.Path.ColumnRelation).WriteString(")")
-	my.WriteString("AND").WriteString("(").Quoted(table).WriteString(".").Quoted(column).WriteString("=").Quoted(alias).WriteString(".").Quoted(field.Path.ColumnRelation).WriteString(")")
+	my.WriteString("AND").WriteString("(").Quoted(table).WriteString(".").Quoted(column).WriteString("!=").Quoted(field.Link.TableRelation).WriteString(".").Quoted(field.Link.ColumnRelation).WriteString(")")
+	my.WriteString("AND").WriteString("(").Quoted(table).WriteString(".").Quoted(column).WriteString("=").Quoted(alias).WriteString(".").Quoted(field.Link.ColumnRelation).WriteString(")")
 	my.WriteString(")")
 
 	my.WriteString(") SELECT ")
