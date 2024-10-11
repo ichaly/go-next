@@ -2,36 +2,40 @@ package core
 
 import (
 	"bytes"
+	"fmt"
 	"github.com/duke-git/lancet/v2/convertor"
+	"github.com/duke-git/lancet/v2/maputil"
 	"github.com/ichaly/go-next/lib/util"
 	"github.com/vektah/gqlparser/v2/ast"
+	"strings"
 )
 
 type compilerContext struct {
-	buf  *bytes.Buffer
-	meta *Metadata
+	buf   *bytes.Buffer
+	meta  *Metadata
+	stack map[int]int
 }
 
 func newContext(m *Metadata) *compilerContext {
-	return &compilerContext{meta: m, buf: bytes.NewBuffer([]byte{})}
+	return &compilerContext{meta: m, buf: bytes.NewBuffer([]byte{}), stack: make(map[int]int)}
 }
 
 func (my *compilerContext) String() string {
-	return my.buf.String()
+	return strings.TrimSpace(my.buf.String())
 }
 
-func (my *compilerContext) Quoted(identifier string) {
+func (my *compilerContext) Quoted(elem ...any) *compilerContext {
 	my.buf.WriteByte('"')
-	my.buf.WriteString(identifier)
+	my.WriteString(elem...)
 	my.buf.WriteByte('"')
+	return my
 }
 
-func (my *compilerContext) WriteInt(i int) {
-	my.buf.WriteString(convertor.ToString(i))
-}
-
-func (my *compilerContext) WriteString(s string) {
-	my.buf.WriteString(s)
+func (my *compilerContext) WriteString(elem ...any) *compilerContext {
+	for _, e := range elem {
+		my.buf.WriteString(fmt.Sprintf("%v", e))
+	}
+	return my
 }
 
 func (my *compilerContext) RenderQuery(set ast.SelectionSet) {
@@ -40,20 +44,17 @@ func (my *compilerContext) RenderQuery(set ast.SelectionSet) {
 		if index != 0 {
 			my.WriteString(`,`)
 		}
-		id := my.fieldFlag(field)
-		my.WriteString(`'`)
-		my.WriteString(field.Name)
-		my.WriteString(`', __sj_`)
-		my.WriteInt(id)
-		my.WriteString(`.json`)
+		id := my.fieldId(field)
+		my.WriteString(`'`, field.Name, `', __sj_`, id, `.json`)
 	})
 	my.WriteString(`) AS __root FROM (SELECT true) AS __root_x`)
 	my.renderField(0, set)
 }
 
-func (my *compilerContext) fieldFlag(field *ast.Field) int {
+func (my *compilerContext) fieldId(field *ast.Field) int {
 	p := field.GetPosition()
-	return p.Line<<32 | p.Column
+	id := p.Line<<32 | p.Column
+	return maputil.GetOrSet(my.stack, id, len(my.stack))
 }
 
 func (my *compilerContext) eachField(set ast.SelectionSet, callback func(index int, field *ast.Field)) {
@@ -70,7 +71,7 @@ func (my *compilerContext) eachField(set ast.SelectionSet, callback func(index i
 
 func (my *compilerContext) renderField(pid int, set ast.SelectionSet) {
 	my.eachField(set, func(index int, field *ast.Field) {
-		id := my.fieldFlag(field)
+		id := my.fieldId(field)
 
 		my.renderJoin(id)
 		my.renderList(id)
@@ -92,31 +93,23 @@ func (my *compilerContext) renderJoin(id int) {
 }
 
 func (my *compilerContext) renderJoinClose(id int) {
-	my.WriteString(`) AS __sj_`)
-	my.WriteInt(id)
-	my.WriteString(` ON true`)
+	my.WriteString(` ) AS `).Quoted(`__sj_`, id).WriteString(` ON true `)
 }
 
 func (my *compilerContext) renderList(id int) {
-	my.WriteString(`SELECT COALESCE(jsonb_agg(__sj_`)
-	my.WriteInt(id)
-	my.WriteString(`.json), '[]') AS json FROM (`)
+	my.WriteString(` SELECT COALESCE(jsonb_agg(__sj_`, id, `.json), '[]') AS json FROM ( `)
 }
 
 func (my *compilerContext) renderListClose(id int) {
-	my.WriteString(`) AS __sj_`)
-	my.WriteInt(id)
+	my.WriteString(` ) AS `).Quoted(`__sj_`, id)
 }
 
 func (my *compilerContext) renderJson(id int) {
-	my.WriteString(`SELECT to_jsonb(__sr_`)
-	my.WriteInt(id)
-	my.WriteString(`.*) AS json FROM ( `)
+	my.WriteString(` SELECT to_jsonb(__sr_`, id, `.*) AS json FROM ( `)
 }
 
 func (my *compilerContext) renderJsonClose(id int) {
-	my.WriteString(`) AS __sr_`)
-	my.WriteInt(id)
+	my.WriteString(` ) AS `).Quoted(`__sr_`, id)
 }
 
 func (my *compilerContext) renderSelect(id, pid int, f *ast.Field) {
@@ -139,9 +132,8 @@ func (my *compilerContext) renderSelect(id, pid int, f *ast.Field) {
 				my.WriteString(",")
 			}
 			if len(field.Link) > 0 {
-				my.Quoted(util.JoinString("__sj_", convertor.ToString(my.fieldFlag(f))))
-				my.WriteString(".")
-				my.Quoted("json")
+				my.Quoted("__sj_", my.fieldId(f))
+				my.WriteString(".").Quoted("json")
 			} else {
 				my.Quoted(alias)
 				my.WriteString(".")
@@ -262,6 +254,11 @@ func (my *compilerContext) renderRecursiveSelect(id, pid int, f *ast.Field) {
 	my.WriteString(" FROM ")
 	my.Quoted(table)
 
+	my.WriteString(` WHERE `)
+	my.Quoted(table).WriteString(".").WriteString(field.Path.ColumnRelation)
+	my.WriteString(" = ")
+	my.Quoted(table, "_", pid).WriteString(".").WriteString(field.Path.ColumnRelation)
+
 	my.WriteString(` LIMIT 1 ) UNION ALL `)
 
 	my.WriteString(` SELECT `)
@@ -278,8 +275,6 @@ func (my *compilerContext) renderRecursiveSelect(id, pid int, f *ast.Field) {
 			my.Quoted(_field.Table)
 			my.WriteString(".")
 			my.Quoted(_field.Column)
-			my.WriteString(" AS ")
-			my.Quoted(_field.Column)
 		}
 	}
 
@@ -292,6 +287,13 @@ func (my *compilerContext) renderRecursiveSelect(id, pid int, f *ast.Field) {
 
 	my.WriteString(" , ")
 	my.Quoted(alias)
+
+	my.WriteString("WHERE (")
+	my.WriteString("(").Quoted(table).WriteString(".").Quoted(column).WriteString("IS NOT NULL)")
+	my.WriteString("AND").WriteString("(").Quoted(table).WriteString(".").Quoted(column).WriteString("!=").Quoted(field.Path.TableRelation).WriteString(".").Quoted(field.Path.ColumnRelation).WriteString(")")
+	my.WriteString("AND").WriteString("(").Quoted(table).WriteString(".").Quoted(column).WriteString("=").Quoted(alias).WriteString(".").Quoted(field.Path.ColumnRelation).WriteString(")")
+	my.WriteString(")")
+
 	my.WriteString(") SELECT ")
 
 	for i, s := range f.SelectionSet {
