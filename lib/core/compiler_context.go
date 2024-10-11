@@ -282,12 +282,11 @@ func (my *compilerContext) renderRecursiveSelect(id, pid int, f *ast.Field) {
 		}
 	}
 
-	my.Write(",")
-	my.Quoted(table)
-	my.Write(".")
-	my.Quoted(column)
-	my.Write(" FROM ")
-	my.Quoted(table)
+	if "children" == f.Name {
+		my.Write(",").Quoted(table).Write(".").Quoted(field.Link.ColumnName).Write(" FROM ").Quoted(table)
+	} else {
+		my.Write(",").Quoted(table).Write(".").Quoted(field.Link.ColumnRelation).Write(" FROM ").Quoted(table)
+	}
 
 	my.Write(" , ")
 	my.Quoted(alias)
