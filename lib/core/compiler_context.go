@@ -165,48 +165,41 @@ func (my *compilerContext) renderSelect(id, pid int, f *ast.Field) {
 
 func (my *compilerContext) renderInner(id, pid int, f *ast.Field) {
 	field, ok := my.meta.FindField(f.ObjectDefinition.Name, f.Name, false)
-	if !ok || len(field.Join) == 0 {
+	if !ok || field.Join == nil {
 		return
 	}
-	for _, v := range field.Join {
-		my.WriteString(` INNER JOIN `)
-		my.WriteString(v.TableName)
-		my.WriteString(` ON ((`)
-		my.Quoted(v.TableName)
-		my.WriteString(` . `)
-		my.Quoted(v.ColumnName)
-		my.WriteString(` = `)
-		my.Quoted(util.JoinString(v.TableRelation, "_", convertor.ToString(pid)))
-		my.WriteString(` . `)
-		my.Quoted(v.ColumnRelation)
-		my.WriteString(`))`)
-	}
+	join := field.Join
+	my.WriteString(` INNER JOIN `)
+	my.WriteString(join.TableName)
+	my.WriteString(` ON ((`)
+	my.Quoted(join.TableName)
+	my.WriteString(` . `)
+	my.Quoted(join.ColumnName)
+	my.WriteString(` = `)
+	my.Quoted(util.JoinString(join.TableRelation, "_", convertor.ToString(pid)))
+	my.WriteString(` . `)
+	my.Quoted(join.ColumnRelation)
+	my.WriteString(`))`)
 }
 
 func (my *compilerContext) renderWhere(id, pid int, f *ast.Field) {
-	class := my.meta.Nodes[f.ObjectDefinition.Name]
-	field, ok := class.Fields[f.Name]
-	if ok && len(field.Path) > 0 {
+	field, ok := my.meta.FindField(f.ObjectDefinition.Name, f.Name, false)
+	if ok && field.Path != nil {
+		path := field.Path
 		my.WriteString(` WHERE (`)
 
-		for i, v := range field.Path {
-			if i != 0 {
-				my.WriteString(" AND ")
-			}
+		my.Quoted(path.TableName)
+		my.WriteString(".")
+		my.Quoted(path.ColumnName)
 
-			my.Quoted(v.TableName)
-			my.WriteString(".")
-			my.Quoted(v.ColumnName)
-
-			my.WriteString(" = ")
-			if field.Link == MANY_TO_MANY {
-				my.Quoted(v.TableRelation)
-			} else {
-				my.Quoted(util.JoinString(v.TableRelation, "_", convertor.ToString(pid)))
-			}
-			my.WriteString(".")
-			my.Quoted(v.ColumnRelation)
+		my.WriteString(" = ")
+		if field.Link == MANY_TO_MANY {
+			my.Quoted(path.TableRelation)
+		} else {
+			my.Quoted(util.JoinString(path.TableRelation, "_", convertor.ToString(pid)))
 		}
+		my.WriteString(".")
+		my.Quoted(path.ColumnRelation)
 
 		my.WriteString(`)`)
 	}
@@ -240,8 +233,8 @@ func (my *compilerContext) renderUniversalSelect(id, pid int, f *ast.Field) {
 
 func (my *compilerContext) renderRecursiveSelect(id, pid int, f *ast.Field) {
 	field, _ := my.meta.FindField(f.Definition.Type.Name(), f.Name, false)
-	alias := util.JoinString("__rcte_", field.Table)
-	table := field.Table
+	table, column := field.Path.TableName, field.Path.ColumnName
+	alias := util.JoinString("__rcte_", table)
 
 	my.WriteString(` WITH RECURSIVE `)
 	my.Quoted(alias)
@@ -265,7 +258,7 @@ func (my *compilerContext) renderRecursiveSelect(id, pid int, f *ast.Field) {
 	my.WriteString(",")
 	my.Quoted(table)
 	my.WriteString(".")
-	my.Quoted(field.Column)
+	my.Quoted(column)
 	my.WriteString(" FROM ")
 	my.Quoted(table)
 
@@ -293,7 +286,7 @@ func (my *compilerContext) renderRecursiveSelect(id, pid int, f *ast.Field) {
 	my.WriteString(",")
 	my.Quoted(table)
 	my.WriteString(".")
-	my.Quoted(field.Column)
+	my.Quoted(column)
 	my.WriteString(" FROM ")
 	my.Quoted(table)
 

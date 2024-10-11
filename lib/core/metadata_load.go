@@ -45,8 +45,8 @@ type Class struct {
 type Field struct {
 	Name         string
 	Type         *ast.Type
-	Path         []*Entry
-	Join         []*Entry
+	Path         *Entry
+	Join         *Entry
 	Link         Chain
 	Table        string
 	Column       string
@@ -137,12 +137,12 @@ func (my *Metadata) tableOption() error {
 				Name: currentField,
 				Type: ast.NamedType(foreignClass, nil),
 				Link: MANY_TO_ONE,
-				Path: []*Entry{{
+				Path: &Entry{
 					TableName:      e.TableRelation,
 					ColumnName:     e.ColumnRelation,
 					TableRelation:  e.TableName,
 					ColumnRelation: e.ColumnName,
-				}},
+				},
 				Table:     e.TableName,
 				Column:    e.ColumnName,
 				Arguments: inputs(foreignClass),
@@ -152,9 +152,7 @@ func (my *Metadata) tableOption() error {
 				Name:      foreignField,
 				Type:      ast.ListType(ast.NamedType(currentClass, nil), nil),
 				Link:      condition.TernaryOperator(e.TableRelation == e.TableName, RECURSIVE, ONE_TO_MANY),
-				Path:      []*Entry{e},
-				Table:     e.TableName,
-				Column:    e.ColumnName,
+				Path:      e,
 				Arguments: inputs(currentClass),
 			}
 			//ManyToMany
@@ -172,13 +170,13 @@ func (my *Metadata) tableOption() error {
 					Name: field,
 					Type: ast.ListType(ast.NamedType(class, nil), nil),
 					Link: MANY_TO_MANY,
-					Path: []*Entry{{
+					Path: &Entry{
 						TableName:      r.TableRelation,
 						ColumnName:     e.ColumnRelation,
 						TableRelation:  e.TableName,
 						ColumnRelation: r.ColumnName,
-					}},
-					Join:      []*Entry{e},
+					},
+					Join:      e,
 					Arguments: inputs(class),
 				}
 			}
