@@ -57,7 +57,7 @@ func SwapPrimaryKey(table string) NamedOption {
 func NamedRecursion(c *Entry, b bool) NamedOption {
 	return func(t, s string) string {
 		if c.TableRelation == c.TableName {
-			s = condition.TernaryOperator(b, "parent", "children")
+			s = condition.TernaryOperator(b, "parents", "children")
 		}
 		return s
 	}

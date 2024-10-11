@@ -231,33 +231,37 @@ func (my *compilerContext) renderRecursiveSelect(id, pid int, f *ast.Field) {
 	my.WriteString(` WITH RECURSIVE `)
 	my.Quoted(alias)
 	my.WriteString(` AS ((SELECT `)
-	for i, s := range f.SelectionSet {
+	for _, s := range f.SelectionSet {
 		switch f := s.(type) {
 		case *ast.Field:
 			_field, ok := my.meta.FindField(f.ObjectDefinition.Name, f.Name, false)
 			if !ok || len(_field.Table) == 0 || len(_field.Column) == 0 {
 				continue
 			}
-			if i != 0 {
-				my.WriteString(",")
-			}
 			my.Quoted(_field.Table)
 			my.WriteString(".")
 			my.Quoted(_field.Column)
+			my.WriteString(",")
 		}
 	}
 
-	my.WriteString(",")
-	my.Quoted(table)
-	my.WriteString(".")
-	my.Quoted(column)
-	my.WriteString(" FROM ")
-	my.Quoted(table)
+	if "children" == f.Name {
+		my.Quoted(field.Link.TableName).WriteString(".").Quoted(field.Link.ColumnName)
+	} else {
+		my.Quoted(field.Link.TableRelation).WriteString(".").Quoted(field.Link.ColumnRelation)
+	}
 
-	my.WriteString(` WHERE `)
-	my.Quoted(table).WriteString(".").WriteString(field.Link.ColumnRelation)
-	my.WriteString(" = ")
-	my.Quoted(table, "_", pid).WriteString(".").WriteString(field.Link.ColumnRelation)
+	my.WriteString(" FROM ").Quoted(table).WriteString(` WHERE `)
+
+	if "children" == f.Name {
+		my.Quoted(table).WriteString(".").WriteString(field.Link.ColumnRelation)
+		my.WriteString(" = ")
+		my.Quoted(table, "_", pid).WriteString(".").WriteString(field.Link.ColumnRelation)
+	} else {
+		my.Quoted(table).WriteString(".").WriteString(field.Link.ColumnName)
+		my.WriteString(" = ")
+		my.Quoted(table, "_", pid).WriteString(".").WriteString(field.Link.ColumnName)
+	}
 
 	my.WriteString(` LIMIT 1 ) UNION ALL `)
 
@@ -289,9 +293,15 @@ func (my *compilerContext) renderRecursiveSelect(id, pid int, f *ast.Field) {
 	my.Quoted(alias)
 
 	my.WriteString("WHERE (")
-	my.WriteString("(").Quoted(table).WriteString(".").Quoted(column).WriteString("IS NOT NULL)")
-	my.WriteString("AND").WriteString("(").Quoted(table).WriteString(".").Quoted(column).WriteString("!=").Quoted(field.Link.TableRelation).WriteString(".").Quoted(field.Link.ColumnRelation).WriteString(")")
-	my.WriteString("AND").WriteString("(").Quoted(table).WriteString(".").Quoted(column).WriteString("=").Quoted(alias).WriteString(".").Quoted(field.Link.ColumnRelation).WriteString(")")
+	if "children" == f.Name {
+		my.WriteString("(").Quoted(table).WriteString(".").Quoted(column).WriteString("IS NOT NULL)")
+		my.WriteString("AND").WriteString("(").Quoted(table).WriteString(".").Quoted(column).WriteString("!=").Quoted(field.Link.TableRelation).WriteString(".").Quoted(field.Link.ColumnRelation).WriteString(")")
+		my.WriteString("AND").WriteString("(").Quoted(table).WriteString(".").Quoted(column).WriteString("=").Quoted(alias).WriteString(".").Quoted(field.Link.ColumnRelation).WriteString(")")
+	} else {
+		my.WriteString("(").Quoted(alias).WriteString(".").Quoted(field.Link.ColumnRelation).WriteString("IS NOT NULL)")
+		my.WriteString("AND").WriteString("(").Quoted(alias).WriteString(".").Quoted(field.Link.ColumnRelation).WriteString("!=").Quoted(alias).WriteString(".").Quoted(field.Link.ColumnName).WriteString(")")
+		my.WriteString("AND").WriteString("(").Quoted(alias).WriteString(".").Quoted(field.Link.ColumnRelation).WriteString("=").Quoted(field.Link.TableName).WriteString(".").Quoted(field.Link.ColumnName).WriteString(")")
+	}
 	my.WriteString(")")
 
 	my.WriteString(") SELECT ")
