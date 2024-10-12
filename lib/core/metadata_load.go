@@ -59,11 +59,8 @@ type Field struct {
 type Input struct {
 	Name        string
 	Type        *ast.Type
-	Default     *Value
+	Default     string
 	Description string
-}
-
-type Value struct {
 }
 
 type Chain string
@@ -132,6 +129,23 @@ func (my *Metadata) tableOption() error {
 				JoinListSuffix(),
 				NamedRecursion(e, false),
 			)
+			var args []*Input
+			if e.TableRelation == e.TableName {
+				args = append(args, &Input{
+					Name:        "level",
+					Type:        ast.NamedType(SCALAR_INT, nil),
+					Default:     `1`,
+					Description: "Recursive query depth default level 1 , 0 is all.",
+				})
+			}
+			//OneToMany
+			my.Nodes[foreignClass].Fields[foreignField] = &Field{
+				Name:      foreignField,
+				Type:      ast.ListType(ast.NamedType(currentClass, nil), nil),
+				Kind:      condition.TernaryOperator(e.TableRelation == e.TableName, RECURSIVE, ONE_TO_MANY),
+				Link:      e,
+				Arguments: append(args, inputs(currentClass)...),
+			}
 			//ManyToOne
 			my.Nodes[currentClass].Fields[currentField] = &Field{
 				Name: currentField,
@@ -145,15 +159,7 @@ func (my *Metadata) tableOption() error {
 				},
 				Table:     e.TableName,
 				Column:    e.ColumnName,
-				Arguments: inputs(foreignClass),
-			}
-			//OneToMany
-			my.Nodes[foreignClass].Fields[foreignField] = &Field{
-				Name:      foreignField,
-				Type:      ast.ListType(ast.NamedType(currentClass, nil), nil),
-				Kind:      condition.TernaryOperator(e.TableRelation == e.TableName, RECURSIVE, ONE_TO_MANY),
-				Link:      e,
-				Arguments: inputs(currentClass),
+				Arguments: append(args, inputs(foreignClass)...),
 			}
 			//ManyToMany
 			rest := maputil.OmitBy(v, func(key string, value *Entry) bool {

@@ -1,6 +1,12 @@
 package util
 
-import "time"
+import (
+	"time"
+)
+
+/**
+ * https://github.com/pilagod/pointer
+ */
 
 func TimePtr(t time.Time) *time.Time {
 	return &t
