@@ -82,10 +82,6 @@ func (my *Metadata) whereOption() error {
 			Name: name,
 			Kind: ast.InputObject,
 			Fields: map[string]*Field{
-				"isNull": {
-					Name: "isNull",
-					Type: ast.NamedType(SCALAR_BOOLEAN, nil),
-				},
 				"and": {
 					Name: "and",
 					Type: ast.NamedType(name, nil),
