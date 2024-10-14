@@ -14,18 +14,18 @@ func (my *Metadata) expression() error {
 		Desc string
 	}
 	symbols := []symbol{
-		{"in", "Is in list of values"},
-		{"eq", "Equals value"},
-		{"is", "Is value null (true) or not null (false)"},
-		{"ne", "Does not equal value"},
-		{"gt", "Is greater than value"},
-		{"lt", "Is lesser than value"},
-		{"ge", "Is greater than or equals value"},
-		{"le", "Is lesser than or equals value"},
-		{"like", "Value matching (case-insensitive) pattern where '%' represents zero or more characters and '_' represents a single character. Eg. '_r%' finds values having 'r' in second position"},
-		{"iLike", "Value matching (case-insensitive) pattern where '%' represents zero or more characters and '_' represents a single character. Eg. '_r%' finds values having 'r' in second position"},
-		{"regex", "Value matches regex pattern"},
-		{"iRegex", "Value matches (case-insensitive) regex pattern"},
+		{"in", descIn},
+		{"eq", descEqual},
+		{"is", descIs},
+		{"ne", descNotEqual},
+		{"gt", descGreaterThan},
+		{"lt", descLessThan},
+		{"ge", descGreaterThanOrEqual},
+		{"le", descLessThanOrEqual},
+		{"like", descLike},
+		{"iLike", descILike},
+		{"regex", descRegex},
+		{"iRegex", descIRegex},
 	}
 	operator := map[string][]symbol{
 		SCALAR_ID:      symbols[:2],  //[in,eq]

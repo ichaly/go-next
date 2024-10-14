@@ -56,3 +56,19 @@ const (
 	SCALAR_BOOLEAN   = "Boolean"
 	SCALAR_DATE_TIME = "DateTime"
 )
+
+// 过滤操作符号描述
+const (
+	descIn                 = "Is in list of values"
+	descIs                 = "Is value null (true) or not null (false)"
+	descEqual              = "Equals value"
+	descNotEqual           = "Does not equal value"
+	descGreaterThan        = "Is greater than value"
+	descGreaterThanOrEqual = "Is greater than or equal to value"
+	descLessThan           = "Is less than value"
+	descLessThanOrEqual    = "Is less than or equal to value"
+	descLike               = "Value matching pattern where '%' represents zero or more characters and '_' represents a single character. Eg. '_r%' finds values having 'r' in second position"
+	descILike              = "Value matching (case-insensitive) pattern where '%' represents zero or more characters and '_' represents a single character. Eg. '_r%' finds values not having 'r' in second position"
+	descRegex              = "Value matching regular pattern"
+	descIRegex             = "Value matching (case-insensitive) regex pattern"
+)
