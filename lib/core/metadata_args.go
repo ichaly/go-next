@@ -16,10 +16,15 @@ func (my *Metadata) expression() error {
 	var build = func(scalar, suffix string, symbols []symbol) {
 		name := util.JoinString(scalar, suffix)
 		expr := &Class{Name: name, Kind: ast.InputObject, Fields: make(map[string]*Field)}
-		expr.Fields["isNull"] = &Field{
-			Name:        "isNull",
-			Type:        ast.NamedType(SCALAR_BOOLEAN, nil),
+		expr.Fields["is"] = &Field{
+			Name:        "is",
+			Type:        ast.NamedType(ENUM_IS_INPUT, nil),
 			Description: "Is value null (true) or not null (false)",
+		}
+		expr.Fields["in"] = &Field{
+			Name:        "in",
+			Type:        ast.ListType(ast.NonNullNamedType(scalar, nil), nil),
+			Description: "Is in list of values",
 		}
 		for _, v := range symbols {
 			expr.Fields[v.Name] = &Field{
@@ -29,10 +34,6 @@ func (my *Metadata) expression() error {
 		my.Nodes[name] = expr
 	}
 	for _, s := range scalars {
-		build(s, SUFFIX_EXPR_LIST, []symbol{
-			{"in", "Is in list of values"},
-			{"notIn", "Is not in list of values"},
-		})
 		build(s, SUFFIX_EXPRESSION, []symbol{
 			{"eq", "Equals value"},
 			{"ne", "Does not equal value"},
@@ -64,7 +65,7 @@ func (my *Metadata) inputOption() error {
 			}
 			sort.Fields[f.Name] = &Field{
 				Name: f.Name,
-				Type: ast.NamedType(ENUM_SORT_DIRECTION, nil),
+				Type: ast.NamedType(ENUM_SORT_INPUT, nil),
 			}
 		}
 		my.Nodes[name] = sort
@@ -82,17 +83,17 @@ func (my *Metadata) whereOption() error {
 			Name: name,
 			Kind: ast.InputObject,
 			Fields: map[string]*Field{
-				"and": {
-					Name: "and",
-					Type: ast.NamedType(name, nil),
-				},
 				"not": {
 					Name: "not",
 					Type: ast.NamedType(name, nil),
 				},
+				"and": {
+					Name: "and",
+					Type: ast.ListType(ast.NonNullNamedType(name, nil), nil),
+				},
 				"or": {
 					Name: "or",
-					Type: ast.NamedType(name, nil),
+					Type: ast.ListType(ast.NonNullNamedType(name, nil), nil),
 				},
 			},
 		}

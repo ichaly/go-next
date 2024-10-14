@@ -42,7 +42,8 @@ const (
 
 // 内置枚举类型
 const (
-	ENUM_SORT_DIRECTION = "SortDirection"
+	ENUM_IS_INPUT   = "IsInput"
+	ENUM_SORT_INPUT = "SortInput"
 )
 
 // 内置枚举类型

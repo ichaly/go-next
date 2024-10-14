@@ -8,7 +8,7 @@ The `DateTime` scalar type represents a DateTime. The DateTime is serialized as 
 scalar DateTime
 
 "The direction of result ordering."
-enum SortDirection {
+enum SortInput {
     "Ascending order"
     ASC
     "Descending order"
@@ -21,6 +21,12 @@ enum SortDirection {
     ASC_NULLS_LAST
     "Descending nulls last order"
     DESC_NULLS_LAST
+}
+
+"NULL or NOT"
+enum IsInput {
+    NULL
+    NOT_NULL
 }
 
 {{ range $key,$obj := . }}
