@@ -36,8 +36,8 @@ const (
 
 // 路基表达式后缀
 const (
-	SUFFIX_EXPRESSION = "Expression"
-	SUFFIX_EXPR_LIST  = "ListExpression"
+	SUFFIX_EXPRESSION      = "Expression"
+	SUFFIX_EXPRESSION_LIST = "ListExpression"
 )
 
 // 内置枚举类型

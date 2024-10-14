@@ -13,37 +13,45 @@ func (my *Metadata) expression() error {
 		Name string
 		Desc string
 	}
+	symbols := []symbol{
+		{"in", "Is in list of values"},
+		{"eq", "Equals value"},
+		{"is", "Is value null (true) or not null (false)"},
+		{"ne", "Does not equal value"},
+		{"gt", "Is greater than value"},
+		{"lt", "Is lesser than value"},
+		{"ge", "Is greater than or equals value"},
+		{"le", "Is lesser than or equals value"},
+		{"like", "Value matching (case-insensitive) pattern where '%' represents zero or more characters and '_' represents a single character. Eg. '_r%' finds values having 'r' in second position"},
+		{"iLike", "Value matching (case-insensitive) pattern where '%' represents zero or more characters and '_' represents a single character. Eg. '_r%' finds values having 'r' in second position"},
+		{"regex", "Value matches regex pattern"},
+		{"iRegex", "Value matches (case-insensitive) regex pattern"},
+	}
+	operator := map[string][]symbol{
+		SCALAR_ID:      symbols[:2],  //[in,eq]
+		SCALAR_INT:     symbols[:8],  //[is,in,eq,ne,gt,ge,lt,le]
+		SCALAR_FLOAT:   symbols[:8],  //[is,in,eq,ne,gt,ge,lt,le]
+		SCALAR_STRING:  symbols,      //[is,in,eq,ne,gt,ge,lt,le,like,iLike,regex,iRegex]
+		SCALAR_BOOLEAN: symbols[1:3], //[eq,is]
+	}
+
 	var build = func(scalar, suffix string, symbols []symbol) {
 		name := util.JoinString(scalar, suffix)
 		expr := &Class{Name: name, Kind: ast.InputObject, Fields: make(map[string]*Field)}
-		expr.Fields["is"] = &Field{
-			Name:        "is",
-			Type:        ast.NamedType(ENUM_IS_INPUT, nil),
-			Description: "Is value null (true) or not null (false)",
-		}
-		expr.Fields["in"] = &Field{
-			Name:        "in",
-			Type:        ast.ListType(ast.NonNullNamedType(scalar, nil), nil),
-			Description: "Is in list of values",
-		}
 		for _, v := range symbols {
-			expr.Fields[v.Name] = &Field{
-				Name: v.Name, Type: ast.NamedType(scalar, nil), Description: v.Desc,
+			t := ast.NamedType(scalar, nil)
+			if v.Name == "is" {
+				t = ast.NamedType(ENUM_IS_INPUT, nil)
+			} else if v.Name == "in" {
+				t = ast.ListType(ast.NonNullNamedType(scalar, nil), nil)
 			}
+			expr.Fields[v.Name] = &Field{Type: t, Name: v.Name, Description: v.Desc}
 		}
 		my.Nodes[name] = expr
 	}
 	for _, s := range scalars {
-		build(s, SUFFIX_EXPRESSION, []symbol{
-			{"eq", "Equals value"},
-			{"ne", "Does not equal value"},
-			{"gt", "Is greater than value"},
-			{"lt", "Is lesser than value"},
-			{"ge", "Is greater than or equals value"},
-			{"le", "Is lesser than or equals value"},
-			{"like", "Value matching (case-insensitive) pattern where '%' represents zero or more characters and '_' represents a single character. Eg. '_r%' finds values having 'r' in second position"},
-			{"notLike", "Value not matching pattern where '%' represents zero or more characters and '_' represents a single character. Eg. '_r%' finds values not having 'r' in second position"},
-		})
+		build(s, SUFFIX_EXPRESSION, operator[s])
+		build(s, SUFFIX_EXPRESSION_LIST, operator[s])
 	}
 	return nil
 }
