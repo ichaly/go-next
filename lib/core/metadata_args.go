@@ -14,25 +14,25 @@ func (my *Metadata) expression() error {
 		Desc string
 	}
 	symbols := []symbol{
-		{"in", descIn},
-		{"eq", descEqual},
 		{"is", descIs},
-		{"ne", descNotEqual},
+		{"eq", descEqual},
+		{"in", descIn},
 		{"gt", descGreaterThan},
-		{"lt", descLessThan},
 		{"ge", descGreaterThanOrEqual},
+		{"lt", descLessThan},
 		{"le", descLessThanOrEqual},
+		{"ne", descNotEqual},
 		{"like", descLike},
 		{"iLike", descILike},
 		{"regex", descRegex},
 		{"iRegex", descIRegex},
 	}
 	operator := map[string][]symbol{
-		SCALAR_ID:      symbols[:2],  //[in,eq]
-		SCALAR_INT:     symbols[:8],  //[is,in,eq,ne,gt,ge,lt,le]
-		SCALAR_FLOAT:   symbols[:8],  //[is,in,eq,ne,gt,ge,lt,le]
-		SCALAR_STRING:  symbols,      //[is,in,eq,ne,gt,ge,lt,le,like,iLike,regex,iRegex]
-		SCALAR_BOOLEAN: symbols[1:3], //[eq,is]
+		SCALAR_ID:      symbols[1:7], //[eq,in,gt,ge,lt,le]
+		SCALAR_INT:     symbols[:8],  //[is,eq,in,gt,ge,lt,le,ne]
+		SCALAR_FLOAT:   symbols[:8],  //[is,eq,in,gt,ge,lt,le,ne]
+		SCALAR_STRING:  symbols,      //[is,eq,in,gt,ge,lt,le,ne,like,iLike,regex,iRegex]
+		SCALAR_BOOLEAN: symbols[1:3], //[is,eq]
 	}
 
 	var build = func(scalar, suffix string, symbols []symbol) {
