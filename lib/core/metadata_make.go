@@ -55,15 +55,10 @@ func (my *Metadata) queryOption() error {
 		}
 		_, name := my.Named(query.Name, k, JoinListSuffix())
 		query.Fields[name] = &Field{
-			Name:    name,
-			Type:    ast.ListType(ast.NamedType(v.Name, nil), nil),
-			Virtual: query.Virtual,
-			Arguments: append([]*Input{
-				{
-					Name: "id",
-					Type: ast.NamedType(SCALAR_ID, nil),
-				},
-			}, inputs(k)...),
+			Name:      name,
+			Type:      ast.ListType(ast.NamedType(v.Name, nil), nil),
+			Virtual:   query.Virtual,
+			Arguments: inputs(k),
 		}
 	}
 	my.Nodes[query.Name] = query
