@@ -31,8 +31,24 @@ func (my *_ExecutorWhereSuite) TestExecutorWhereBase() {
 	my.Require().Equal(expect, r.Sql)
 }
 
+func (my *_ExecutorWhereSuite) TestExecutorWhereNot() {
+	input := "query{areaList(where:{not:{id:{le:1}}}){id name}}"
+	expect := ""
+	r := my.e.Execute(context.Background(), input, nil)
+	my.T().Log(r.Sql)
+	my.Require().Equal(expect, r.Sql)
+}
+
 func (my *_ExecutorWhereSuite) TestExecutorWhereAnd() {
 	input := "query{areaList(where:{and:[{id:{ge:1}},{id:{le:10}}]}){id name}}"
+	expect := ""
+	r := my.e.Execute(context.Background(), input, nil)
+	my.T().Log(r.Sql)
+	my.Require().Equal(expect, r.Sql)
+}
+
+func (my *_ExecutorWhereSuite) TestExecutorWhereOr() {
+	input := "query{areaList(where:{or:[{id:{ge:10}},{id:{le:1}}]}){id name}}"
 	expect := ""
 	r := my.e.Execute(context.Background(), input, nil)
 	my.T().Log(r.Sql)

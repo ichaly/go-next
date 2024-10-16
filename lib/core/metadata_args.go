@@ -6,36 +6,14 @@ import (
 	"github.com/vektah/gqlparser/v2/ast"
 )
 
-var scalars = []string{SCALAR_ID, SCALAR_INT, SCALAR_FLOAT, SCALAR_STRING, SCALAR_BOOLEAN}
+type symbol struct {
+	Name     string
+	Text     string
+	Describe string
+}
 
 func (my *Metadata) expression() error {
-	type symbol = struct {
-		Name string
-		Desc string
-	}
-	symbols := []symbol{
-		{"is", descIs},
-		{"eq", descEqual},
-		{"in", descIn},
-		{"gt", descGreaterThan},
-		{"ge", descGreaterThanOrEqual},
-		{"lt", descLessThan},
-		{"le", descLessThanOrEqual},
-		{"ne", descNotEqual},
-		{"like", descLike},
-		{"iLike", descILike},
-		{"regex", descRegex},
-		{"iRegex", descIRegex},
-	}
-	operator := map[string][]symbol{
-		SCALAR_ID:      symbols[1:7], //[eq,in,gt,ge,lt,le]
-		SCALAR_INT:     symbols[:8],  //[is,eq,in,gt,ge,lt,le,ne]
-		SCALAR_FLOAT:   symbols[:8],  //[is,eq,in,gt,ge,lt,le,ne]
-		SCALAR_STRING:  symbols,      //[is,eq,in,gt,ge,lt,le,ne,like,iLike,regex,iRegex]
-		SCALAR_BOOLEAN: symbols[1:3], //[is,eq]
-	}
-
-	var build = func(scalar, suffix string, symbols []symbol) {
+	var build = func(scalar, suffix string, symbols []*symbol) {
 		name := util.JoinString(scalar, suffix)
 		expr := &Class{Name: name, Kind: ast.InputObject, Fields: make(map[string]*Field)}
 		for _, v := range symbols {
@@ -45,13 +23,13 @@ func (my *Metadata) expression() error {
 			} else if v.Name == "in" {
 				t = ast.ListType(ast.NonNullNamedType(scalar, nil), nil)
 			}
-			expr.Fields[v.Name] = &Field{Type: t, Name: v.Name, Description: v.Desc}
+			expr.Fields[v.Name] = &Field{Type: t, Name: v.Name, Description: v.Describe}
 		}
 		my.Nodes[name] = expr
 	}
 	for _, s := range scalars {
-		build(s, SUFFIX_EXPRESSION, operator[s])
-		build(s, SUFFIX_EXPRESSION_LIST, operator[s])
+		build(s, SUFFIX_EXPRESSION, symbols[s])
+		build(s, SUFFIX_EXPRESSION_LIST, symbols[s])
 	}
 	return nil
 }
@@ -91,16 +69,16 @@ func (my *Metadata) whereOption() error {
 			Name: name,
 			Kind: ast.InputObject,
 			Fields: map[string]*Field{
-				"not": {
-					Name: "not",
+				NOT: {
+					Name: NOT,
 					Type: ast.NamedType(name, nil),
 				},
-				"and": {
-					Name: "and",
+				AND: {
+					Name: AND,
 					Type: ast.ListType(ast.NonNullNamedType(name, nil), nil),
 				},
-				"or": {
-					Name: "or",
+				OR: {
+					Name: OR,
 					Type: ast.ListType(ast.NonNullNamedType(name, nil), nil),
 				},
 			},

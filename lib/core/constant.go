@@ -1,5 +1,7 @@
 package core
 
+import "github.com/samber/lo"
+
 // 根结点的名称
 const (
 	QUERY        = "Query"
@@ -72,3 +74,44 @@ const (
 	descRegex              = "Value matching regular pattern"
 	descIRegex             = "Value matching (case-insensitive) regex pattern"
 )
+
+// 逻辑关系操作符常量
+const (
+	NOT = "not"
+	AND = "and"
+	OR  = "or"
+)
+
+// 顺序不要调整这个会影响内置标量的可用操作符
+var operators = []*symbol{
+	{"is", "is", descIs},
+	{"eq", "=", descEqual},
+	{"in", "in", descIn},
+	{"gt", ">", descGreaterThan},
+	{"ge", ">=", descGreaterThanOrEqual},
+	{"lt", "<", descLessThan},
+	{"le", "<=", descLessThanOrEqual},
+	{"ne", "!=", descNotEqual},
+	{"like", "like", descLike},
+	{"iLike", "ilike", descILike},
+	{"regex", "~", descRegex},
+	{"iRegex", "~*", descIRegex},
+}
+
+// 构建操作符和内置标量的关系
+var symbols = map[string][]*symbol{
+	SCALAR_ID:      operators[1:7], //[eq,in,gt,ge,lt,le]
+	SCALAR_INT:     operators[:8],  //[is,eq,in,gt,ge,lt,le,ne]
+	SCALAR_FLOAT:   operators[:8],  //[is,eq,in,gt,ge,lt,le,ne]
+	SCALAR_STRING:  operators,      //[is,eq,in,gt,ge,lt,le,ne,like,iLike,regex,iRegex]
+	SCALAR_BOOLEAN: operators[1:3], //[is,eq]
+}
+
+// 运算符按照名字索引字典
+var dictionary = lo.Reduce(operators, func(agg map[string]*symbol, item *symbol, index int) map[string]*symbol {
+	agg[item.Name] = item
+	return agg
+}, map[string]*symbol{})
+
+// 内置标量类型集合
+var scalars = []string{SCALAR_ID, SCALAR_INT, SCALAR_FLOAT, SCALAR_STRING, SCALAR_BOOLEAN}

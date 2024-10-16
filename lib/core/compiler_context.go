@@ -33,7 +33,7 @@ func (my *compilerContext) Quoted(elem ...any) *compilerContext {
 
 func (my *compilerContext) Write(elem ...any) *compilerContext {
 	for _, e := range elem {
-		my.buf.WriteString(fmt.Sprintf("%v", e))
+		my.buf.WriteString(fmt.Sprint(e))
 	}
 	return my
 }
@@ -176,6 +176,9 @@ func (my *compilerContext) renderInner(id, pid int, f *ast.Field) {
 
 func (my *compilerContext) renderWhere(id, pid int, f *ast.Field) {
 	field, ok := my.meta.FindField(f.ObjectDefinition.Name, f.Name, false)
+	value := f.Arguments.ForName("where").Value
+
+	//处理关联关系的查询条件
 	if ok && field.Link != nil {
 		path := field.Link
 		my.Write(` WHERE (`)
@@ -195,6 +198,11 @@ func (my *compilerContext) renderWhere(id, pid int, f *ast.Field) {
 
 		my.Write(`)`)
 	}
+
+	//拼接SQL
+	my.Write(` WHERE (`)
+	my.renderWhereValue(value)
+	my.Write(`)`)
 }
 
 func (my *compilerContext) renderUniversalSelect(id, pid int, f *ast.Field) {
