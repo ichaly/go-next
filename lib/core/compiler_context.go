@@ -176,33 +176,40 @@ func (my *compilerContext) renderInner(id, pid int, f *ast.Field) {
 
 func (my *compilerContext) renderWhere(id, pid int, f *ast.Field) {
 	field, ok := my.meta.FindField(f.ObjectDefinition.Name, f.Name, false)
-	value := f.Arguments.ForName("where").Value
+	where := f.Arguments.ForName("where")
 
-	//处理关联关系的查询条件
+	//TODO:处理关联关系的查询条件，有优化空间？
 	if ok && field.Link != nil {
-		path := field.Link
-		my.Write(` WHERE (`)
-
-		my.Quoted(path.TableName)
-		my.Write(".")
-		my.Quoted(path.ColumnName)
-
-		my.Write(" = ")
-		if field.Kind == MANY_TO_MANY {
-			my.Quoted(path.TableRelation)
-		} else {
-			my.Quoted(util.JoinString(path.TableRelation, "_", convertor.ToString(pid)))
+		link := field.Link
+		if where == nil {
+			where = &ast.Argument{Name: "where", Value: &ast.Value{Children: []*ast.ChildValue{}}}
 		}
-		my.Write(".")
-		my.Quoted(path.ColumnRelation)
-
-		my.Write(`)`)
+		var relation string
+		if field.Kind == MANY_TO_MANY {
+			relation = link.TableRelation
+		} else {
+			relation = util.JoinString(link.TableRelation, "_", convertor.ToString(pid))
+		}
+		where.Value.Children = append(where.Value.Children, &ast.ChildValue{
+			Name: util.JoinString(`"`, link.TableName, `"."`, link.ColumnName, `"`),
+			Value: &ast.Value{Children: []*ast.ChildValue{
+				{Name: "eq", Value: &ast.Value{
+					Children: []*ast.ChildValue{
+						{Value: &ast.Value{
+							Raw: util.JoinString(relation, ".", link.ColumnRelation),
+						}},
+					},
+				}},
+			}},
+		})
 	}
 
 	//拼接SQL
-	my.Write(` WHERE (`)
-	my.renderWhereValue(value)
-	my.Write(`)`)
+	if where != nil {
+		my.Write(` WHERE (`)
+		my.renderWhereValue(where.Value)
+		my.Write(`)`)
+	}
 }
 
 func (my *compilerContext) renderUniversalSelect(id, pid int, f *ast.Field) {
