@@ -180,28 +180,39 @@ func (my *compilerContext) renderWhere(id, pid int, f *ast.Field) {
 
 	//TODO:处理关联关系的查询条件，有优化空间？
 	if ok && field.Link != nil {
+		//组装关联条件
 		link := field.Link
-		if where == nil {
-			where = &ast.Argument{Name: "where", Value: &ast.Value{Children: []*ast.ChildValue{}}}
-		}
 		var relation string
 		if field.Kind == MANY_TO_MANY {
 			relation = link.TableRelation
 		} else {
 			relation = util.JoinString(link.TableRelation, "_", convertor.ToString(pid))
 		}
-		where.Value.Children = append(where.Value.Children, &ast.ChildValue{
-			Name: util.JoinString(`"`, link.TableName, `"."`, link.ColumnName, `"`),
-			Value: &ast.Value{Children: []*ast.ChildValue{
-				{Name: "eq", Value: &ast.Value{
-					Children: []*ast.ChildValue{
-						{Value: &ast.Value{
-							Raw: util.JoinString(relation, ".", link.ColumnRelation),
-						}},
-					},
-				}},
+		value := &ast.Value{
+			Kind: ast.ObjectValue,
+			Children: []*ast.ChildValue{{
+				Name: util.JoinString(`"`, link.TableName, `"."`, link.ColumnName, `"`),
+				Value: &ast.Value{
+					Kind: ast.ObjectValue,
+					Children: []*ast.ChildValue{{
+						Name: "eq",
+						Value: &ast.Value{
+							Kind: ast.EnumValue,
+							Raw:  util.JoinString(`"`, relation, `"."`, link.ColumnRelation, `"`),
+						},
+					}},
+				},
 			}},
-		})
+		}
+		//拼接原始条件
+		if where == nil {
+			where = &ast.Argument{Name: "where", Value: value}
+		} else {
+			//使用and包装拼接关联关系查询条件
+			where.Value = &ast.Value{Kind: ast.ObjectValue, Children: []*ast.ChildValue{
+				{Name: AND, Value: &ast.Value{Kind: ast.ListValue, Children: []*ast.ChildValue{{Value: where.Value}, {Value: value}}}},
+			}}
+		}
 	}
 
 	//拼接SQL
