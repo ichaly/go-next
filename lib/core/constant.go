@@ -82,20 +82,35 @@ const (
 	OR  = "or"
 )
 
+const (
+	IS      = "is"
+	EQ      = "eq"
+	IN      = "in"
+	GT      = "gt"
+	GE      = "ge"
+	LT      = "lt"
+	LE      = "le"
+	NE      = "ne"
+	LIKE    = "like"
+	I_LIKE  = "iLike"
+	REGEX   = "regex"
+	I_REGEX = "iRegex"
+)
+
 // 顺序不要调整这个会影响内置标量的可用操作符
 var operators = []*symbol{
-	{"is", "is", descIs},
-	{"eq", "=", descEqual},
-	{"in", "in", descIn},
-	{"gt", ">", descGreaterThan},
-	{"ge", ">=", descGreaterThanOrEqual},
-	{"lt", "<", descLessThan},
-	{"le", "<=", descLessThanOrEqual},
-	{"ne", "!=", descNotEqual},
-	{"like", "like", descLike},
-	{"iLike", "ilike", descILike},
-	{"regex", "~", descRegex},
-	{"iRegex", "~*", descIRegex},
+	{IS, "is", descIs},
+	{EQ, "=", descEqual},
+	{IN, "in", descIn},
+	{GT, ">", descGreaterThan},
+	{GE, ">=", descGreaterThanOrEqual},
+	{LT, "<", descLessThan},
+	{LE, "<=", descLessThanOrEqual},
+	{NE, "!=", descNotEqual},
+	{LIKE, "like", descLike},
+	{I_LIKE, "ilike", descILike},
+	{REGEX, "~", descRegex},
+	{I_REGEX, "~*", descIRegex},
 }
 
 // 构建操作符和内置标量的关系
