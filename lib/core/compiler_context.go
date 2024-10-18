@@ -305,75 +305,60 @@ func (my *compilerContext) renderRecursiveSelect(id, pid int, f *ast.Field) {
 	my.Write(" , ")
 	my.Quoted(alias)
 
-	my.Write("WHERE (")
+	//拼接并编译条件
+	var children []*ast.ChildValue
 	if "children" == f.Name {
-		my.Write("(").Quoted(table).Write(".").Quoted(column).Write("IS NOT NULL)")
-		my.Write("AND").Write("(").Quoted(table).Write(".").Quoted(column).Write("!=").Quoted(field.Link.TableRelation).Write(".").Quoted(field.Link.ColumnRelation).Write(")")
-		my.Write("AND").Write("(").Quoted(table).Write(".").Quoted(column).Write("=").Quoted(alias).Write(".").Quoted(field.Link.ColumnRelation).Write(")")
+		key := util.JoinString(`"`, table, `"."`, column, `"`)
+		//条件1
+		children = append(children, &ast.ChildValue{Value: &ast.Value{Kind: ast.ObjectValue, Children: []*ast.ChildValue{{
+			Name: key, Value: &ast.Value{Kind: ast.ObjectValue, Children: []*ast.ChildValue{
+				{Name: "is", Value: &ast.Value{Kind: ast.EnumValue, Raw: "NOT_NULL"}},
+			}}},
+		}}})
+		//条件2
+		children = append(children, &ast.ChildValue{Value: &ast.Value{Kind: ast.ObjectValue, Children: []*ast.ChildValue{{
+			Name: key, Value: &ast.Value{Kind: ast.ObjectValue, Children: []*ast.ChildValue{
+				{Name: "ne", Value: &ast.Value{Kind: ast.BlockValue, Raw: util.JoinString(`"`, field.Link.TableRelation, `"."`, field.Link.ColumnRelation, `"`)}},
+			}}},
+		}}})
+		//条件3
+		children = append(children, &ast.ChildValue{Value: &ast.Value{Kind: ast.ObjectValue, Children: []*ast.ChildValue{{
+			Name: key, Value: &ast.Value{Kind: ast.ObjectValue, Children: []*ast.ChildValue{
+				{Name: "eq", Value: &ast.Value{Kind: ast.BlockValue, Raw: util.JoinString(`"`, alias, `"."`, field.Link.ColumnRelation, `"`)}},
+			}}},
+		}}})
 	} else {
-		my.Write("(").Quoted(alias).Write(".").Quoted(field.Link.ColumnRelation).Write("IS NOT NULL)")
-		my.Write("AND").Write("(").Quoted(alias).Write(".").Quoted(field.Link.ColumnRelation).Write("!=").Quoted(alias).Write(".").Quoted(field.Link.ColumnName).Write(")")
-		my.Write("AND").Write("(").Quoted(alias).Write(".").Quoted(field.Link.ColumnRelation).Write("=").Quoted(field.Link.TableName).Write(".").Quoted(field.Link.ColumnName).Write(")")
+		key := util.JoinString(`"`, alias, `"."`, field.Link.ColumnRelation, `"`)
+		//条件1
+		children = append(children, &ast.ChildValue{Value: &ast.Value{Kind: ast.ObjectValue, Children: []*ast.ChildValue{{
+			Name: key, Value: &ast.Value{Kind: ast.ObjectValue, Children: []*ast.ChildValue{
+				{Name: "is", Value: &ast.Value{Kind: ast.EnumValue, Raw: "NOT_NULL"}},
+			}}},
+		}}})
+		//条件2
+		children = append(children, &ast.ChildValue{Value: &ast.Value{Kind: ast.ObjectValue, Children: []*ast.ChildValue{{
+			Name: key, Value: &ast.Value{Kind: ast.ObjectValue, Children: []*ast.ChildValue{
+				{Name: "ne", Value: &ast.Value{Kind: ast.BlockValue, Raw: util.JoinString(`"`, alias, `"."`, field.Link.ColumnName, `"`)}},
+			}}},
+		}}})
+		//条件3
+		children = append(children, &ast.ChildValue{Value: &ast.Value{Kind: ast.ObjectValue, Children: []*ast.ChildValue{{
+			Name: key, Value: &ast.Value{Kind: ast.ObjectValue, Children: []*ast.ChildValue{
+				{Name: "eq", Value: &ast.Value{Kind: ast.BlockValue, Raw: util.JoinString(`"`, field.Link.TableName, `"."`, field.Link.ColumnName, `"`)}},
+			}}},
+		}}})
 	}
-	my.Write(")")
-
-	//var children []*ast.ChildValue
-	//if "children" == f.Name {
-	//	key := util.JoinString(`"`, table, `"."`, column, `"`)
-	//	//条件1
-	//	children = append(children, &ast.ChildValue{Value: &ast.Value{Kind: ast.ObjectValue, Children: []*ast.ChildValue{{
-	//		Name: key, Value: &ast.Value{Kind: ast.ObjectValue, Children: []*ast.ChildValue{
-	//			{Name: "is", Value: &ast.Value{Kind: ast.EnumValue, Raw: "NOT_NULL"}},
-	//		}}},
-	//	}}})
-	//	//条件2
-	//	children = append(children, &ast.ChildValue{Value: &ast.Value{Kind: ast.ObjectValue, Children: []*ast.ChildValue{{
-	//		Name: key, Value: &ast.Value{Kind: ast.ObjectValue, Children: []*ast.ChildValue{
-	//			{Name: "ne", Value: &ast.Value{Kind: ast.BlockValue, Raw: util.JoinString(`"`, field.Link.TableRelation, `"."`, field.Link.ColumnRelation, `"`)}},
-	//		}}},
-	//	}}})
-	//	//条件3
-	//	children = append(children, &ast.ChildValue{Value: &ast.Value{Kind: ast.ObjectValue, Children: []*ast.ChildValue{{
-	//		Name: key, Value: &ast.Value{Kind: ast.ObjectValue, Children: []*ast.ChildValue{
-	//			{Name: "eq", Value: &ast.Value{Kind: ast.BlockValue, Raw: util.JoinString(`"`, alias, `"."`, field.Link.ColumnRelation, `"`)}},
-	//		}}},
-	//	}}})
-	//} else {
-	//	key := util.JoinString(`"`, alias, `"."`, field.Link.ColumnRelation, `"`)
-	//	//条件1
-	//	children = append(children, &ast.ChildValue{Value: &ast.Value{Kind: ast.ObjectValue, Children: []*ast.ChildValue{{
-	//		Name: key, Value: &ast.Value{Kind: ast.ObjectValue, Children: []*ast.ChildValue{
-	//			{Name: "is", Value: &ast.Value{Kind: ast.EnumValue, Raw: "NOT_NULL"}},
-	//		}}},
-	//	}}})
-	//	//条件2
-	//	children = append(children, &ast.ChildValue{Value: &ast.Value{Kind: ast.ObjectValue, Children: []*ast.ChildValue{{
-	//		Name: key, Value: &ast.Value{Kind: ast.ObjectValue, Children: []*ast.ChildValue{
-	//			{Name: "ne", Value: &ast.Value{Kind: ast.BlockValue, Raw: util.JoinString(`"`, alias, `"."`, field.Link.ColumnName, `"`)}},
-	//		}}},
-	//	}}})
-	//	//条件3
-	//	children = append(children, &ast.ChildValue{Value: &ast.Value{Kind: ast.ObjectValue, Children: []*ast.ChildValue{{
-	//		Name: key, Value: &ast.Value{Kind: ast.ObjectValue, Children: []*ast.ChildValue{
-	//			{Name: "eq", Value: &ast.Value{Kind: ast.BlockValue, Raw: util.JoinString(`"`, field.Link.TableName, `"."`, field.Link.ColumnName, `"`)}},
-	//		}}},
-	//	}}})
-	//}
-	//value := &ast.Value{
-	//	Kind: ast.ObjectValue,
-	//	Children: []*ast.ChildValue{{
-	//		Name: AND,
-	//		Value: &ast.Value{
-	//			Kind:     ast.ListValue,
-	//			Children: children,
-	//		},
-	//	}},
-	//}
-	//my.appendWhereValue(f, value)
-	//
-	//my.Write(` WHERE (`)
-	//my.renderWhereValue(value)
-	//my.Write(")")
+	my.appendWhereValue(f, &ast.Value{
+		Kind: ast.ObjectValue,
+		Children: []*ast.ChildValue{{
+			Name: AND,
+			Value: &ast.Value{
+				Kind:     ast.ListValue,
+				Children: children,
+			},
+		}},
+	})
+	my.renderWhereField(f)
 
 	my.Write(") SELECT ")
 
