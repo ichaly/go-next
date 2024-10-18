@@ -34,13 +34,12 @@ func (my *compilerContext) renderWhereValue(value *ast.Value) {
 	}
 	if value.Raw != "" {
 		// TODO:使用?占位符,利用预编译提高性能
-		if value.Kind == ast.StringValue {
+		if value.Kind == ast.EnumValue && value.Raw == "NOT_NULL" {
+			my.Write("NOT NULL")
+		} else if value.Kind == ast.StringValue {
 			my.Write("'")
 			my.Write(value.Raw)
 			my.Write("'")
-		} else if value.Kind == ast.EnumValue {
-			// TODO:处理正确的枚举类型
-			my.Write("NOT NULL")
 		} else {
 			my.Write(value.Raw)
 		}
@@ -72,8 +71,7 @@ func (my *compilerContext) renderWhereValue(value *ast.Value) {
 			my.Write(")")
 		default:
 			my.Write("(")
-			// 如果Definition为空，则认为是多表关联条件使用字段名称
-			// TODO：更合适的办法？
+			// TODO：更合适的办法？如果Definition为空，则认为是多表关联条件使用字段名称
 			if value.Definition != nil {
 				name := strings.TrimSuffix(value.Definition.Name, SUFFIX_WHERE_INPUT)
 				table, _ := my.meta.TableName(name, false)

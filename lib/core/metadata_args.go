@@ -17,11 +17,13 @@ func (my *Metadata) expression() error {
 		name := util.JoinString(scalar, suffix)
 		expr := &Class{Name: name, Kind: ast.InputObject, Fields: make(map[string]*Field)}
 		for _, v := range symbols {
-			t := ast.NamedType(scalar, nil)
-			if v.Name == "is" {
+			var t *ast.Type
+			if v.Name == IS {
 				t = ast.NamedType(ENUM_IS_INPUT, nil)
-			} else if v.Name == "in" {
+			} else if v.Name == IN {
 				t = ast.ListType(ast.NonNullNamedType(scalar, nil), nil)
+			} else {
+				t = ast.NamedType(scalar, nil)
 			}
 			expr.Fields[v.Name] = &Field{Type: t, Name: v.Name, Description: v.Describe}
 		}
