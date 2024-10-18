@@ -48,7 +48,7 @@ func (my *compilerContext) renderWhereValue(value *ast.Value) {
 	}
 	for _, v := range value.Children {
 		switch v.Name {
-		case "is", "in", "eq", "ne", "gt", "ge", "lt", "le", "like", "iLike", "regex", "iRegex":
+		case IS, IN, EQ, NE, GT, GE, LT, LE, LIKE, I_LIKE, REGEX, I_REGEX:
 			if s, ok := dictionary[v.Name]; ok {
 				my.Write(" ")
 				my.Write(strings.ToUpper(s.Text))
