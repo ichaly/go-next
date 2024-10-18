@@ -132,10 +132,10 @@ func (my *Metadata) tableOption() error {
 			var args []*Input
 			if e.TableRelation == e.TableName {
 				args = append(args, &Input{
-					Name:        "level",
+					Name:        LEVEL,
 					Type:        ast.NamedType(SCALAR_INT, nil),
 					Default:     `1`,
-					Description: "Recursive query depth default level 1 , 0 is all.",
+					Description: descLevel,
 				})
 			}
 			//OneToMany

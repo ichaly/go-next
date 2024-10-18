@@ -29,6 +29,20 @@ const (
 	RESULT_TYPE = "resultType"
 )
 
+// 参数名称
+const (
+	DISTINCT = "distinct"
+	LIMIT    = "limit"
+	OFFSET   = "offset"
+	FIRST    = "first"
+	LAST     = "last"
+	AFTER    = "after"
+	BEFORE   = "before"
+	SORT     = "sort"
+	WHERE    = "where"
+	LEVEL    = "level"
+)
+
 // GraphQL入参名称后缀
 const (
 	SUFFIX_SORT_INPUT  = "SortInput"
@@ -73,6 +87,7 @@ const (
 	descILike              = "Value matching (case-insensitive) pattern where '%' represents zero or more characters and '_' represents a single character. Eg. '_r%' finds values not having 'r' in second position"
 	descRegex              = "Value matching regular pattern"
 	descIRegex             = "Value matching (case-insensitive) regex pattern"
+	descLevel              = "Recursive query depth default level 1 , 0 is all."
 )
 
 // 逻辑关系操作符常量

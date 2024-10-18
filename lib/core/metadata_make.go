@@ -8,39 +8,40 @@ import (
 var inputs = func(name string) []*Input {
 	return []*Input{
 		{
-			Name: "distinct",
+			Name: DISTINCT,
 			Type: ast.ListType(ast.NamedType(SCALAR_STRING, nil), nil),
 		},
 		{
-			Name: "limit",
+			Name:    LIMIT,
+			Type:    ast.NamedType(SCALAR_INT, nil),
+			Default: `20`,
+		},
+		{
+			Name: OFFSET,
 			Type: ast.NamedType(SCALAR_INT, nil),
 		},
 		{
-			Name: "offset",
+			Name: FIRST,
 			Type: ast.NamedType(SCALAR_INT, nil),
 		},
 		{
-			Name: "first",
+			Name: LAST,
 			Type: ast.NamedType(SCALAR_INT, nil),
 		},
 		{
-			Name: "last",
-			Type: ast.NamedType(SCALAR_INT, nil),
-		},
-		{
-			Name: "after",
+			Name: AFTER,
 			Type: ast.NamedType(SCALAR_CURSOR, nil),
 		},
 		{
-			Name: "before",
+			Name: BEFORE,
 			Type: ast.NamedType(SCALAR_CURSOR, nil),
 		},
 		{
-			Name: "sort",
+			Name: SORT,
 			Type: ast.NamedType(util.JoinString(name, SUFFIX_SORT_INPUT), nil),
 		},
 		{
-			Name: "where",
+			Name: WHERE,
 			Type: ast.NamedType(util.JoinString(name, SUFFIX_WHERE_INPUT), nil),
 		},
 	}

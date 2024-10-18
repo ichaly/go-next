@@ -6,10 +6,10 @@ import (
 )
 
 func (my *compilerContext) appendWhereValue(field *ast.Field, value *ast.Value) {
-	where := field.Arguments.ForName("where")
+	where := field.Arguments.ForName(WHERE)
 	//拼接原始条件
 	if where == nil {
-		where = &ast.Argument{Name: "where", Value: value}
+		where = &ast.Argument{Name: WHERE, Value: value}
 		field.Arguments = append(field.Arguments, where)
 	} else {
 		//使用AND包装拼接关联关系查询条件
@@ -20,7 +20,7 @@ func (my *compilerContext) appendWhereValue(field *ast.Field, value *ast.Value) 
 }
 
 func (my *compilerContext) renderWhereField(field *ast.Field) {
-	where := field.Arguments.ForName("where")
+	where := field.Arguments.ForName(WHERE)
 	if where != nil {
 		my.Write(` WHERE (`)
 		my.renderWhereValue(where.Value)

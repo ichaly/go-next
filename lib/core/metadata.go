@@ -38,7 +38,9 @@ func NewMetadata(v *viper.Viper, d *gorm.DB) (*Metadata, error) {
 	}
 
 	cfg := &internal.TableConfig{Mapping: internal.DataTypes}
-	if err = v.Sub("schema").Unmarshal(cfg); err != nil {
+	v = v.Sub("schema")
+	v.SetDefault("default-limit", 10)
+	if err = v.Unmarshal(cfg); err != nil {
 		return nil, err
 	}
 

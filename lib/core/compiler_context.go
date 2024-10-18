@@ -151,7 +151,8 @@ func (my *compilerContext) renderSelect(id, pid int, f *ast.Field) {
 		my.renderUniversalSelect(id, pid, f)
 	}
 
-	my.Write(` LIMIT 20 ) AS`)
+	my.renderLimitField(f)
+	my.Write(` ) AS`)
 	my.Quoted(alias)
 }
 
