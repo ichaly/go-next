@@ -5,6 +5,29 @@ import (
 	"strings"
 )
 
+func (my *compilerContext) appendWhereValue(field *ast.Field, value *ast.Value) {
+	where := field.Arguments.ForName("where")
+	//拼接原始条件
+	if where == nil {
+		where = &ast.Argument{Name: "where", Value: value}
+		field.Arguments = append(field.Arguments, where)
+	} else {
+		//使用AND包装拼接关联关系查询条件
+		where.Value = &ast.Value{Kind: ast.ObjectValue, Children: []*ast.ChildValue{
+			{Name: AND, Value: &ast.Value{Kind: ast.ListValue, Children: []*ast.ChildValue{{Value: where.Value}, {Value: value}}}},
+		}}
+	}
+}
+
+func (my *compilerContext) renderWhereField(field *ast.Field) {
+	where := field.Arguments.ForName("where")
+	if where != nil {
+		my.Write(` WHERE (`)
+		my.renderWhereValue(where.Value)
+		my.Write(`)`)
+	}
+}
+
 func (my *compilerContext) renderWhereValue(value *ast.Value) {
 	if value == nil {
 		return
@@ -15,6 +38,9 @@ func (my *compilerContext) renderWhereValue(value *ast.Value) {
 			my.Write("'")
 			my.Write(value.Raw)
 			my.Write("'")
+		} else if value.Kind == ast.EnumValue {
+			// TODO:处理正确的枚举类型
+			my.Write("NOT NULL")
 		} else {
 			my.Write(value.Raw)
 		}
