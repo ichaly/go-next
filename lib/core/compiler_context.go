@@ -121,6 +121,7 @@ func (my *compilerContext) renderSelect(id, pid int, f *ast.Field) {
 	alias := util.JoinString(table, "_", convertor.ToString(id))
 
 	my.Write(` SELECT `)
+	my.renderDistinct(id, pid, f)
 	for i, s := range f.SelectionSet {
 		switch f := s.(type) {
 		case *ast.Field:
@@ -154,6 +155,35 @@ func (my *compilerContext) renderSelect(id, pid int, f *ast.Field) {
 	my.renderLimitField(f)
 	my.Write(` ) AS`)
 	my.Quoted(alias)
+}
+
+func (my *compilerContext) renderDistinct(id, pid int, f *ast.Field) {
+	distinct := f.Arguments.ForName(DISTINCT)
+	if distinct == nil {
+		return
+	}
+	data, err := distinct.Value.Value(nil)
+	if err != nil {
+		return
+	}
+	list, ok := data.([]interface{})
+	if !ok || len(list) == 0 {
+		return
+	}
+	my.Write(`DISTINCT ON (`)
+	for i, v := range list {
+		if i != 0 {
+			my.Write(`, `)
+		}
+		field, ok := my.meta.FindField(f.Definition.Type.Name(), convertor.ToString(v), false)
+		if !ok {
+			continue
+		}
+		my.Quoted(util.JoinString(field.Table, "_", convertor.ToString(pid)))
+		my.Write(".")
+		my.Quoted(field.Column)
+	}
+	my.Write(`) `)
 }
 
 func (my *compilerContext) renderInner(id, pid int, f *ast.Field) {
