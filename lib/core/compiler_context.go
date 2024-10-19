@@ -188,22 +188,15 @@ func (my *compilerContext) renderWhere(id, pid int, f *ast.Field) {
 		} else {
 			relation = util.JoinString(link.TableRelation, "_", convertor.ToString(pid))
 		}
-		value := &ast.Value{
-			Kind: ast.ObjectValue,
-			Children: []*ast.ChildValue{{
-				Name: util.JoinString(`"`, link.TableName, `"."`, link.ColumnName, `"`),
-				Value: &ast.Value{
-					Kind: ast.ObjectValue,
-					Children: []*ast.ChildValue{{
-						Name: EQ,
-						Value: &ast.Value{
-							Kind: ast.BlockValue,
-							Raw:  util.JoinString(`"`, relation, `"."`, link.ColumnRelation, `"`),
-						},
-					}},
+		value := &ast.Value{Kind: ast.ObjectValue, Children: []*ast.ChildValue{{
+			Name: util.JoinString(`"`, link.TableName, `"."`, link.ColumnName, `"`),
+			Value: &ast.Value{Kind: ast.ObjectValue, Children: []*ast.ChildValue{{
+				Name: EQ, Value: &ast.Value{
+					Kind: ast.BlockValue,
+					Raw:  util.JoinString(`"`, relation, `"."`, link.ColumnRelation, `"`),
 				},
-			}},
-		}
+			}}},
+		}}}
 		//拼接原始条件
 		my.appendWhereValue(f, value)
 	}
@@ -311,43 +304,19 @@ func (my *compilerContext) renderRecursiveSelect(id, pid int, f *ast.Field) {
 	if "children" == f.Name {
 		key := util.JoinString(`"`, table, `"."`, column, `"`)
 		//条件1
-		children = append(children, &ast.ChildValue{Value: &ast.Value{Kind: ast.ObjectValue, Children: []*ast.ChildValue{{
-			Name: key, Value: &ast.Value{Kind: ast.ObjectValue, Children: []*ast.ChildValue{
-				{Name: IS, Value: &ast.Value{Kind: ast.EnumValue, Raw: "NOT_NULL"}},
-			}}},
-		}}})
+		children = append(children, my.buildChildValue(key, IS, "NOT_NULL", ast.EnumValue))
 		//条件2
-		children = append(children, &ast.ChildValue{Value: &ast.Value{Kind: ast.ObjectValue, Children: []*ast.ChildValue{{
-			Name: key, Value: &ast.Value{Kind: ast.ObjectValue, Children: []*ast.ChildValue{
-				{Name: NE, Value: &ast.Value{Kind: ast.BlockValue, Raw: util.JoinString(`"`, field.Link.TableRelation, `"."`, field.Link.ColumnRelation, `"`)}},
-			}}},
-		}}})
+		children = append(children, my.buildChildValue(key, NE, util.JoinString(`"`, field.Link.TableRelation, `"."`, field.Link.ColumnRelation, `"`), ast.BlockValue))
 		//条件3
-		children = append(children, &ast.ChildValue{Value: &ast.Value{Kind: ast.ObjectValue, Children: []*ast.ChildValue{{
-			Name: key, Value: &ast.Value{Kind: ast.ObjectValue, Children: []*ast.ChildValue{
-				{Name: EQ, Value: &ast.Value{Kind: ast.BlockValue, Raw: util.JoinString(`"`, alias, `"."`, field.Link.ColumnRelation, `"`)}},
-			}}},
-		}}})
+		children = append(children, my.buildChildValue(key, EQ, util.JoinString(`"`, alias, `"."`, field.Link.ColumnRelation, `"`), ast.BlockValue))
 	} else {
 		key := util.JoinString(`"`, alias, `"."`, field.Link.ColumnRelation, `"`)
 		//条件1
-		children = append(children, &ast.ChildValue{Value: &ast.Value{Kind: ast.ObjectValue, Children: []*ast.ChildValue{{
-			Name: key, Value: &ast.Value{Kind: ast.ObjectValue, Children: []*ast.ChildValue{
-				{Name: IS, Value: &ast.Value{Kind: ast.EnumValue, Raw: "NOT_NULL"}},
-			}}},
-		}}})
+		children = append(children, my.buildChildValue(key, IS, "NOT_NULL", ast.EnumValue))
 		//条件2
-		children = append(children, &ast.ChildValue{Value: &ast.Value{Kind: ast.ObjectValue, Children: []*ast.ChildValue{{
-			Name: key, Value: &ast.Value{Kind: ast.ObjectValue, Children: []*ast.ChildValue{
-				{Name: NE, Value: &ast.Value{Kind: ast.BlockValue, Raw: util.JoinString(`"`, alias, `"."`, field.Link.ColumnName, `"`)}},
-			}}},
-		}}})
+		children = append(children, my.buildChildValue(key, NE, util.JoinString(`"`, alias, `"."`, field.Link.ColumnName, `"`), ast.BlockValue))
 		//条件3
-		children = append(children, &ast.ChildValue{Value: &ast.Value{Kind: ast.ObjectValue, Children: []*ast.ChildValue{{
-			Name: key, Value: &ast.Value{Kind: ast.ObjectValue, Children: []*ast.ChildValue{
-				{Name: EQ, Value: &ast.Value{Kind: ast.BlockValue, Raw: util.JoinString(`"`, field.Link.TableName, `"."`, field.Link.ColumnName, `"`)}},
-			}}},
-		}}})
+		children = append(children, my.buildChildValue(key, EQ, util.JoinString(`"`, field.Link.TableName, `"."`, field.Link.ColumnName, `"`), ast.BlockValue))
 	}
 	my.appendWhereValue(f, &ast.Value{
 		Kind: ast.ObjectValue,

@@ -5,6 +5,14 @@ import (
 	"strings"
 )
 
+func (my *compilerContext) buildChildValue(key, operator, raw string, kind ast.ValueKind) *ast.ChildValue {
+	return &ast.ChildValue{Value: &ast.Value{Kind: ast.ObjectValue, Children: []*ast.ChildValue{{
+		Name: key, Value: &ast.Value{Kind: ast.ObjectValue, Children: []*ast.ChildValue{
+			{Name: operator, Value: &ast.Value{Kind: kind, Raw: raw}},
+		}}},
+	}}}
+}
+
 func (my *compilerContext) appendWhereValue(field *ast.Field, value *ast.Value) {
 	where := field.Arguments.ForName(WHERE)
 	//拼接原始条件
@@ -14,7 +22,10 @@ func (my *compilerContext) appendWhereValue(field *ast.Field, value *ast.Value) 
 	} else {
 		//使用AND包装拼接关联关系查询条件
 		where.Value = &ast.Value{Kind: ast.ObjectValue, Children: []*ast.ChildValue{
-			{Name: AND, Value: &ast.Value{Kind: ast.ListValue, Children: []*ast.ChildValue{{Value: where.Value}, {Value: value}}}},
+			{Name: AND, Value: &ast.Value{Kind: ast.ListValue, Children: []*ast.ChildValue{
+				{Value: where.Value},
+				{Value: value},
+			}}},
 		}}
 	}
 }
