@@ -179,7 +179,7 @@ func (my *compilerContext) renderDistinct(id, pid int, f *ast.Field) {
 		if !ok {
 			continue
 		}
-		my.Quoted(util.JoinString(field.Table, "_", convertor.ToString(pid)))
+		my.Quoted(util.JoinString(field.Table, "_", convertor.ToString(id)))
 		my.Write(".")
 		my.Quoted(field.Column)
 	}
