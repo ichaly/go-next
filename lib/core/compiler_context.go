@@ -153,6 +153,7 @@ func (my *compilerContext) renderSelect(id, pid int, f *ast.Field) {
 	}
 
 	my.renderLimitField(f)
+	my.renderOffsetField(f)
 	my.Write(` ) AS`)
 	my.Quoted(alias)
 }

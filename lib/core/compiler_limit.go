@@ -18,3 +18,16 @@ func (my *compilerContext) renderLimitField(field *ast.Field) {
 	my.Write(` LIMIT `)
 	my.Write(my.parseLimitValue(field))
 }
+
+func (my *compilerContext) renderOffsetField(field *ast.Field) {
+	offset := field.Arguments.ForName(OFFSET)
+	if offset == nil {
+		return
+	}
+	value, err := offset.Value.Value(nil)
+	if err != nil {
+		return
+	}
+	my.Write(` OFFSET `)
+	my.Write(value)
+}
