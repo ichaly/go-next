@@ -3,6 +3,7 @@ package core
 import (
 	"github.com/duke-git/lancet/v2/convertor"
 	"github.com/vektah/gqlparser/v2/ast"
+	"strings"
 )
 
 func (my *compilerContext) renderSort(field *ast.Field) {
@@ -20,6 +21,6 @@ func (my *compilerContext) renderSort(field *ast.Field) {
 		my.Write(".")
 		my.Quoted(f.Column)
 		my.Write(` `)
-		my.Write(convertor.ToString(v.Value.Raw))
+		my.Write(strings.ReplaceAll(convertor.ToString(v.Value.Raw), "_", " "))
 	}
 }
