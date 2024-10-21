@@ -165,3 +165,9 @@ func (my *_ExecutorSuite) TestExecutorFirst() {
 	expect := `SELECT jsonb_build_object('areaList', __sj_0.json) AS __root FROM (SELECT true) AS __root_x LEFT OUTER JOIN LATERAL ( SELECT COALESCE(jsonb_agg(__sj_0.json), '[]') AS json FROM (  SELECT to_jsonb(__sr_0.*) AS json FROM (  SELECT "sys_area_0"."id" AS "id","sys_area_0"."name" AS "name"FROM ( SELECT "sys_area"."id","sys_area"."name" FROM "sys_area" LIMIT 10 OFFSET 50 ) AS"sys_area_0" ) AS "__sr_0" ) AS "__sj_0" ) AS "__sj_0" ON true`
 	my.doCase(input, expect)
 }
+
+func (my *_ExecutorSuite) TestExecutorSortOneToMany() {
+	input := `query{areaList(sort:{name:DESC,id:ASC}){key:id userList(sort:{id:DESC}){key:id}}}`
+	expect := `SELECT jsonb_build_object('areaList', __sj_0.json) AS __root FROM (SELECT true) AS __root_x LEFT OUTER JOIN LATERAL ( SELECT COALESCE(jsonb_agg(__sj_0.json), '[]') AS json FROM (  SELECT to_jsonb(__sr_0.*) AS json FROM (  SELECT "sys_area_0"."id" AS "id","sys_area_0"."name" AS "name"FROM ( SELECT "sys_area"."id","sys_area"."name" FROM "sys_area" LIMIT 10 OFFSET 50 ) AS"sys_area_0" ) AS "__sr_0" ) AS "__sj_0" ) AS "__sj_0" ON true`
+	my.doCase(input, expect)
+}
