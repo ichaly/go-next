@@ -138,7 +138,7 @@ func (my *compilerContext) renderSelect(id, pid int, f *ast.Field) {
 			} else {
 				my.Quoted(alias)
 				my.Write(".")
-				my.Quoted(f.Name)
+				my.Quoted(field.Column)
 			}
 			my.Write(` AS `)
 			my.Quoted(f.Alias)
