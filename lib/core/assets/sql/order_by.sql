@@ -18,4 +18,4 @@ FROM ((SELECT true)) AS __root_x
                                                                                                   ORDER BY "sys_user"."id" DESC
                                                                                                   LIMIT 20) AS "sys_user_1") AS "__sr_1") AS "__sj_1") AS "__sj_1"
                                                                        ON true) AS "__sr_0") AS "__sj_0") AS "__sj_0"
-                         ON true
+                         ON true;

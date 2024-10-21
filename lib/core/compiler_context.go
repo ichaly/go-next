@@ -151,7 +151,7 @@ func (my *compilerContext) renderSelect(id, pid int, f *ast.Field) {
 	} else {
 		my.renderUniversalSelect(id, pid, f)
 	}
-
+	my.renderSort(f)
 	my.renderLimitField(f)
 	my.renderOffsetField(f)
 	my.Write(` ) AS`)
