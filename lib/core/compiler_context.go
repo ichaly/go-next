@@ -74,8 +74,8 @@ func (my *compilerContext) renderField(pid int, set ast.SelectionSet) {
 		id := my.fieldId(field)
 
 		my.renderJoin(id)
-		my.renderList(id)
-		my.renderJson(id)
+		my.renderList(id, field)
+		my.renderJson(id, field)
 
 		my.renderSelect(id, pid, field)
 		if len(field.SelectionSet) > 0 {
@@ -96,16 +96,22 @@ func (my *compilerContext) renderJoinClose(id int) {
 	my.Write(` ) AS `).Quoted(`__sj_`, id).Write(` ON true `)
 }
 
-func (my *compilerContext) renderList(id int) {
-	my.Write(` SELECT COALESCE(jsonb_agg(__sj_`, id, `.json), '[]') AS json FROM ( `)
+func (my *compilerContext) renderList(id int, field *ast.Field) {
+	my.Write(` SELECT COALESCE(jsonb_agg(__sj_`, id, `.json), '[]') AS json `)
+	my.renderCursor(id, field)
+	my.Write(` FROM ( `)
 }
 
 func (my *compilerContext) renderListClose(id int) {
 	my.Write(` ) AS `).Quoted(`__sj_`, id)
 }
 
-func (my *compilerContext) renderJson(id int) {
-	my.Write(` SELECT to_jsonb(__sr_`, id, `.*) AS json FROM ( `)
+func (my *compilerContext) renderJson(id int, field *ast.Field) {
+	my.Write(` SELECT to_jsonb(__sr_`, id, `.*) `)
+	my.renderCursorExclude(field)
+	my.Write(`AS json`)
+	my.renderCursorSelect(field)
+	my.Write(` FROM ( `)
 }
 
 func (my *compilerContext) renderJsonClose(id int) {
