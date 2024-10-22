@@ -11,7 +11,7 @@ func (my *compilerContext) renderSort(field *ast.Field) {
 	if sort == nil || len(sort.Value.Children) == 0 {
 		return
 	}
-	my.Write(`  ORDER BY  `)
+	my.Write(` ORDER BY  `)
 	for i, v := range sort.Value.Children {
 		if i != 0 {
 			my.Write(`, `)

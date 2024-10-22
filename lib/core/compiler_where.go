@@ -1,6 +1,7 @@
 package core
 
 import (
+	"github.com/duke-git/lancet/v2/convertor"
 	"github.com/vektah/gqlparser/v2/ast"
 	"strings"
 )
@@ -44,15 +45,12 @@ func (my *compilerContext) renderWhereValue(value *ast.Value) {
 		return
 	}
 	if value.Raw != "" {
-		// TODO:使用?占位符,利用预编译提高性能
-		if value.Kind == ast.EnumValue && value.Raw == "NOT_NULL" {
-			my.Write("NOT NULL")
-		} else if value.Kind == ast.StringValue {
-			my.Write("'")
+		if value.Kind == ast.EnumValue {
+			my.Write(strings.ReplaceAll(convertor.ToString(value.Raw), "_", " "))
+		} else if value.Kind == ast.BlockValue {
 			my.Write(value.Raw)
-			my.Write("'")
 		} else {
-			my.Write(value.Raw)
+			my.renderParam(value)
 		}
 		return
 	}

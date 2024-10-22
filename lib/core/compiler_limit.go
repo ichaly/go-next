@@ -2,21 +2,22 @@ package core
 
 import (
 	"github.com/vektah/gqlparser/v2/ast"
+	"strconv"
 )
-
-func (my *compilerContext) parseLimitValue(field *ast.Field) interface{} {
-	limit := field.Arguments.ForName(LIMIT)
-	if limit != nil {
-		if value, err := limit.Value.Value(nil); err == nil {
-			return value
-		}
-	}
-	return my.meta.cfg.DefaultLimit
-}
 
 func (my *compilerContext) renderLimit(field *ast.Field) {
 	my.Write(` LIMIT `)
-	my.Write(my.parseLimitValue(field))
+	var value *ast.Value
+	limit := field.Arguments.ForName(LIMIT)
+	if limit != nil {
+		value = limit.Value
+	} else {
+		value = &ast.Value{
+			Kind: ast.IntValue,
+			Raw:  strconv.Itoa(my.meta.cfg.DefaultLimit),
+		}
+	}
+	my.renderParam(value)
 }
 
 func (my *compilerContext) renderOffset(field *ast.Field) {
@@ -24,10 +25,6 @@ func (my *compilerContext) renderOffset(field *ast.Field) {
 	if offset == nil {
 		return
 	}
-	value, err := offset.Value.Value(nil)
-	if err != nil {
-		return
-	}
 	my.Write(` OFFSET `)
-	my.Write(value)
+	my.renderParam(offset.Value)
 }

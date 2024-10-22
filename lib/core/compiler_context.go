@@ -23,7 +23,7 @@ type compilerContext struct {
 }
 
 func newContext(m *Metadata) *compilerContext {
-	return &compilerContext{meta: m, buf: bytes.NewBuffer([]byte{}), dictionary: make(map[int]int)}
+	return &compilerContext{meta: m, buf: bytes.NewBuffer([]byte{}), dictionary: make(map[int]int), variables: make(map[string]interface{})}
 }
 
 func (my *compilerContext) String() string {
@@ -160,7 +160,7 @@ func (my *compilerContext) renderSelect(id, pid int, f *ast.Field) {
 	my.renderSort(f)
 	my.renderLimit(f)
 	my.renderOffset(f)
-	my.Write(` ) AS`)
+	my.Write(` ) AS `)
 	my.Quoted(alias)
 }
 
@@ -392,6 +392,18 @@ func (my *compilerContext) renderRecursiveSelect(id, pid int, f *ast.Field) {
 	my.Quoted(table)
 }
 
-func (my *compilerContext) renderParam(param Param) {
-
+func (my *compilerContext) renderParam(value *ast.Value) {
+	val, err := value.Value(my.variables)
+	if err != nil {
+		my.params = append(my.params, nil)
+	} else {
+		my.params = append(my.params, val)
+	}
+	//my.Write(`$`, len(my.params)+1)
+	//TODO:方便调试查看直接拼接参数值
+	if value.Kind == ast.StringValue {
+		my.Write(`'`, val, `'`)
+	} else {
+		my.Write(val)
+	}
 }
