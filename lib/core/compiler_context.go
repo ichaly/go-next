@@ -2,6 +2,7 @@ package core
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"github.com/duke-git/lancet/v2/convertor"
 	"github.com/duke-git/lancet/v2/maputil"
@@ -10,14 +11,19 @@ import (
 	"strings"
 )
 
+type Param struct {
+}
+
 type compilerContext struct {
-	buf   *bytes.Buffer
-	meta  *Metadata
-	stack map[int]int
+	buf        *bytes.Buffer
+	meta       *Metadata
+	params     []any
+	variables  map[string]interface{}
+	dictionary map[int]int
 }
 
 func newContext(m *Metadata) *compilerContext {
-	return &compilerContext{meta: m, buf: bytes.NewBuffer([]byte{}), stack: make(map[int]int)}
+	return &compilerContext{meta: m, buf: bytes.NewBuffer([]byte{}), dictionary: make(map[int]int)}
 }
 
 func (my *compilerContext) String() string {
@@ -38,7 +44,8 @@ func (my *compilerContext) Write(elem ...any) *compilerContext {
 	return my
 }
 
-func (my *compilerContext) RenderQuery(set ast.SelectionSet) {
+func (my *compilerContext) RenderQuery(set ast.SelectionSet, variables json.RawMessage) {
+	_ = json.Unmarshal(variables, &my.variables)
 	my.Write(`SELECT jsonb_build_object(`)
 	my.eachField(set, func(index int, field *ast.Field) {
 		if index != 0 {
@@ -54,7 +61,7 @@ func (my *compilerContext) RenderQuery(set ast.SelectionSet) {
 func (my *compilerContext) fieldId(field *ast.Field) int {
 	p := field.GetPosition()
 	id := p.Line<<32 | p.Column
-	return maputil.GetOrSet(my.stack, id, len(my.stack))
+	return maputil.GetOrSet(my.dictionary, id, len(my.dictionary))
 }
 
 func (my *compilerContext) eachField(set ast.SelectionSet, callback func(index int, field *ast.Field)) {
@@ -98,7 +105,6 @@ func (my *compilerContext) renderJoinClose(id int) {
 
 func (my *compilerContext) renderList(id int, field *ast.Field) {
 	my.Write(` SELECT COALESCE(jsonb_agg(__sj_`, id, `.json), '[]') AS json `)
-	my.renderCursor(id, field)
 	my.Write(` FROM ( `)
 }
 
@@ -108,9 +114,7 @@ func (my *compilerContext) renderListClose(id int) {
 
 func (my *compilerContext) renderJson(id int, field *ast.Field) {
 	my.Write(` SELECT to_jsonb(__sr_`, id, `.*) `)
-	my.renderCursorExclude(field)
 	my.Write(`AS json`)
-	my.renderCursorSelect(field)
 	my.Write(` FROM ( `)
 }
 
@@ -125,7 +129,6 @@ func (my *compilerContext) renderSelect(id, pid int, f *ast.Field) {
 	}
 
 	alias := util.JoinString(table, "_", convertor.ToString(id))
-
 	my.Write(` SELECT `)
 	my.renderDistinct(id, pid, f)
 	for i, s := range f.SelectionSet {
@@ -150,7 +153,7 @@ func (my *compilerContext) renderSelect(id, pid int, f *ast.Field) {
 			my.Quoted(f.Alias)
 		}
 	}
-	my.Write(`FROM (`)
+	my.Write(` FROM (`)
 	field, ok := my.meta.FindField(f.Definition.Type.Name(), f.Name, false)
 	if ok && field.Kind == RECURSIVE {
 		my.renderRecursiveSelect(id, pid, f)
@@ -158,8 +161,8 @@ func (my *compilerContext) renderSelect(id, pid int, f *ast.Field) {
 		my.renderUniversalSelect(id, pid, f)
 	}
 	my.renderSort(f)
-	my.renderLimitField(f)
-	my.renderOffsetField(f)
+	my.renderLimit(f)
+	my.renderOffset(f)
 	my.Write(` ) AS`)
 	my.Quoted(alias)
 }
@@ -390,4 +393,8 @@ func (my *compilerContext) renderRecursiveSelect(id, pid int, f *ast.Field) {
 	my.Quoted(alias)
 	my.Write(` OFFSET 1) AS  `)
 	my.Quoted(table)
+}
+
+func (my *compilerContext) renderParam(param Param) {
+
 }

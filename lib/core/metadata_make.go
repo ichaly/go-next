@@ -20,22 +20,22 @@ var inputs = func(name string) []*Input {
 			Name: OFFSET,
 			Type: ast.NamedType(SCALAR_INT, nil),
 		},
-		{
-			Name: FIRST,
-			Type: ast.NamedType(SCALAR_INT, nil),
-		},
-		{
-			Name: LAST,
-			Type: ast.NamedType(SCALAR_INT, nil),
-		},
-		{
-			Name: AFTER,
-			Type: ast.NamedType(SCALAR_CURSOR, nil),
-		},
-		{
-			Name: BEFORE,
-			Type: ast.NamedType(SCALAR_CURSOR, nil),
-		},
+		//{
+		//	Name: FIRST,
+		//	Type: ast.NamedType(SCALAR_INT, nil),
+		//},
+		//{
+		//	Name: LAST,
+		//	Type: ast.NamedType(SCALAR_INT, nil),
+		//},
+		//{
+		//	Name: AFTER,
+		//	Type: ast.NamedType(SCALAR_CURSOR, nil),
+		//},
+		//{
+		//	Name: BEFORE,
+		//	Type: ast.NamedType(SCALAR_CURSOR, nil),
+		//},
 		{
 			Name: SORT,
 			Type: ast.NamedType(util.JoinString(name, SUFFIX_SORT_INPUT), nil),

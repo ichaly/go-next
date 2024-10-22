@@ -46,7 +46,7 @@ func (my *Executor) Execute(ctx context.Context, query string, vars json.RawMess
 	}
 	//resultChans := make([]<-chan gqlValue, 0, len(set))
 	for _, o := range doc.Operations {
-		sql, _ := my.compiler.Compile(o.SelectionSet)
+		sql, _ := my.compiler.Compile(o.SelectionSet, vars)
 		r.Sql = sql
 	}
 	return
