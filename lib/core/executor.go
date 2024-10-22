@@ -3,7 +3,6 @@ package core
 import (
 	"context"
 	"encoding/json"
-	"github.com/dolmen-go/jsonmap"
 	"github.com/ichaly/go-next/lib/core/internal/intro"
 	"github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
@@ -17,9 +16,9 @@ type (
 		Variables     map[string]interface{}
 	}
 	gqlResult struct {
-		Sql    string          `json:"-"`
-		Data   jsonmap.Ordered `json:"data,omitempty"`
-		Errors gqlerror.List   `json:"errors,omitempty"`
+		sql    string
+		Data   map[string]interface{} `json:"data,omitempty"`
+		Errors gqlerror.List          `json:"errors,omitempty"`
 	}
 	gqlValue struct {
 		value interface{}
@@ -46,8 +45,12 @@ func (my *Executor) Execute(ctx context.Context, query string, vars json.RawMess
 	}
 	//resultChans := make([]<-chan gqlValue, 0, len(set))
 	for _, o := range doc.Operations {
-		sql, _ := my.compiler.Compile(o.SelectionSet, vars)
-		r.Sql = sql
+		var args []any
+		r.sql, args = my.compiler.Compile(o.SelectionSet, vars)
+		e := my.compiler.meta.db.Raw(r.sql, args...).Scan(&r.Data).Error
+		if e != nil {
+			r.Errors = append(r.Errors, gqlerror.Wrap(e))
+		}
 	}
 	return
 }

@@ -20,8 +20,9 @@ func TestExecutor(t *testing.T) {
 
 func (my *_ExecutorSuite) doCase(input, expect string) {
 	r := my.e.Execute(context.Background(), input, nil)
-	my.T().Log(r.Sql)
-	my.Require().Equal(expect, r.Sql)
+	my.T().Log(r.sql)
+	my.T().Log(r.Data)
+	my.Require().Equal(expect, r.sql)
 }
 
 func (my *_ExecutorSuite) SetupSuite() {
@@ -34,7 +35,7 @@ func (my *_ExecutorSuite) SetupSuite() {
 
 	my.s, err = gqlparser.LoadSchema(s)
 	my.Require().NoError(err)
-	my.c = NewCompiler(my.m, my.s)
+	my.c = NewCompiler(my.m)
 
 	my.e, err = NewExecutor(my.c, my.s)
 	my.Require().NoError(err)

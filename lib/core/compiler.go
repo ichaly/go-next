@@ -6,16 +6,15 @@ import (
 )
 
 type Compiler struct {
-	meta   *Metadata
-	schema *ast.Schema
+	meta *Metadata
 }
 
-func NewCompiler(m *Metadata, s *ast.Schema) *Compiler {
-	return &Compiler{meta: m, schema: s}
+func NewCompiler(m *Metadata) *Compiler {
+	return &Compiler{meta: m}
 }
 
-func (my *Compiler) Compile(set ast.SelectionSet, vars json.RawMessage) (string, error) {
+func (my *Compiler) Compile(set ast.SelectionSet, vars json.RawMessage) (string, []any) {
 	c := newContext(my.meta)
 	c.RenderQuery(set, vars)
-	return c.String(), nil
+	return c.String(), c.params
 }

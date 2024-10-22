@@ -399,11 +399,12 @@ func (my *compilerContext) renderParam(value *ast.Value) {
 	} else {
 		my.params = append(my.params, val)
 	}
-	//my.Write(`$`, len(my.params)+1)
+	// TODO: 有待进行真实的类型转换
+	my.Write(`$`, len(my.params), `::int`)
 	//TODO:方便调试查看直接拼接参数值
-	if value.Kind == ast.StringValue {
-		my.Write(`'`, val, `'`)
-	} else {
-		my.Write(val)
-	}
+	//if value.Kind == ast.StringValue {
+	//	my.Write(`'`, val, `'`)
+	//} else {
+	//	my.Write(val)
+	//}
 }
