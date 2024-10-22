@@ -104,8 +104,7 @@ func (my *compilerContext) renderJoinClose(id int) {
 }
 
 func (my *compilerContext) renderList(id int, field *ast.Field) {
-	my.Write(` SELECT COALESCE(jsonb_agg(__sj_`, id, `.json), '[]') AS json `)
-	my.Write(` FROM ( `)
+	my.Write(` SELECT COALESCE(jsonb_agg(__sj_`, id, `.json), '[]') AS json FROM ( `)
 }
 
 func (my *compilerContext) renderListClose(id int) {
@@ -113,9 +112,7 @@ func (my *compilerContext) renderListClose(id int) {
 }
 
 func (my *compilerContext) renderJson(id int, field *ast.Field) {
-	my.Write(` SELECT to_jsonb(__sr_`, id, `.*) `)
-	my.Write(`AS json`)
-	my.Write(` FROM ( `)
+	my.Write(` SELECT to_jsonb(__sr_`, id, `.*) AS json FROM ( `)
 }
 
 func (my *compilerContext) renderJsonClose(id int) {
