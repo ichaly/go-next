@@ -24,8 +24,7 @@ func (my *compilerContext) renderCursor(id int, field *ast.Field) {
 	}
 
 	// 添加按主键排序的条件
-	child := &ast.ChildValue{Name: "id", Value: &ast.Value{Kind: ast.EnumValue, Raw: "DESC"}}
-	my.appendCursorValue(field, child)
+	my.appendCursorValue(field, &ast.ChildValue{Name: "id", Value: &ast.Value{Kind: ast.EnumValue, Raw: "DESC"}})
 
 	my.Write(`, CONCAT('`)
 	my.Write(fmt.Sprintf("gj/%x:", time.Now().Unix()))
@@ -33,10 +32,9 @@ func (my *compilerContext) renderCursor(id int, field *ast.Field) {
 	my.Write(id)
 
 	sort := field.Arguments.ForName(SORT)
-	for i := 0; i < len(sort.Value.Children); i++ {
-		my.Write(`, MAX(__cur_`)
-		my.Write(i)
-		my.Write(`)`)
+	size := len(sort.Value.Children)
+	for i := 0; i < size; i++ {
+		my.Write(`, MAX(__cur_`, i, `)`)
 	}
 
 	my.Write(`)) as __cursor`)
@@ -47,10 +45,9 @@ func (my *compilerContext) renderCursorExclude(field *ast.Field) {
 	if sort == nil {
 		return
 	}
-	for i := 0; i < len(sort.Value.Children); i++ {
-		my.Write(`- '__cur_`)
-		my.Write(i)
-		my.Write(`'`)
+	size := len(sort.Value.Children)
+	for i := 0; i < size; i++ {
+		my.Write(`- '__cur_`, i, `'`)
 	}
 }
 
@@ -59,9 +56,8 @@ func (my *compilerContext) renderCursorSelect(field *ast.Field) {
 	if sort == nil {
 		return
 	}
-	for i := 0; i < len(sort.Value.Children); i++ {
-		my.Write(`, '__cur_`)
-		my.Write(i)
-		my.Write(`'`)
+	size := len(sort.Value.Children)
+	for i := 0; i < size; i++ {
+		my.Write(`, '__cur_`, i, `'`)
 	}
 }
