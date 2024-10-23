@@ -2,8 +2,10 @@ package base
 
 import (
 	"github.com/ichaly/go-next/lib/util"
+	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
+	"reflect"
 	"testing"
 )
 
@@ -42,15 +44,29 @@ type CoreConfig struct {
 }
 
 func TestViper(t *testing.T) {
-	var b BaseConfig
-	var c CoreConfig
+	var s struct {
+		BaseConfig `mapstructure:"app"`
+		CoreConfig `mapstructure:"schema"`
+	}
 	viper.SetDefault("schema.default-limit", 10)
 	viper.SetConfigFile("../../cfg/dev.yml")
 	if err := viper.ReadInConfig(); err != nil {
 		println(err)
 	}
-	if err := viper.Unmarshal(&b); err != nil {
-		return
+	if err := viper.Unmarshal(&s, viper.DecodeHook(mapstructure.ComposeDecodeHookFunc(
+		mapstructure.StringToTimeDurationHookFunc(),
+		mapstructure.StringToSliceHookFunc(","),
+		func(f reflect.Type, t reflect.Type, data interface{}) (interface{}, error) {
+			return data, nil
+		},
+		func(f reflect.Kind, t reflect.Kind, data interface{}) (interface{}, error) {
+			return data, nil
+		},
+		func(f reflect.Value, t reflect.Value) (interface{}, error) {
+			return f.Interface(), nil
+		},
+	))); err != nil {
+		println(err)
 	}
-	println(&b, &c, viper.AllSettings())
+	println(&s, viper.AllSettings())
 }
