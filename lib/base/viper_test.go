@@ -27,7 +27,7 @@ func TestNewViper(t *testing.T) {
 	t.Log(c.Name, val)
 }
 
-type BaseConfig struct {
+type InternalConfig struct {
 	Name  string `mapstructure:"name"`
 	Port  string `mapstructure:"port"`
 	Host  string `mapstructure:"host"`
@@ -43,9 +43,13 @@ type CoreConfig struct {
 	DefaultLimit int               `mapstructure:"default-limit"`
 }
 
+type BaseConfig struct {
+	InternalConfig `mapstructure:"app"`
+}
+
 func TestViper(t *testing.T) {
 	var s struct {
-		BaseConfig `mapstructure:"app"`
+		BaseConfig `mapstructure:",squash"`
 		CoreConfig `mapstructure:"schema"`
 	}
 	viper.SetDefault("schema.default-limit", 10)

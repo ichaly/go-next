@@ -3,6 +3,7 @@ package core
 import (
 	"embed"
 	_ "embed"
+	"github.com/ichaly/go-next/lib/base"
 	"github.com/ichaly/go-next/lib/core/internal"
 	"github.com/jinzhu/inflection"
 	"github.com/spf13/viper"
@@ -23,10 +24,15 @@ func init() {
 
 type Option func() error
 
+type Config struct {
+	base.Config          `mapstructure:",squash"`
+	internal.TableConfig `mapstructure:"schema"`
+}
+
 type Metadata struct {
 	db  *gorm.DB
+	cfg *Config
 	tpl *template.Template
-	cfg *internal.TableConfig
 
 	Nodes internal.AnyMap[*Class]
 }
@@ -37,9 +43,8 @@ func NewMetadata(v *viper.Viper, d *gorm.DB) (*Metadata, error) {
 		return nil, err
 	}
 
-	cfg := &internal.TableConfig{Mapping: internal.DataTypes}
-	v = v.Sub("schema")
-	v.SetDefault("default-limit", 10)
+	cfg := &Config{TableConfig: internal.TableConfig{Mapping: internal.DataTypes}}
+	v.SetDefault("schema.default-limit", 10)
 	if err = v.Unmarshal(cfg); err != nil {
 		return nil, err
 	}
