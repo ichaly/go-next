@@ -36,7 +36,7 @@ func (my *Metadata) expression() error {
 	return nil
 }
 
-func (my *Metadata) inputOption() error {
+func (my *Metadata) orderOption() error {
 	for k, v := range my.Nodes {
 		if v.Kind != ast.Object {
 			continue
@@ -95,6 +95,30 @@ func (my *Metadata) whereOption() error {
 			}
 		}
 		my.Nodes[name] = where
+	}
+	return nil
+}
+
+func (my *Metadata) inputOption() error {
+	for k, v := range my.Nodes {
+		if v.Kind != ast.Object {
+			continue
+		}
+		upsert := &Class{
+			Name:   util.JoinString(k, SUFFIX_UPSERT_INPUT),
+			Kind:   ast.InputObject,
+			Fields: make(map[string]*Field),
+		}
+		for _, f := range v.Fields {
+			if !slice.Contain(scalars, f.Type.Name()) {
+				continue
+			}
+			upsert.Fields[f.Name] = &Field{
+				Name: f.Name,
+				Type: ast.NamedType(f.Type.Name(), nil),
+			}
+		}
+		my.Nodes[upsert.Name] = upsert
 	}
 	return nil
 }

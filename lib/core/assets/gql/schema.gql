@@ -8,7 +8,7 @@ The `DateTime` scalar type represents a DateTime. The DateTime is serialized as 
 scalar DateTime
 
 "The direction of result ordering."
-enum SortDirection {
+enum SortInput {
     "Ascending order"
     ASC
     "Descending order"
@@ -23,299 +23,399 @@ enum SortDirection {
     DESC_NULLS_LAST
 }
 
+"NULL or NOT"
+enum IsInput {
+    NULL
+    NOT_NULL
+}
+
 type Area {
+    children(level:Int=1,distinct:[String],limit:Int=20,offset:Int,sort:AreaSortInput,where:AreaWhereInput): [Area]
     id: ID
     name: String
-    userList(distinct:[String],limit:Int,offset:Int,first:Int,last:Int,after:Cursor,before:Cursor,sort:UserSortInput,where:UserWhereInput): [User]
+    parents(level:Int=1,distinct:[String],limit:Int=20,offset:Int,sort:AreaSortInput,where:AreaWhereInput): Area
+    pid: Int
+    userList(distinct:[String],limit:Int=20,offset:Int,sort:UserSortInput,where:UserWhereInput): [User]
 }
 input AreaSortInput {
-    id: SortDirection
-    name: SortDirection
+    id: SortInput
+    name: SortInput
+    pid: SortInput
 }
 input AreaWhereInput {
-    and: AreaWhereInput
-    not: AreaWhereInput
-    or: AreaWhereInput
+    and: [AreaWhereInput!]
     id: IDExpression
     name: StringExpression
+    not: AreaWhereInput
+    or: [AreaWhereInput!]
+    pid: IntExpression
 }
 input BooleanExpression {
-    """
-    Is value null (true) or not null (false)
-    """
-    isNull: Boolean
     """
     Equals value
     """
     eq: Boolean
     """
-    Does not equal value
+    Is in list of values
     """
-    ne: Boolean
-    """
-    Is greater than value
-    """
-    gt: Boolean
-    """
-    Is lesser than value
-    """
-    lt: Boolean
-    """
-    Is greater than or equals value
-    """
-    ge: Boolean
-    """
-    Is lesser than or equals value
-    """
-    le: Boolean
-    """
-    Value matching (case-insensitive) pattern where '%' represents zero or more characters and '_' represents a single character. Eg. '_r%' finds values having 'r' in second position
-    """
-    like: Boolean
-    """
-    Value not matching pattern where '%' represents zero or more characters and '_' represents a single character. Eg. '_r%' finds values not having 'r' in second position
-    """
-    notLike: Boolean
+    in: [Boolean!]
 }
 input BooleanListExpression {
     """
-    Is value null (true) or not null (false)
+    Equals value
     """
-    isNull: Boolean
+    eq: Boolean
     """
     Is in list of values
     """
-    in: Boolean
-    """
-    Is not in list of values
-    """
-    notIn: Boolean
+    in: [Boolean!]
+}
+type Edge {
+    team(distinct:[String],limit:Int=20,offset:Int,sort:TeamSortInput,where:TeamWhereInput): Team
+    teamId: ID
+    user(distinct:[String],limit:Int=20,offset:Int,sort:UserSortInput,where:UserWhereInput): User
+    userId: ID
+}
+input EdgeSortInput {
+    teamId: SortInput
+    userId: SortInput
+}
+input EdgeWhereInput {
+    and: [EdgeWhereInput!]
+    not: EdgeWhereInput
+    or: [EdgeWhereInput!]
+    teamId: IDExpression
+    userId: IDExpression
 }
 input FloatExpression {
-    """
-    Is value null (true) or not null (false)
-    """
-    isNull: Boolean
     """
     Equals value
     """
     eq: Float
     """
-    Does not equal value
+    Is greater than or equal to value
     """
-    ne: Float
+    ge: Float
     """
     Is greater than value
     """
     gt: Float
     """
-    Is lesser than value
+    Is in list of values
     """
-    lt: Float
+    in: [Float!]
     """
-    Is greater than or equals value
+    Is value null (true) or not null (false)
     """
-    ge: Float
+    is: IsInput
     """
-    Is lesser than or equals value
+    Is less than or equal to value
     """
     le: Float
     """
-    Value matching (case-insensitive) pattern where '%' represents zero or more characters and '_' represents a single character. Eg. '_r%' finds values having 'r' in second position
+    Is less than value
     """
-    like: Float
+    lt: Float
     """
-    Value not matching pattern where '%' represents zero or more characters and '_' represents a single character. Eg. '_r%' finds values not having 'r' in second position
+    Does not equal value
     """
-    notLike: Float
+    ne: Float
 }
 input FloatListExpression {
     """
-    Is value null (true) or not null (false)
+    Equals value
     """
-    isNull: Boolean
+    eq: Float
+    """
+    Is greater than or equal to value
+    """
+    ge: Float
+    """
+    Is greater than value
+    """
+    gt: Float
     """
     Is in list of values
     """
-    in: Float
-    """
-    Is not in list of values
-    """
-    notIn: Float
-}
-input IDExpression {
+    in: [Float!]
     """
     Is value null (true) or not null (false)
     """
-    isNull: Boolean
+    is: IsInput
+    """
+    Is less than or equal to value
+    """
+    le: Float
+    """
+    Is less than value
+    """
+    lt: Float
+    """
+    Does not equal value
+    """
+    ne: Float
+}
+input IDExpression {
     """
     Equals value
     """
     eq: ID
     """
-    Does not equal value
+    Is greater than or equal to value
     """
-    ne: ID
+    ge: ID
     """
     Is greater than value
     """
     gt: ID
     """
-    Is lesser than value
+    Is in list of values
     """
-    lt: ID
+    in: [ID!]
     """
-    Is greater than or equals value
-    """
-    ge: ID
-    """
-    Is lesser than or equals value
+    Is less than or equal to value
     """
     le: ID
     """
-    Value matching (case-insensitive) pattern where '%' represents zero or more characters and '_' represents a single character. Eg. '_r%' finds values having 'r' in second position
+    Is less than value
     """
-    like: ID
-    """
-    Value not matching pattern where '%' represents zero or more characters and '_' represents a single character. Eg. '_r%' finds values not having 'r' in second position
-    """
-    notLike: ID
+    lt: ID
 }
 input IDListExpression {
     """
-    Is value null (true) or not null (false)
+    Equals value
     """
-    isNull: Boolean
+    eq: ID
+    """
+    Is greater than or equal to value
+    """
+    ge: ID
+    """
+    Is greater than value
+    """
+    gt: ID
     """
     Is in list of values
     """
-    in: ID
+    in: [ID!]
     """
-    Is not in list of values
+    Is less than or equal to value
     """
-    notIn: ID
+    le: ID
+    """
+    Is less than value
+    """
+    lt: ID
 }
 input IntExpression {
-    """
-    Is value null (true) or not null (false)
-    """
-    isNull: Boolean
     """
     Equals value
     """
     eq: Int
     """
-    Does not equal value
+    Is greater than or equal to value
     """
-    ne: Int
+    ge: Int
     """
     Is greater than value
     """
     gt: Int
     """
-    Is lesser than value
+    Is in list of values
     """
-    lt: Int
+    in: [Int!]
     """
-    Is greater than or equals value
+    Is value null (true) or not null (false)
     """
-    ge: Int
+    is: IsInput
     """
-    Is lesser than or equals value
+    Is less than or equal to value
     """
     le: Int
     """
-    Value matching (case-insensitive) pattern where '%' represents zero or more characters and '_' represents a single character. Eg. '_r%' finds values having 'r' in second position
+    Is less than value
     """
-    like: Int
+    lt: Int
     """
-    Value not matching pattern where '%' represents zero or more characters and '_' represents a single character. Eg. '_r%' finds values not having 'r' in second position
+    Does not equal value
     """
-    notLike: Int
+    ne: Int
 }
 input IntListExpression {
     """
-    Is value null (true) or not null (false)
+    Equals value
     """
-    isNull: Boolean
+    eq: Int
+    """
+    Is greater than or equal to value
+    """
+    ge: Int
+    """
+    Is greater than value
+    """
+    gt: Int
     """
     Is in list of values
     """
-    in: Int
-    """
-    Is not in list of values
-    """
-    notIn: Int
-}
-type Query {
-    userList(id:ID,distinct:[String],limit:Int,offset:Int,first:Int,last:Int,after:Cursor,before:Cursor,sort:UserSortInput,where:UserWhereInput): [User]
-    areaList(id:ID,distinct:[String],limit:Int,offset:Int,first:Int,last:Int,after:Cursor,before:Cursor,sort:AreaSortInput,where:AreaWhereInput): [Area]
-}
-input StringExpression {
+    in: [Int!]
     """
     Is value null (true) or not null (false)
     """
-    isNull: Boolean
+    is: IsInput
+    """
+    Is less than or equal to value
+    """
+    le: Int
+    """
+    Is less than value
+    """
+    lt: Int
+    """
+    Does not equal value
+    """
+    ne: Int
+}
+type Mutation {
+    areaList(distinct:[String],limit:Int=20,offset:Int,sort:AreaSortInput,where:AreaWhereInput): [Area]
+    edgeList(distinct:[String],limit:Int=20,offset:Int,sort:EdgeSortInput,where:EdgeWhereInput): [Edge]
+    teamList(distinct:[String],limit:Int=20,offset:Int,sort:TeamSortInput,where:TeamWhereInput): [Team]
+    userList(distinct:[String],limit:Int=20,offset:Int,sort:UserSortInput,where:UserWhereInput): [User]
+}
+type Query {
+    areaList(distinct:[String],limit:Int=20,offset:Int,sort:AreaSortInput,where:AreaWhereInput): [Area]
+    edgeList(distinct:[String],limit:Int=20,offset:Int,sort:EdgeSortInput,where:EdgeWhereInput): [Edge]
+    teamList(distinct:[String],limit:Int=20,offset:Int,sort:TeamSortInput,where:TeamWhereInput): [Team]
+    userList(distinct:[String],limit:Int=20,offset:Int,sort:UserSortInput,where:UserWhereInput): [User]
+}
+input StringExpression {
     """
     Equals value
     """
     eq: String
     """
-    Does not equal value
+    Is greater than or equal to value
     """
-    ne: String
+    ge: String
     """
     Is greater than value
     """
     gt: String
     """
-    Is lesser than value
+    Value matching (case-insensitive) pattern where '%' represents zero or more characters and '_' represents a single character. Eg. '_r%' finds values not having 'r' in second position
     """
-    lt: String
+    iLike: String
     """
-    Is greater than or equals value
+    Value matching (case-insensitive) regex pattern
     """
-    ge: String
-    """
-    Is lesser than or equals value
-    """
-    le: String
-    """
-    Value matching (case-insensitive) pattern where '%' represents zero or more characters and '_' represents a single character. Eg. '_r%' finds values having 'r' in second position
-    """
-    like: String
-    """
-    Value not matching pattern where '%' represents zero or more characters and '_' represents a single character. Eg. '_r%' finds values not having 'r' in second position
-    """
-    notLike: String
-}
-input StringListExpression {
-    """
-    Is value null (true) or not null (false)
-    """
-    isNull: Boolean
+    iRegex: String
     """
     Is in list of values
     """
-    in: String
+    in: [String!]
     """
-    Is not in list of values
+    Is value null (true) or not null (false)
     """
-    notIn: String
+    is: IsInput
+    """
+    Is less than or equal to value
+    """
+    le: String
+    """
+    Value matching pattern where '%' represents zero or more characters and '_' represents a single character. Eg. '_r%' finds values having 'r' in second position
+    """
+    like: String
+    """
+    Is less than value
+    """
+    lt: String
+    """
+    Does not equal value
+    """
+    ne: String
+    """
+    Value matching regular pattern
+    """
+    regex: String
+}
+input StringListExpression {
+    """
+    Equals value
+    """
+    eq: String
+    """
+    Is greater than or equal to value
+    """
+    ge: String
+    """
+    Is greater than value
+    """
+    gt: String
+    """
+    Value matching (case-insensitive) pattern where '%' represents zero or more characters and '_' represents a single character. Eg. '_r%' finds values not having 'r' in second position
+    """
+    iLike: String
+    """
+    Value matching (case-insensitive) regex pattern
+    """
+    iRegex: String
+    """
+    Is in list of values
+    """
+    in: [String!]
+    """
+    Is value null (true) or not null (false)
+    """
+    is: IsInput
+    """
+    Is less than or equal to value
+    """
+    le: String
+    """
+    Value matching pattern where '%' represents zero or more characters and '_' represents a single character. Eg. '_r%' finds values having 'r' in second position
+    """
+    like: String
+    """
+    Is less than value
+    """
+    lt: String
+    """
+    Does not equal value
+    """
+    ne: String
+    """
+    Value matching regular pattern
+    """
+    regex: String
+}
+type Team {
+    edgeList(distinct:[String],limit:Int=20,offset:Int,sort:EdgeSortInput,where:EdgeWhereInput): [Edge]
+    id: ID
+    userList(distinct:[String],limit:Int=20,offset:Int,sort:UserSortInput,where:UserWhereInput): [User]
+}
+input TeamSortInput {
+    id: SortInput
+}
+input TeamWhereInput {
+    and: [TeamWhereInput!]
+    id: IDExpression
+    not: TeamWhereInput
+    or: [TeamWhereInput!]
 }
 type User {
-    id: ID
+    area(distinct:[String],limit:Int=20,offset:Int,sort:AreaSortInput,where:AreaWhereInput): Area
     areaId: Int
-    area(distinct:[String],limit:Int,offset:Int,first:Int,last:Int,after:Cursor,before:Cursor,sort:AreaSortInput,where:AreaWhereInput): Area
+    edgeList(distinct:[String],limit:Int=20,offset:Int,sort:EdgeSortInput,where:EdgeWhereInput): [Edge]
+    id: ID
+    teamList(distinct:[String],limit:Int=20,offset:Int,sort:TeamSortInput,where:TeamWhereInput): [Team]
 }
 input UserSortInput {
-    id: SortDirection
-    areaId: SortDirection
+    areaId: SortInput
+    id: SortInput
 }
 input UserWhereInput {
-    and: UserWhereInput
-    not: UserWhereInput
-    or: UserWhereInput
-    id: IDExpression
+    and: [UserWhereInput!]
     areaId: IntExpression
+    id: IDExpression
+    not: UserWhereInput
+    or: [UserWhereInput!]
 }

@@ -47,9 +47,31 @@ var inputs = func(name string) []*Input {
 	}
 }
 
-func (my *Metadata) queryOption() error {
-	//构建Query
+var mutationInputs = func(name string) []*Input {
+	return []*Input{
+		{
+			Name: UPSERT,
+			Type: ast.NamedType(util.JoinString(name, SUFFIX_UPSERT_INPUT), nil),
+		},
+		//{
+		//	Name: INSERT,
+		//	Type: ast.NamedType(util.JoinString(name, SUFFIX_INSERT_INPUT), nil),
+		//},
+		//{
+		//	Name: UPDATE,
+		//	Type: ast.NamedType(util.JoinString(name, SUFFIX_UPDATE_INPUT), nil),
+		//},
+		{
+			Name: DELETE,
+			Type: ast.NamedType(SCALAR_BOOLEAN, nil),
+		},
+	}
+}
+
+func (my *Metadata) entryOption() error {
+	//构建入口节点
 	query := &Class{Name: QUERY, Fields: make(map[string]*Field), Virtual: true}
+	mutation := &Class{Name: MUTATION, Fields: make(map[string]*Field), Virtual: true}
 	for k, v := range my.Nodes {
 		if v.Kind != ast.Object {
 			continue
@@ -61,7 +83,14 @@ func (my *Metadata) queryOption() error {
 			Virtual:   query.Virtual,
 			Arguments: inputs(k),
 		}
+		mutation.Fields[name] = &Field{
+			Name:      name,
+			Type:      ast.ListType(ast.NamedType(v.Name, nil), nil),
+			Virtual:   mutation.Virtual,
+			Arguments: append(inputs(k), mutationInputs(k)...),
+		}
 	}
 	my.Nodes[query.Name] = query
+	my.Nodes[mutation.Name] = mutation
 	return nil
 }

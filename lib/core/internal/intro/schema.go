@@ -29,6 +29,12 @@ func (my __Schema) MarshalJSON() ([]byte, error) {
 	if my.s.Query != nil {
 		res["queryType"] = __RootType{my.s.Query}
 	}
+	if my.s.Mutation != nil {
+		res["mutationType"] = __RootType{my.s.Mutation}
+	}
+	if my.s.Subscription != nil {
+		res["subscriptionType"] = __RootType{my.s.Subscription}
+	}
 	if len(my.s.Directives) > 0 {
 		directives := make([]__Directive, 0, len(my.s.Directives))
 		for _, d := range my.s.Directives {

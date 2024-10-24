@@ -41,13 +41,19 @@ const (
 	SORT     = "sort"
 	WHERE    = "where"
 	LEVEL    = "level"
+	INSERT   = "insert"
+	UPSERT   = "upsert"
+	UPDATE   = "update"
+	DELETE   = "delete"
 )
 
 // GraphQL入参名称后缀
 const (
-	SUFFIX_SORT_INPUT  = "SortInput"
-	SUFFIX_DATA_INPUT  = "DataInput"
-	SUFFIX_WHERE_INPUT = "WhereInput"
+	SUFFIX_SORT_INPUT   = "SortInput"
+	SUFFIX_WHERE_INPUT  = "WhereInput"
+	SUFFIX_UPSERT_INPUT = "UpsertInput"
+	SUFFIX_INSERT_INPUT = "InsertInput"
+	SUFFIX_UPDATE_INPUT = "UpdateInput"
 )
 
 // 路基表达式后缀
