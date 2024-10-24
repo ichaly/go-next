@@ -21,7 +21,7 @@ func NewConnect(v *viper.Viper, p []gorm.Plugin, e []interface{}) (*gorm.DB, err
 
 	db, err := gorm.Open(
 		buildDialect(&c.DataSource),
-		&gorm.Config{Logger: logger.Default.LogMode(logger.Info)},
+		&gorm.Config{PrepareStmt: true, Logger: logger.Default.LogMode(logger.Info)},
 	)
 	if err != nil {
 		return nil, err
