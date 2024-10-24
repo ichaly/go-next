@@ -37,7 +37,7 @@ func (my *_ExecutorSuite) SetupSuite() {
 	my.Require().NoError(err)
 	my.c = NewCompiler(my.m)
 
-	my.e, err = NewExecutor(my.c, my.s)
+	my.e, err = NewExecutor(my.c.meta.db, my.s, my.c)
 	my.Require().NoError(err)
 }
 

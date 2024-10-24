@@ -7,6 +7,7 @@ import (
 	"github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
 	"github.com/vektah/gqlparser/v2/gqlerror"
+	"gorm.io/gorm"
 )
 
 type (
@@ -17,6 +18,7 @@ type (
 	}
 	gqlResult struct {
 		sql    string
+		args   []any
 		Data   map[string]interface{} `json:"data,omitempty"`
 		Errors gqlerror.List          `json:"errors,omitempty"`
 	}
@@ -28,13 +30,14 @@ type (
 )
 
 type Executor struct {
+	db       *gorm.DB
 	intro    interface{}
 	schema   *ast.Schema
 	compiler *Compiler
 }
 
-func NewExecutor(c *Compiler, s *ast.Schema) (*Executor, error) {
-	return &Executor{intro: intro.New(s), schema: s, compiler: c}, nil
+func NewExecutor(d *gorm.DB, s *ast.Schema, c *Compiler) (*Executor, error) {
+	return &Executor{db: d, intro: intro.New(s), schema: s, compiler: c}, nil
 }
 
 func (my *Executor) Execute(ctx context.Context, query string, vars json.RawMessage) (r gqlResult) {
@@ -45,9 +48,8 @@ func (my *Executor) Execute(ctx context.Context, query string, vars json.RawMess
 	}
 	//resultChans := make([]<-chan gqlValue, 0, len(set))
 	for _, o := range doc.Operations {
-		var args []any
-		r.sql, args = my.compiler.Compile(o.SelectionSet, vars)
-		e := my.compiler.meta.db.Raw(r.sql, args...).Scan(&r.Data).Error
+		r.sql, r.args = my.compiler.Compile(o.SelectionSet, vars)
+		e := my.db.Raw(r.sql, r.args...).Scan(&r.Data).Error
 		if e != nil {
 			r.Errors = append(r.Errors, gqlerror.Wrap(e))
 		}
