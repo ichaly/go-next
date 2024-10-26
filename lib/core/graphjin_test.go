@@ -2,6 +2,7 @@ package core
 
 import (
 	"database/sql"
+	"encoding/json"
 	"github.com/dosco/graphjin/core/v3"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -46,12 +47,12 @@ func (my *_GraphJinSuite) TestGraphJin() {
 	r := gin.Default()
 	r.Match([]string{http.MethodGet, http.MethodPost}, "/v0/graphql", func(ctx *gin.Context) {
 		var req struct {
-			Query     string                 `form:"query"`
-			Operation string                 `form:"operationName" json:"operationName"`
-			Variables map[string]interface{} `form:"variables"`
+			Query     string          `form:"query"`
+			Operation string          `form:"operationName" json:"operationName"`
+			Variables json.RawMessage `form:"variables"`
 		}
 		_ = ctx.ShouldBindBodyWith(&req, binding.JSON)
-		res, _ := gj.GraphQL(ctx, req.Query, nil, nil)
+		res, _ := gj.GraphQL(ctx, req.Query, req.Variables, nil)
 		println(res.SQL())
 		ctx.JSON(http.StatusOK, res)
 	})

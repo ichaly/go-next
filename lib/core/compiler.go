@@ -12,9 +12,8 @@ type Compiler struct {
 func NewCompiler(m *Metadata) *Compiler {
 	return &Compiler{meta: m}
 }
-
-func (my *Compiler) Compile(set ast.SelectionSet, vars json.RawMessage) (string, []any) {
+func (my *Compiler) Compile(operation *ast.OperationDefinition, variables json.RawMessage) (string, []any) {
 	c := newContext(my.meta)
-	c.RenderQuery(set, vars)
+	c.Render(operation, variables)
 	return c.String(), c.params
 }

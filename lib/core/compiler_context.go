@@ -44,8 +44,24 @@ func (my *compilerContext) Write(elem ...any) *compilerContext {
 	return my
 }
 
-func (my *compilerContext) RenderQuery(set ast.SelectionSet, variables json.RawMessage) {
+func (my *compilerContext) Render(operation *ast.OperationDefinition, variables json.RawMessage) {
 	_ = json.Unmarshal(variables, &my.variables)
+	switch operation.Operation {
+	case "query", "subscription":
+		my.renderQuery(operation.SelectionSet)
+	case "mutation":
+		my.compileMutation(operation.SelectionSet)
+	}
+}
+
+func (my *compilerContext) compileMutation(set ast.SelectionSet) {
+	my.Write(`WITH `)
+
+	my.Write(` `)
+	my.renderQuery(set)
+}
+
+func (my *compilerContext) renderQuery(set ast.SelectionSet) {
 	my.Write(`SELECT jsonb_build_object(`)
 	my.eachField(set, func(index int, field *ast.Field) {
 		if index != 0 {

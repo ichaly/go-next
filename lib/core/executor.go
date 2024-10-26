@@ -40,15 +40,15 @@ func NewExecutor(d *gorm.DB, s *ast.Schema, c *Compiler) (*Executor, error) {
 	return &Executor{db: d, intro: intro.New(s), schema: s, compiler: c}, nil
 }
 
-func (my *Executor) Execute(ctx context.Context, query string, vars json.RawMessage) (r gqlResult) {
+func (my *Executor) Execute(ctx context.Context, query string, variables json.RawMessage) (r gqlResult) {
 	doc, err := gqlparser.LoadQuery(my.schema, query)
 	if err != nil {
 		r.Errors = err
 		return
 	}
 	//resultChans := make([]<-chan gqlValue, 0, len(set))
-	for _, o := range doc.Operations {
-		r.sql, r.args = my.compiler.Compile(o.SelectionSet, vars)
+	for _, operation := range doc.Operations {
+		r.sql, r.args = my.compiler.Compile(operation, variables)
 		e := my.db.Raw(r.sql, r.args...).Scan(&r.Data).Error
 		if e != nil {
 			r.Errors = append(r.Errors, gqlerror.Wrap(e))
