@@ -104,21 +104,22 @@ func (my *Metadata) inputOption() error {
 		if v.Kind != ast.Object {
 			continue
 		}
-		upsert := &Class{
-			Name:   util.JoinString(k, SUFFIX_UPSERT_INPUT),
+		update := &Class{
+			Name:   util.JoinString(k, SUFFIX_UPDATE_INPUT),
 			Kind:   ast.InputObject,
 			Fields: make(map[string]*Field),
 		}
 		for _, f := range v.Fields {
+			name := f.Type.Name()
 			if !slice.Contain(scalars, f.Type.Name()) {
-				continue
+				name = util.JoinString(name, SUFFIX_UPDATE_INPUT)
 			}
-			upsert.Fields[f.Name] = &Field{
+			update.Fields[f.Name] = &Field{
 				Name: f.Name,
-				Type: ast.NamedType(f.Type.Name(), nil),
+				Type: ast.NamedType(name, nil),
 			}
 		}
-		my.Nodes[upsert.Name] = upsert
+		my.Nodes[update.Name] = update
 	}
 	return nil
 }

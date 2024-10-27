@@ -5,8 +5,8 @@ import (
 	"github.com/vektah/gqlparser/v2/ast"
 )
 
-var inputs = func(name string) []*Input {
-	return []*Input{
+var inputs = func(name string, forMutation ...bool) []*Input {
+	result := []*Input{
 		{
 			Name: DISTINCT,
 			Type: ast.ListType(ast.NamedType(SCALAR_STRING, nil), nil),
@@ -45,27 +45,28 @@ var inputs = func(name string) []*Input {
 			Type: ast.NamedType(util.JoinString(name, SUFFIX_WHERE_INPUT), nil),
 		},
 	}
-}
 
-var mutationInputs = func(name string) []*Input {
-	return []*Input{
-		{
-			Name: UPSERT,
-			Type: ast.NamedType(util.JoinString(name, SUFFIX_UPSERT_INPUT), nil),
-		},
-		//{
-		//	Name: INSERT,
-		//	Type: ast.NamedType(util.JoinString(name, SUFFIX_INSERT_INPUT), nil),
-		//},
-		//{
-		//	Name: UPDATE,
-		//	Type: ast.NamedType(util.JoinString(name, SUFFIX_UPDATE_INPUT), nil),
-		//},
-		{
-			Name: DELETE,
-			Type: ast.NamedType(SCALAR_BOOLEAN, nil),
-		},
+	if len(forMutation) > 0 && forMutation[0] {
+		result = append(result, []*Input{
+			//{
+			//	Name: UPSERT,
+			//	Type: ast.NamedType(util.JoinString(name, SUFFIX_UPSERT_INPUT), nil),
+			//},
+			//{
+			//	Name: INSERT,
+			//	Type: ast.NamedType(util.JoinString(name, SUFFIX_INSERT_INPUT), nil),
+			//},
+			{
+				Name: UPDATE,
+				Type: ast.NamedType(util.JoinString(name, SUFFIX_UPDATE_INPUT), nil),
+			},
+			{
+				Name: DELETE,
+				Type: ast.NamedType(SCALAR_BOOLEAN, nil),
+			},
+		}...)
 	}
+	return result
 }
 
 func (my *Metadata) entryOption() error {
@@ -87,7 +88,7 @@ func (my *Metadata) entryOption() error {
 			Name:      name,
 			Type:      ast.ListType(ast.NamedType(v.Name, nil), nil),
 			Virtual:   mutation.Virtual,
-			Arguments: append(inputs(k), mutationInputs(k)...),
+			Arguments: inputs(k, true),
 		}
 	}
 	my.Nodes[query.Name] = query
