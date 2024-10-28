@@ -2,52 +2,52 @@ package core
 
 import (
 	"github.com/ichaly/go-next/lib/util"
+	"github.com/samber/lo"
 	"github.com/vektah/gqlparser/v2/ast"
 )
 
-var inputs = func(name string, forMutation ...bool) []*Input {
-	result := []*Input{
-		{
-			Name: DISTINCT,
-			Type: ast.ListType(ast.NamedType(SCALAR_STRING, nil), nil),
+var inputs = func(name string, ops ...operation) []*Input {
+	data := map[operation][]*Input{
+		QUERY: {
+			{
+				Name: DISTINCT,
+				Type: ast.ListType(ast.NamedType(SCALAR_STRING, nil), nil),
+			},
+			{
+				Name:    LIMIT,
+				Type:    ast.NamedType(SCALAR_INT, nil),
+				Default: `20`,
+			},
+			{
+				Name: OFFSET,
+				Type: ast.NamedType(SCALAR_INT, nil),
+			},
+			//{
+			//	Name: FIRST,
+			//	Type: ast.NamedType(SCALAR_INT, nil),
+			//},
+			//{
+			//	Name: LAST,
+			//	Type: ast.NamedType(SCALAR_INT, nil),
+			//},
+			//{
+			//	Name: AFTER,
+			//	Type: ast.NamedType(SCALAR_CURSOR, nil),
+			//},
+			//{
+			//	Name: BEFORE,
+			//	Type: ast.NamedType(SCALAR_CURSOR, nil),
+			//},
+			{
+				Name: SORT,
+				Type: ast.NamedType(util.JoinString(name, SUFFIX_SORT_INPUT), nil),
+			},
+			{
+				Name: WHERE,
+				Type: ast.NamedType(util.JoinString(name, SUFFIX_WHERE_INPUT), nil),
+			},
 		},
-		{
-			Name:    LIMIT,
-			Type:    ast.NamedType(SCALAR_INT, nil),
-			Default: `20`,
-		},
-		{
-			Name: OFFSET,
-			Type: ast.NamedType(SCALAR_INT, nil),
-		},
-		//{
-		//	Name: FIRST,
-		//	Type: ast.NamedType(SCALAR_INT, nil),
-		//},
-		//{
-		//	Name: LAST,
-		//	Type: ast.NamedType(SCALAR_INT, nil),
-		//},
-		//{
-		//	Name: AFTER,
-		//	Type: ast.NamedType(SCALAR_CURSOR, nil),
-		//},
-		//{
-		//	Name: BEFORE,
-		//	Type: ast.NamedType(SCALAR_CURSOR, nil),
-		//},
-		{
-			Name: SORT,
-			Type: ast.NamedType(util.JoinString(name, SUFFIX_SORT_INPUT), nil),
-		},
-		{
-			Name: WHERE,
-			Type: ast.NamedType(util.JoinString(name, SUFFIX_WHERE_INPUT), nil),
-		},
-	}
-
-	if len(forMutation) > 0 && forMutation[0] {
-		result = append(result, []*Input{
+		MUTATION: {
 			//{
 			//	Name: UPSERT,
 			//	Type: ast.NamedType(util.JoinString(name, SUFFIX_UPSERT_INPUT), nil),
@@ -64,15 +64,21 @@ var inputs = func(name string, forMutation ...bool) []*Input {
 				Name: DELETE,
 				Type: ast.NamedType(SCALAR_BOOLEAN, nil),
 			},
-		}...)
+		},
 	}
+
+	result := data[QUERY]
+	for _, k := range ops {
+		result = append(result, data[k]...)
+	}
+
 	return result
 }
 
 func (my *Metadata) entryOption() error {
 	//构建入口节点
-	query := &Class{Name: QUERY, Fields: make(map[string]*Field), Virtual: true}
-	mutation := &Class{Name: MUTATION, Fields: make(map[string]*Field), Virtual: true}
+	query := &Class{Name: lo.Capitalize(string(QUERY)), Fields: make(map[string]*Field), Virtual: true}
+	mutation := &Class{Name: lo.Capitalize(string(MUTATION)), Fields: make(map[string]*Field), Virtual: true}
 	for k, v := range my.Nodes {
 		if v.Kind != ast.Object {
 			continue
@@ -88,7 +94,7 @@ func (my *Metadata) entryOption() error {
 			Name:      name,
 			Type:      ast.ListType(ast.NamedType(v.Name, nil), nil),
 			Virtual:   mutation.Virtual,
-			Arguments: inputs(k, true),
+			Arguments: inputs(k, MUTATION),
 		}
 	}
 	my.Nodes[query.Name] = query

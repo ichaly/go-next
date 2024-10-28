@@ -3,10 +3,12 @@ package core
 import "github.com/samber/lo"
 
 // 根结点的名称
+type operation string
+
 const (
-	QUERY        = "Query"
-	MUTATION     = "Mutation"
-	SUBSCRIPTION = "Subscription"
+	QUERY        operation = "query"
+	MUTATION     operation = "mutation"
+	SUBSCRIPTION operation = "subscription"
 )
 
 const (
@@ -135,6 +137,12 @@ var operators = []*symbol{
 }
 
 // 构建操作符和内置标量的关系
+type symbol struct {
+	Name     string
+	Text     string
+	Describe string
+}
+
 var symbols = map[string][]*symbol{
 	SCALAR_ID:      operators[1:7], //[eq,in,gt,ge,lt,le]
 	SCALAR_INT:     operators[:8],  //[is,eq,in,gt,ge,lt,le,ne]

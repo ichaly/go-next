@@ -6,12 +6,6 @@ import (
 	"github.com/vektah/gqlparser/v2/ast"
 )
 
-type symbol struct {
-	Name     string
-	Text     string
-	Describe string
-}
-
 func (my *Metadata) expression() error {
 	var build = func(scalar, suffix string, symbols []*symbol) {
 		name := util.JoinString(scalar, suffix)
