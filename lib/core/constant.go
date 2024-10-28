@@ -33,20 +33,22 @@ const (
 
 // 参数名称
 const (
-	DISTINCT = "distinct"
-	LIMIT    = "limit"
-	OFFSET   = "offset"
-	FIRST    = "first"
-	LAST     = "last"
-	AFTER    = "after"
-	BEFORE   = "before"
-	SORT     = "sort"
-	WHERE    = "where"
-	LEVEL    = "level"
-	INSERT   = "insert"
-	UPSERT   = "upsert"
-	UPDATE   = "update"
-	DELETE   = "delete"
+	DISTINCT   = "distinct"
+	LIMIT      = "limit"
+	OFFSET     = "offset"
+	FIRST      = "first"
+	LAST       = "last"
+	AFTER      = "after"
+	BEFORE     = "before"
+	SORT       = "sort"
+	WHERE      = "where"
+	LEVEL      = "level"
+	INSERT     = "insert"
+	UPSERT     = "upsert"
+	UPDATE     = "update"
+	DELETE     = "delete"
+	CONNECT    = "connect"
+	DISCONNECT = "disconnect "
 )
 
 // GraphQL入参名称后缀

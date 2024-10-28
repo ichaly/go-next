@@ -94,26 +94,43 @@ func (my *Metadata) whereOption() error {
 }
 
 func (my *Metadata) inputOption() error {
+	list := []string{SUFFIX_UPDATE_INPUT, SUFFIX_UPSERT_INPUT, SUFFIX_INSERT_INPUT}
 	for k, v := range my.Nodes {
 		if v.Kind != ast.Object {
 			continue
 		}
-		update := &Class{
-			Name:   util.JoinString(k, SUFFIX_UPDATE_INPUT),
-			Kind:   ast.InputObject,
-			Fields: make(map[string]*Field),
-		}
-		for _, f := range v.Fields {
-			name := f.Type.Name()
-			if !slice.Contain(scalars, f.Type.Name()) {
-				name = util.JoinString(name, SUFFIX_UPDATE_INPUT)
+		for _, suffix := range list {
+			class := &Class{
+				Name:   util.JoinString(k, suffix),
+				Kind:   ast.InputObject,
+				Fields: make(map[string]*Field),
 			}
-			update.Fields[f.Name] = &Field{
-				Name: f.Name,
-				Type: ast.NamedType(name, nil),
+			for _, f := range v.Fields {
+				name := f.Type.Name()
+				if !slice.Contain(scalars, f.Type.Name()) {
+					if suffix == SUFFIX_UPSERT_INPUT {
+						continue
+					}
+					name = util.JoinString(name, suffix)
+				}
+				class.Fields[f.Name] = &Field{
+					Name: f.Name,
+					Type: ast.NamedType(name, nil),
+				}
 			}
+			if suffix == SUFFIX_UPDATE_INPUT {
+				name := util.JoinString(k, SUFFIX_WHERE_INPUT)
+				class.Fields[CONNECT] = &Field{
+					Name: CONNECT,
+					Type: ast.NamedType(name, nil),
+				}
+				class.Fields[DISCONNECT] = &Field{
+					Name: DISCONNECT,
+					Type: ast.NamedType(name, nil),
+				}
+			}
+			my.Nodes[class.Name] = class
 		}
-		my.Nodes[update.Name] = update
 	}
 	return nil
 }

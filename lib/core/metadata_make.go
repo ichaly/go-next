@@ -48,14 +48,14 @@ var inputs = func(name string, ops ...operation) []*Input {
 			},
 		},
 		MUTATION: {
-			//{
-			//	Name: UPSERT,
-			//	Type: ast.NamedType(util.JoinString(name, SUFFIX_UPSERT_INPUT), nil),
-			//},
-			//{
-			//	Name: INSERT,
-			//	Type: ast.NamedType(util.JoinString(name, SUFFIX_INSERT_INPUT), nil),
-			//},
+			{
+				Name: UPSERT,
+				Type: ast.NamedType(util.JoinString(name, SUFFIX_UPSERT_INPUT), nil),
+			},
+			{
+				Name: INSERT,
+				Type: ast.NamedType(util.JoinString(name, SUFFIX_INSERT_INPUT), nil),
+			},
 			{
 				Name: UPDATE,
 				Type: ast.NamedType(util.JoinString(name, SUFFIX_UPDATE_INPUT), nil),
