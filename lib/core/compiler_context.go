@@ -40,6 +40,11 @@ func (my *compilerContext) Write(list ...any) *compilerContext {
 	return my
 }
 
+func (my *compilerContext) Space(list ...any) *compilerContext {
+	my.Wrap(` `, list...)
+	return my
+}
+
 func (my *compilerContext) Quoted(list ...any) *compilerContext {
 	my.Wrap(`"`, list...)
 	return my
