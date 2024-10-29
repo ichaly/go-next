@@ -26,22 +26,27 @@ func newContext(m *Metadata) *compilerContext {
 	return &compilerContext{meta: m, buf: bytes.NewBuffer([]byte{}), dictionary: make(map[int]int), variables: make(map[string]interface{})}
 }
 
-func (my *compilerContext) String() string {
-	return strings.TrimSpace(my.buf.String())
-}
-
-func (my *compilerContext) Quoted(elem ...any) *compilerContext {
-	my.buf.WriteByte('"')
-	my.Write(elem...)
-	my.buf.WriteByte('"')
+func (my *compilerContext) Wrap(with string, list ...any) *compilerContext {
+	my.Write(with)
+	my.Write(list...)
+	my.Write(with)
 	return my
 }
 
-func (my *compilerContext) Write(elem ...any) *compilerContext {
-	for _, e := range elem {
+func (my *compilerContext) Write(list ...any) *compilerContext {
+	for _, e := range list {
 		my.buf.WriteString(fmt.Sprint(e))
 	}
 	return my
+}
+
+func (my *compilerContext) Quoted(list ...any) *compilerContext {
+	my.Wrap(`"`, list...)
+	return my
+}
+
+func (my *compilerContext) String() string {
+	return strings.TrimSpace(my.buf.String())
 }
 
 func (my *compilerContext) Render(operation *ast.OperationDefinition, variables json.RawMessage) {
@@ -50,15 +55,31 @@ func (my *compilerContext) Render(operation *ast.OperationDefinition, variables 
 	case ast.Query, ast.Subscription:
 		my.renderQuery(operation.SelectionSet)
 	case ast.Mutation:
-		my.compileMutation(operation.SelectionSet)
+		my.renderMutation(operation.SelectionSet)
 	}
 }
 
-func (my *compilerContext) compileMutation(set ast.SelectionSet) {
-	my.Write(`WITH `)
-
-	my.Write(` `)
-	my.renderQuery(set)
+func (my *compilerContext) renderMutation(set ast.SelectionSet) {
+	for i, s := range set {
+		switch f := s.(type) {
+		case *ast.Field:
+			if i == 0 {
+				my.Write(`WITH `)
+			}
+			id := my.fieldId(f)
+			insert := f.Arguments.ForName(INSERT)
+			update := f.Arguments.ForName(UPDATE)
+			upsert := f.Arguments.ForName(UPSERT)
+			remove := f.Arguments.ForName(DELETE)
+			if insert != nil {
+				my.renderInsert(id, 0, f)
+			} else if update != nil {
+			} else if upsert != nil {
+			} else if remove != nil {
+			}
+			my.renderQuery(set)
+		}
+	}
 }
 
 func (my *compilerContext) renderQuery(set ast.SelectionSet) {
