@@ -47,9 +47,9 @@ func (my *compilerContext) Write(elem ...any) *compilerContext {
 func (my *compilerContext) Render(operation *ast.OperationDefinition, variables json.RawMessage) {
 	_ = json.Unmarshal(variables, &my.variables)
 	switch operation.Operation {
-	case "query", "subscription":
+	case ast.Query, ast.Subscription:
 		my.renderQuery(operation.SelectionSet)
-	case "mutation":
+	case ast.Mutation:
 		my.compileMutation(operation.SelectionSet)
 	}
 }

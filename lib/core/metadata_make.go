@@ -6,9 +6,9 @@ import (
 	"github.com/vektah/gqlparser/v2/ast"
 )
 
-var inputs = func(name string, ops ...operation) []*Input {
-	data := map[operation][]*Input{
-		QUERY: {
+var inputs = func(name string, ops ...ast.Operation) []*Input {
+	data := map[ast.Operation][]*Input{
+		ast.Query: {
 			{
 				Name: DISTINCT,
 				Type: ast.ListType(ast.NamedType(SCALAR_STRING, nil), nil),
@@ -47,7 +47,7 @@ var inputs = func(name string, ops ...operation) []*Input {
 				Type: ast.NamedType(util.JoinString(name, SUFFIX_WHERE_INPUT), nil),
 			},
 		},
-		MUTATION: {
+		ast.Mutation: {
 			{
 				Name: UPSERT,
 				Type: ast.NamedType(util.JoinString(name, SUFFIX_UPSERT_INPUT), nil),
@@ -67,7 +67,7 @@ var inputs = func(name string, ops ...operation) []*Input {
 		},
 	}
 
-	result := data[QUERY]
+	result := data[ast.Query]
 	for _, k := range ops {
 		result = append(result, data[k]...)
 	}
@@ -77,8 +77,8 @@ var inputs = func(name string, ops ...operation) []*Input {
 
 func (my *Metadata) entryOption() error {
 	//构建入口节点
-	query := &Class{Name: lo.Capitalize(string(QUERY)), Fields: make(map[string]*Field), Virtual: true}
-	mutation := &Class{Name: lo.Capitalize(string(MUTATION)), Fields: make(map[string]*Field), Virtual: true}
+	query := &Class{Name: lo.Capitalize(string(ast.Query)), Fields: make(map[string]*Field), Virtual: true}
+	mutation := &Class{Name: lo.Capitalize(string(ast.Mutation)), Fields: make(map[string]*Field), Virtual: true}
 	for k, v := range my.Nodes {
 		if v.Kind != ast.Object {
 			continue
@@ -94,7 +94,7 @@ func (my *Metadata) entryOption() error {
 			Name:      name,
 			Type:      ast.ListType(ast.NamedType(v.Name, nil), nil),
 			Virtual:   mutation.Virtual,
-			Arguments: inputs(k, MUTATION),
+			Arguments: inputs(k, ast.Mutation),
 		}
 	}
 	my.Nodes[query.Name] = query

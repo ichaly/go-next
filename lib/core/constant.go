@@ -2,15 +2,6 @@ package core
 
 import "github.com/samber/lo"
 
-// 根结点的名称
-type operation string
-
-const (
-	QUERY        operation = "query"
-	MUTATION     operation = "mutation"
-	SUBSCRIPTION operation = "subscription"
-)
-
 const (
 	RECURSIVE    Chain = "Recursive"
 	ONE_TO_MANY  Chain = "OneToMany"
