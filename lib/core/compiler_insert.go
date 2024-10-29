@@ -14,7 +14,9 @@ func (my *compilerContext) renderInsert(id, pid int, f *ast.Field) {
 	insert := f.Arguments.ForName(INSERT)
 	my.parseValue(insert.Value, result)
 	union := make(map[string][]string)
+	var previous *Entry
 
+	//定义CTE进行数据插入
 	for !result.IsEmpty() {
 		value, _ := result.Dequeue()
 		class := strings.TrimSuffix(value.Definition.Name, SUFFIX_INSERT_INPUT)
@@ -23,31 +25,47 @@ func (my *compilerContext) renderInsert(id, pid int, f *ast.Field) {
 		union[table] = append(maputil.GetOrSet(union, table, []string{}), alias)
 
 		my.Quoted(alias)
-		my.Write(` AS (INSERT INTO `)
+		my.Space(`AS (INSERT INTO`)
 		my.Quoted(table)
 
 		my.Write(` (`)
+		if previous != nil {
+			my.Write(previous.ColumnName, `,`)
+		}
 		for i, v := range value.Children {
-			if i != 0 {
-				my.Write(`,`)
-			}
 			field, _ := my.meta.FindField(class, v.Name, false)
-			my.Quoted(field.Column)
+			if field.Kind == ONE_TO_MANY {
+
+			} else {
+				if i != 0 && previous == nil {
+					my.Write(`,`)
+				}
+				my.Quoted(field.Column)
+			}
 		}
 		my.Write(`) SELECT `)
+		if previous != nil {
+			my.Quoted(previous.TableRelation, `_`, convertor.ToString(result.Size()+1))
+			my.Write(`.`)
+			my.Quoted(previous.ColumnRelation)
+			my.Write(`,`)
+		}
 		for i, v := range value.Children {
-			if i != 0 {
-				my.Write(`,`)
-			}
-			if value, err := v.Value.Value(my.variables); err == nil {
-				my.Wrap(`'`, value)
+			field, _ := my.meta.FindField(class, v.Name, false)
+			if field.Kind == ONE_TO_MANY {
+				previous = field.Link
+			} else if raw, err := v.Value.Value(my.variables); err == nil {
+				if i != 0 && previous == nil {
+					my.Write(`,`)
+				}
+				my.Wrap(`'`, raw)
 				my.Write(`::`)
 				//TODO:需要转化为数据库对应的具体类型
 				my.Write("text")
 			}
 		}
 
-		my.Write(` RETURNING `)
+		my.Space(`RETURNING`)
 		my.Quoted(table)
 		my.Write(`.* ),`)
 	}
