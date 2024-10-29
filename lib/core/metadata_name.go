@@ -1,9 +1,9 @@
 package core
 
 import (
-	"github.com/duke-git/lancet/v2/condition"
 	"github.com/iancoleman/strcase"
 	"github.com/ichaly/go-next/lib/util"
+	"github.com/samber/lo"
 	"strings"
 )
 
@@ -57,7 +57,7 @@ func SwapPrimaryKey(table string) NamedOption {
 func NamedRecursion(c *Entry, b bool) NamedOption {
 	return func(t, s string) string {
 		if c.TableRelation == c.TableName {
-			s = condition.TernaryOperator(b, "parents", "children")
+			s = lo.Ternary(b, "parents", "children")
 		}
 		return s
 	}

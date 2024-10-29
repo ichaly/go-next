@@ -1,10 +1,10 @@
 package core
 
 import (
-	"github.com/duke-git/lancet/v2/condition"
 	"github.com/duke-git/lancet/v2/maputil"
 	"github.com/ichaly/go-next/lib/core/internal"
 	"github.com/ichaly/go-next/lib/util"
+	"github.com/samber/lo"
 	"github.com/vektah/gqlparser/v2/ast"
 )
 
@@ -84,7 +84,7 @@ func (my *Metadata) tableOption() error {
 		}
 
 		//转化类型
-		r.DataType = condition.TernaryOperator(r.IsPrimary, "ID", my.cfg.Mapping[r.DataType])
+		r.DataType = lo.Ternary(r.IsPrimary, "ID", my.cfg.Mapping[r.DataType])
 
 		//规范命名
 		table, column := my.Named(r.TableName, r.ColumnName)
@@ -142,7 +142,7 @@ func (my *Metadata) tableOption() error {
 			my.Nodes[foreignClass].Fields[foreignField] = &Field{
 				Name:      foreignField,
 				Type:      ast.ListType(ast.NamedType(currentClass, nil), nil),
-				Kind:      condition.TernaryOperator(e.TableRelation == e.TableName, RECURSIVE, ONE_TO_MANY),
+				Kind:      lo.Ternary(e.TableRelation == e.TableName, RECURSIVE, ONE_TO_MANY),
 				Link:      e,
 				Arguments: append(args, inputs(currentClass)...),
 			}
@@ -150,7 +150,7 @@ func (my *Metadata) tableOption() error {
 			my.Nodes[currentClass].Fields[currentField] = &Field{
 				Name: currentField,
 				Type: ast.NamedType(foreignClass, nil),
-				Kind: condition.TernaryOperator(e.TableRelation == e.TableName, RECURSIVE, MANY_TO_ONE),
+				Kind: lo.Ternary(e.TableRelation == e.TableName, RECURSIVE, MANY_TO_ONE),
 				Link: &Entry{
 					TableName:      e.TableRelation,
 					ColumnName:     e.ColumnRelation,
