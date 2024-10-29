@@ -42,6 +42,11 @@ const (
 	DISCONNECT = "disconnect "
 )
 
+const (
+	PARENTS  = "parents"
+	CHILDREN = "children"
+)
+
 // GraphQL入参名称后缀
 const (
 	SUFFIX_SORT_INPUT   = "SortInput"

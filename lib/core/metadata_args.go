@@ -101,22 +101,19 @@ func (my *Metadata) inputOption() error {
 		}
 		for _, suffix := range list {
 			class := &Class{
-				Name:   util.JoinString(k, suffix),
 				Kind:   ast.InputObject,
+				Name:   util.JoinString(k, suffix),
 				Fields: make(map[string]*Field),
 			}
 			for _, f := range v.Fields {
-				name := f.Type.Name()
+				kind := ast.NamedType(f.Type.Name(), nil)
 				if !slice.Contain(scalars, f.Type.Name()) {
-					if suffix == SUFFIX_UPSERT_INPUT {
+					if suffix == SUFFIX_UPSERT_INPUT || f.Kind == MANY_TO_ONE || (f.Kind == RECURSIVE && f.Name == PARENTS) {
 						continue
 					}
-					name = util.JoinString(name, suffix)
+					kind = ast.ListType(ast.NamedType(util.JoinString(f.Type.Name(), suffix), nil), nil)
 				}
-				class.Fields[f.Name] = &Field{
-					Name: f.Name,
-					Type: ast.NamedType(name, nil),
-				}
+				class.Fields[f.Name] = &Field{Name: f.Name, Type: kind}
 			}
 			if suffix == SUFFIX_UPDATE_INPUT {
 				name := util.JoinString(k, SUFFIX_WHERE_INPUT)

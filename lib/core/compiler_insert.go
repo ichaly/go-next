@@ -14,10 +14,11 @@ func (my *compilerContext) renderInsert(id, pid int, f *ast.Field) {
 	insert := f.Arguments.ForName(INSERT)
 	my.parseValue(insert.Value, result)
 	union := make(map[string][]string)
+
 	for !result.IsEmpty() {
 		value, _ := result.Dequeue()
-		calss := strings.TrimSuffix(value.Definition.Name, SUFFIX_INSERT_INPUT)
-		table, _ := my.meta.TableName(calss, false)
+		class := strings.TrimSuffix(value.Definition.Name, SUFFIX_INSERT_INPUT)
+		table, _ := my.meta.TableName(class, false)
 		alias := util.JoinString(table, `_`, convertor.ToString(result.Size()))
 		union[table] = append(maputil.GetOrSet(union, table, []string{}), alias)
 
@@ -30,7 +31,7 @@ func (my *compilerContext) renderInsert(id, pid int, f *ast.Field) {
 			if i != 0 {
 				my.Write(`,`)
 			}
-			field, _ := my.meta.FindField(calss, v.Name, false)
+			field, _ := my.meta.FindField(class, v.Name, false)
 			my.Quoted(field.Column)
 		}
 		my.Write(`) SELECT `)
