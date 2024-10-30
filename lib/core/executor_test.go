@@ -174,7 +174,9 @@ func (my *_ExecutorSuite) TestMutationInsert() {
 }
 
 func (my *_ExecutorSuite) TestMutationInsertEmbed() {
-	input := `mutation{areaList(insert:{name:"厦门",userList:{name:"厦门管理员"}}){id name userList{id name}}}`
+	//input := `mutation{areaList(insert:{userList:[{name:"大理管理员"},{name:"大理代理商"}]name:"大理"}){id name userList{id name areaId}}}`
+	//input := `mutation{areaList(insert:{userList:[{name:"云南管理员"},{name:"云南代理商"}]name:"云南" children:[{name:"昆明"},{name:"西双版纳"}]}){id name userList{id name areaId}}}`
+	input := `mutation{areaList(insert:{userList:[{name:"云南管理员",teamList:[{name:"云南分公司"}]}{name:"云南代理商"}]name:"云南" children:[{name:"昆明"},{name:"西双版纳"}]}){id name userList{id name areaId}}}`
 	expect := `SELECT jsonb_build_object('areaList', __sj_0.json) AS __root FROM (SELECT true) AS __root_x LEFT OUTER JOIN LATERAL ( SELECT COALESCE(jsonb_agg(__sj_0.json), '[]') AS json FROM (  SELECT to_jsonb(__sr_0.*) AS json FROM (  SELECT "sys_area_0"."id" AS "id","sys_area_0"."name" AS "name","__sj_1"."json" AS "userList" FROM ( SELECT "sys_area"."id","sys_area"."name" FROM "sys_area" ORDER BY  "sys_area"."name" DESC NULLS LAST, "sys_area"."id" ASC LIMIT ? ) AS "sys_area_0" LEFT OUTER JOIN LATERAL ( SELECT COALESCE(jsonb_agg(__sj_1.json), '[]') AS json FROM (  SELECT to_jsonb(__sr_1.*) AS json FROM (  SELECT "sys_user_1"."id" AS "id","sys_user_1"."area_id" AS "areaId" FROM ( SELECT "sys_user"."id","sys_user"."area_id" FROM "sys_user" WHERE ((("sys_user"."area_id") = "sys_area_0"."id")) ORDER BY  "sys_user"."id" ASC LIMIT ? ) AS "sys_user_1" ) AS "__sr_1" ) AS "__sj_1" ) AS "__sj_1" ON true  ) AS "__sr_0" ) AS "__sj_0" ) AS "__sj_0" ON true`
 	my.doCase(input, expect)
 }

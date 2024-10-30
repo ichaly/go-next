@@ -3,6 +3,7 @@ package core
 import "github.com/samber/lo"
 
 const (
+	NONE         Chain = ""
 	RECURSIVE    Chain = "Recursive"
 	ONE_TO_MANY  Chain = "OneToMany"
 	MANY_TO_ONE  Chain = "ManyToOne"

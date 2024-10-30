@@ -2,67 +2,72 @@ package core
 
 import (
 	"github.com/duke-git/lancet/v2/convertor"
-	queue "github.com/duke-git/lancet/v2/datastructure/queue"
 	"github.com/duke-git/lancet/v2/maputil"
 	"github.com/ichaly/go-next/lib/util"
+	"github.com/samber/lo"
 	"github.com/vektah/gqlparser/v2/ast"
 	"strings"
 )
 
+type insertItem struct {
+	index  int
+	field  *Field
+	value  *ast.Value
+	parent *Entry
+}
+
 func (my *compilerContext) renderInsert(id, pid int, f *ast.Field) {
-	result := queue.NewLinkedQueue[ast.Value]()
 	insert := f.Arguments.ForName(INSERT)
-	my.parseValue(insert.Value, result)
+	result := my.parseValue(insert.Value, nil)
 	union := make(map[string][]string)
-	var previous *Entry
 
 	//定义CTE进行数据插入
-	for !result.IsEmpty() {
-		value, _ := result.Dequeue()
-		class := strings.TrimSuffix(value.Definition.Name, SUFFIX_INSERT_INPUT)
+	for index, value := range result {
+		class := strings.TrimSuffix(value.value.Definition.Name, SUFFIX_INSERT_INPUT)
 		table, _ := my.meta.TableName(class, false)
-		alias := util.JoinString(table, `_`, convertor.ToString(result.Size()))
+		alias := util.JoinString(table, `_`, convertor.ToString(index))
 		union[table] = append(maputil.GetOrSet(union, table, []string{}), alias)
+
+		children := lo.Filter(lo.Map(value.value.Children, func(item *ast.ChildValue, index int) insertItem {
+			field, _ := my.meta.FindField(class, item.Name, false)
+			return insertItem{index: index, field: field, value: item.Value}
+		}), func(item insertItem, index int) bool {
+			return item.field != nil && item.field.Kind == NONE
+		})
 
 		my.Quoted(alias)
 		my.Space(`AS (INSERT INTO`)
 		my.Quoted(table)
 
 		my.Write(` (`)
-		if previous != nil {
-			my.Write(previous.ColumnName, `,`)
-		}
-		for i, v := range value.Children {
-			field, _ := my.meta.FindField(class, v.Name, false)
-			if field.Kind == ONE_TO_MANY {
-
-			} else {
-				if i != 0 && previous == nil {
-					my.Write(`,`)
-				}
-				my.Quoted(field.Column)
+		for i, v := range children {
+			if i != 0 {
+				my.Write(`,`)
 			}
+			my.Quoted(v.field.Column)
+		}
+		if value.parent != nil {
+			my.Write(`,`)
+			my.Quoted(value.parent.ColumnName)
 		}
 		my.Write(`) SELECT `)
-		if previous != nil {
-			my.Quoted(previous.TableRelation, `_`, convertor.ToString(result.Size()+1))
-			my.Write(`.`)
-			my.Quoted(previous.ColumnRelation)
-			my.Write(`,`)
-		}
-		for i, v := range value.Children {
-			field, _ := my.meta.FindField(class, v.Name, false)
-			if field.Kind == ONE_TO_MANY {
-				previous = field.Link
-			} else if raw, err := v.Value.Value(my.variables); err == nil {
-				if i != 0 && previous == nil {
-					my.Write(`,`)
-				}
-				my.Wrap(`'`, raw)
-				my.Write(`::`)
-				//TODO:需要转化为数据库对应的具体类型
-				my.Write("text")
+		for i, v := range children {
+			if i != 0 {
+				my.Write(`,`)
 			}
+			raw, _ := v.value.Value(my.variables)
+			my.Wrap(`'`, raw)
+			my.Write(`::`)
+			my.Write("text") //TODO:需要转化为数据库对应的具体类型
+		}
+		if value.parent != nil {
+			from := util.JoinString(value.parent.TableRelation, `_0`)
+			my.Write(`,`)
+			my.Quoted(from)
+			my.Write(`.`)
+			my.Quoted(value.parent.ColumnRelation)
+			my.Space(`FROM`)
+			my.Quoted(from)
 		}
 
 		my.Space(`RETURNING`)
@@ -89,11 +94,24 @@ func (my *compilerContext) renderInsert(id, pid int, f *ast.Field) {
 	}
 }
 
-func (my *compilerContext) parseValue(value *ast.Value, result *queue.LinkedQueue[ast.Value]) {
-	result.Enqueue(*value)
+func (my *compilerContext) parseValue(value *ast.Value, parent *Entry) (result []*insertItem) {
+	result = append(result, &insertItem{value: value, parent: parent})
 	for _, v := range value.Children {
 		if v.Value.Definition.Kind == ast.InputObject {
-			my.parseValue(v.Value, result)
+			var link *Entry
+			class := strings.TrimSuffix(value.Definition.Name, SUFFIX_INSERT_INPUT)
+			field, _ := my.meta.FindField(class, v.Name, false)
+			if field != nil && field.Link != nil && field.Kind != MANY_TO_MANY {
+				link = field.Link
+			}
+			if v.Value.Kind == ast.ListValue {
+				for _, c := range v.Value.Children {
+					result = append(result, my.parseValue(c.Value, link)...)
+				}
+			} else {
+				result = append(result, my.parseValue(v.Value, link)...)
+			}
 		}
 	}
+	return
 }
