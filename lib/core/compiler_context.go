@@ -65,11 +65,12 @@ func (my *compilerContext) Render(operation *ast.OperationDefinition, variables 
 }
 
 func (my *compilerContext) renderMutation(set ast.SelectionSet) {
+	my.Write(`WITH `)
 	for i, s := range set {
 		switch f := s.(type) {
 		case *ast.Field:
-			if i == 0 {
-				my.Write(`WITH `)
+			if i != 0 {
+				my.Write(`,`)
 			}
 			id := my.fieldId(f)
 			insert := f.Arguments.ForName(INSERT)
@@ -83,9 +84,9 @@ func (my *compilerContext) renderMutation(set ast.SelectionSet) {
 			} else if remove != nil {
 				my.renderRemove(id, 0, f)
 			}
-			my.renderQuery(set)
 		}
 	}
+	my.renderQuery(set)
 }
 
 func (my *compilerContext) renderQuery(set ast.SelectionSet) {
