@@ -69,17 +69,18 @@ func (my *compilerContext) renderMutation(set ast.SelectionSet) {
 	for i, s := range set {
 		switch f := s.(type) {
 		case *ast.Field:
-			if i != 0 {
-				my.Write(`,`)
-			}
 			id := my.fieldId(f)
 			insert := f.Arguments.ForName(INSERT)
 			update := f.Arguments.ForName(UPDATE)
 			upsert := f.Arguments.ForName(UPSERT)
 			remove := f.Arguments.ForName(REMOVE)
+			if i != 0 && (insert != nil || update != nil || upsert != nil || remove != nil) {
+				my.Write(`,`)
+			}
 			if insert != nil {
 				my.renderInsert(id, 0, f)
 			} else if update != nil {
+				my.renderUpdate(id, 0, f)
 			} else if upsert != nil {
 			} else if remove != nil {
 				my.renderRemove(id, 0, f)
