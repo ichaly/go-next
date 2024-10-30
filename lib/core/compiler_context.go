@@ -75,12 +75,13 @@ func (my *compilerContext) renderMutation(set ast.SelectionSet) {
 			insert := f.Arguments.ForName(INSERT)
 			update := f.Arguments.ForName(UPDATE)
 			upsert := f.Arguments.ForName(UPSERT)
-			remove := f.Arguments.ForName(DELETE)
+			remove := f.Arguments.ForName(REMOVE)
 			if insert != nil {
 				my.renderInsert(id, 0, f)
 			} else if update != nil {
 			} else if upsert != nil {
 			} else if remove != nil {
+				my.renderRemove(id, 0, f)
 			}
 			my.renderQuery(set)
 		}

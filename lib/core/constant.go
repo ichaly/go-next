@@ -38,7 +38,7 @@ const (
 	INSERT     = "insert"
 	UPSERT     = "upsert"
 	UPDATE     = "update"
-	DELETE     = "delete"
+	REMOVE     = "delete"
 	CONNECT    = "connect"
 	DISCONNECT = "disconnect "
 )

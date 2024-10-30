@@ -61,7 +61,7 @@ var inputs = func(name string, ops ...ast.Operation) []*Input {
 				Type: ast.NamedType(util.JoinString(name, SUFFIX_UPDATE_INPUT), nil),
 			},
 			{
-				Name: DELETE,
+				Name: REMOVE,
 				Type: ast.NamedType(SCALAR_BOOLEAN, nil),
 			},
 		},
