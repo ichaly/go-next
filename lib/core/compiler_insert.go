@@ -10,10 +10,10 @@ import (
 )
 
 type insertItem struct {
-	index  int
-	field  *Field
-	value  *ast.Value
-	parent *Entry
+	index   int
+	field   *Field
+	value   *ast.Value
+	parents []*Entry
 }
 
 func (my *compilerContext) renderInsert(id, pid int, f *ast.Field) {
@@ -46,9 +46,11 @@ func (my *compilerContext) renderInsert(id, pid int, f *ast.Field) {
 			}
 			my.Quoted(v.field.Column)
 		}
-		if value.parent != nil {
-			my.Write(`,`)
-			my.Quoted(value.parent.ColumnName)
+		if len(value.parents) > 0 {
+			for _, v := range value.parents {
+				my.Write(`,`)
+				my.Quoted(v.ColumnName)
+			}
 		}
 		my.Write(`) SELECT `)
 		for i, v := range children {
@@ -60,16 +62,21 @@ func (my *compilerContext) renderInsert(id, pid int, f *ast.Field) {
 			my.Write(`::`)
 			my.Write("text") //TODO:需要转化为数据库对应的具体类型
 		}
-		if value.parent != nil {
-			from := util.JoinString(value.parent.TableRelation, `_0`)
-			my.Write(`,`)
-			my.Quoted(from)
-			my.Write(`.`)
-			my.Quoted(value.parent.ColumnRelation)
+		if len(value.parents) > 0 {
+			for _, v := range value.parents {
+				my.Write(`,`)
+				my.Quoted(util.JoinString(v.TableRelation, `_0`))
+				my.Write(`.`)
+				my.Quoted(v.ColumnRelation)
+			}
 			my.Space(`FROM`)
-			my.Quoted(from)
+			for i, v := range value.parents {
+				if i != 0 {
+					my.Write(`,`)
+				}
+				my.Quoted(util.JoinString(v.TableRelation, `_0`))
+			}
 		}
-
 		my.Space(`RETURNING`)
 		my.Quoted(table)
 		my.Write(`.* ),`)
@@ -94,22 +101,22 @@ func (my *compilerContext) renderInsert(id, pid int, f *ast.Field) {
 	}
 }
 
-func (my *compilerContext) parseValue(value *ast.Value, parent *Entry) (result []*insertItem) {
-	result = append(result, &insertItem{value: value, parent: parent})
+func (my *compilerContext) parseValue(value *ast.Value, parents ...*Entry) (result []*insertItem) {
+	parents = lo.Filter(parents, func(item *Entry, index int) bool {
+		return item != nil
+	})
+	result = append(result, &insertItem{value: value, parents: parents})
 	for _, v := range value.Children {
 		if v.Value.Definition.Kind == ast.InputObject {
-			var link *Entry
 			class := strings.TrimSuffix(value.Definition.Name, SUFFIX_INSERT_INPUT)
 			field, _ := my.meta.FindField(class, v.Name, false)
-			if field != nil && field.Link != nil && field.Kind != MANY_TO_MANY {
-				link = field.Link
-			}
+			//TODO:MANY_TO_MANY
 			if v.Value.Kind == ast.ListValue {
 				for _, c := range v.Value.Children {
-					result = append(result, my.parseValue(c.Value, link)...)
+					result = append(result, my.parseValue(c.Value, field.Link, field.Join)...)
 				}
 			} else {
-				result = append(result, my.parseValue(v.Value, link)...)
+				result = append(result, my.parseValue(v.Value, field.Link, field.Join)...)
 			}
 		}
 	}
