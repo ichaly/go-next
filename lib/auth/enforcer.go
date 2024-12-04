@@ -27,7 +27,7 @@ func registerFunction(e *casbin.SyncedCachedEnforcer) {
 	e.AddFunction("permit", func(args ...interface{}) (interface{}, error) {
 		sub, obj, act := args[0].(string), args[1].(string), args[2].(string)
 		//判断是否有相应的策略，如果没有则放行
-		policy := e.GetFilteredPolicy(1, obj, act)
+		policy, _ := e.GetFilteredPolicy(1, obj, act)
 		if len(policy) == 0 {
 			return true, nil
 		}

@@ -195,3 +195,28 @@ func TestDataCleaning(t *testing.T) {
 	}
 	t.Log("全部操作完成")
 }
+
+func readExcel(t *testing.T, path string, index int) map[string][]string {
+	source, _ := os.Open(path)
+	excel, _ := excelize.OpenReader(source)
+	sheets := excel.GetSheetList()
+	names := make(map[string][]string)
+	for _, s := range sheets {
+		rows, _ := excel.GetRows(s)
+		for _, row := range rows {
+			names[row[index]] = row
+		}
+	}
+	t.Logf("%s读取完毕", path)
+	return names
+}
+
+func TestExcelRead(t *testing.T) {
+	names := readExcel(t, "/Users/Chaly/Downloads/Expenses01.xlsx", 1)
+	prices := readExcel(t, "/Users/Chaly/Downloads/Product Batch Adding or Modification Template.xlsx", 0)
+
+	for k, v := range prices {
+		row := names[k]
+		t.Log(k, v, names[k])
+	}
+}

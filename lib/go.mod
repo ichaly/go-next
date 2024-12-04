@@ -7,7 +7,6 @@ toolchain go1.23.1
 require (
 	github.com/allegro/bigcache/v3 v3.1.0
 	github.com/casbin/casbin/v2 v2.77.2
-	github.com/dolmen-go/jsonmap v0.0.0-20210331234024-f4ef59ae53f6
 	github.com/duke-git/lancet/v2 v2.3.2
 	github.com/eko/gocache/lib/v4 v4.1.6
 	github.com/eko/gocache/store/bigcache/v4 v4.2.2
@@ -29,6 +28,7 @@ require (
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/redis/go-redis/v9 v9.0.2
 	github.com/rs/zerolog v1.31.0
+	github.com/samber/lo v1.47.0
 	github.com/sony/sonyflake v1.1.0
 	github.com/spf13/viper v1.19.0
 	github.com/sqids/sqids-go v0.4.1
@@ -85,7 +85,6 @@ require (
 	github.com/prometheus/procfs v0.8.0 // indirect
 	github.com/sagikazarmark/locafero v0.4.0 // indirect
 	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
-	github.com/samber/lo v1.47.0 // indirect
 	github.com/sourcegraph/conc v0.3.0 // indirect
 	github.com/spf13/afero v1.11.0 // indirect
 	github.com/spf13/cast v1.6.0 // indirect
