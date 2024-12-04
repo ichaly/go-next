@@ -215,8 +215,28 @@ func TestExcelRead(t *testing.T) {
 	names := readExcel(t, "/Users/Chaly/Downloads/Expenses01.xlsx", 1)
 	prices := readExcel(t, "/Users/Chaly/Downloads/Product Batch Adding or Modification Template.xlsx", 0)
 
+	f := excelize.NewFile()
+	sheetName := "Sheet1"
+	index, _ := f.NewSheet(sheetName)
+	f.SetActiveSheet(index)
+	var line int
 	for k, v := range prices {
 		row := names[k]
-		t.Log(k, v, names[k])
+		if len(row) < 5 || len(v) < 3 {
+			continue
+		}
+		line++
+		f.SetCellValue(sheetName, fmt.Sprintf("%c%v", 'A', line), k)
+		f.SetCellValue(sheetName, fmt.Sprintf("%c%v", 'C', line), fmt.Sprintf("zh_CN|%s|%s", row[0], row[5]))
+		f.SetCellValue(sheetName, fmt.Sprintf("%c%v", 'D', line), v[3])
+		//t.Log(k, v[3], row[0], row[5])
 	}
+	file, err := os.OpenFile("/Users/Chaly/Downloads/output.xlsx", os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		// 如果打开文件出错，打印错误并退出
+		fmt.Println("Error opening file:", err)
+		return
+	}
+	defer file.Close() // 在函数结束时关闭文件
+	f.WriteTo(file)
 }
